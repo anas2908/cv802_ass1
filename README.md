@@ -121,16 +121,18 @@ python3 scripts/package_saved_results.py install \
 ```
 
 Start the CPU-only browser:
-
+if for some reason you are already using 8767 port, change it with 8768 or any other port available, also preferably do it in Mac!
 ```bash
 cd sfm
 CUDA_VISIBLE_DEVICES='' python3 -B browse_historical.py \
   --data-root "$CV802_DATA_ROOT" serve --port 8767
 ```
 
-Open <http://127.0.0.1:8767/>. If the code is running on a remote server, first
+Open <http://127.0.0.1:8767/>. or the port which you decided. If the code is running on a remote server, first
 create this tunnel from your laptop:
 
+
+again cross check the port
 ```bash
 ssh -N -L 8767:127.0.0.1:8767 USER@SERVER
 ```
