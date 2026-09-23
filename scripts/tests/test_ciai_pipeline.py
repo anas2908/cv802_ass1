@@ -97,6 +97,11 @@ class CIAIPipelineTests(unittest.TestCase):
         found = ciai_gpu_ui.discover_results(data)
         self.assertEqual(found["MVS-scene"]["point_count"], 3)
 
+    def test_generated_ui_keeps_javascript_newline_escape(self) -> None:
+        page = ciai_gpu_ui.main_page(["scene"]).decode("utf-8")
+        self.assertIn("s.logs.join('\\n')", page)
+        self.assertNotIn("s.logs.join('\n')", page)
+
 
 if __name__ == "__main__":
     unittest.main()

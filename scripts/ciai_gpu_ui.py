@@ -226,7 +226,7 @@ async function refresh(){{
  $('#progress').value=s.percent; $('#stage').textContent=`${{s.percent}}% — ${{s.stage}}`; $('#error').textContent=s.error||'';
  $('#start').disabled=s.running; $('#dataset').disabled=s.running; $('#method').disabled=s.running;
  const g=s.gpu; $('#gpu').textContent=g.available?`${{g.name}} · ${{g.utilization_percent}}% GPU · ${{g.memory_used_mib}}/${{g.memory_total_mib}} MiB · ${{g.temperature_c}}°C`:'GPU status unavailable';
- const text=s.logs.join('\n')||'Ready.'; if(text!==prior){{const p=$('#logs');p.textContent=text;p.scrollTop=p.scrollHeight;prior=text}}
+ const text=s.logs.join('\\n')||'Ready.'; if(text!==prior){{const p=$('#logs');p.textContent=text;p.scrollTop=p.scrollHeight;prior=text}}
  const list=$('#results'); list.innerHTML=s.results.length?s.results.map(x=>`<li><a href="/viewer?autoload=1&selected=${{encodeURIComponent(x.id)}}" target="_blank">View ${{x.method_name}} · ${{x.dataset}} (${{x.point_count.toLocaleString()}} points)</a></li>`).join(''):'<li class="muted">No CIAI reconstruction completed yet.</li>';
 }}
 $('#start').onclick=async()=>{{const r=await fetch('/api/start',{{method:'POST',headers:{{'Content-Type':'application/json'}},body:JSON.stringify({{dataset:$('#dataset').value,method:$('#method').value}})}});if(!r.ok)$('#error').textContent=(await r.json()).error;refresh()}};
