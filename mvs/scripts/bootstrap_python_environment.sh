@@ -42,17 +42,18 @@ export CONDA_PKGS_DIRS=${DATA_ROOT}/cache/conda-pkgs
 export PIP_CACHE_DIR=${DATA_ROOT}/cache/pip
 export TMPDIR=${DATA_ROOT}/runtime/tmp
 
-if [[ -f /apps/local/conda_init.sh ]]; then
-  # shellcheck source=/dev/null
-  source /apps/local/conda_init.sh
-elif ! command -v conda >/dev/null 2>&1; then
-  echo "ERROR: conda is unavailable" >&2
-  exit 2
-fi
 if [[ ! -x "${ENV_PREFIX}/bin/python" ]]; then
-  conda create --yes --prefix "${ENV_PREFIX}" python=3.12 pip=25.2
+  if ! command -v python3.12 >/dev/null 2>&1; then
+    echo "ERROR: python3.12 is unavailable on this compute node" >&2
+    exit 2
+  fi
+  # CIAI's legacy base Conda initializer can exit silently under strict shell
+  # mode. A standard venv is sufficient because all MVS dependencies are
+  # distributed as pinned binary wheels, including pycolmap-cuda12.
+  python3.12 -m venv "${ENV_PREFIX}"
 fi
 
+"${ENV_PREFIX}/bin/python" -m pip install --upgrade "pip==25.2" "setuptools==80.9.0" "wheel==0.45.1"
 "${ENV_PREFIX}/bin/python" -m pip install \
   --only-binary=:all: \
   --requirement "${CODE_ROOT}/requirements.lock"
