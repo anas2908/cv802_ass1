@@ -1,5 +1,16 @@
 # CV802 Project 1 — 3D Reconstruction
 
+## Quick start
+
+Copy and paste these commands first:
+
+```bash
+git clone https://github.com/anas2908/cv802_ass1.git
+cd cv802_ass1
+export CV802_DATA_ROOT="$(pwd)/cv802-data"
+mkdir -p "$CV802_DATA_ROOT"
+```
+
 This repository has two jobs:
 
 1. Reconstruct a new image folder with **SfM**, **COLMAP MVS**, or **VGGSfM**.
