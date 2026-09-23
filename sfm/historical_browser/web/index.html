@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CV802 Saved 3D Results Browser</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="eyebrow">CV802 · Project 1</div>
+    <h1>SfM history</h1>
+    <p class="intro">Inspect preserved E1–E10, MVS and independent VGGSfM coloured point clouds. This browser is read-only and never starts a reconstruction.</p>
+
+    <label for="experiment">Experiment</label>
+    <select id="experiment" disabled></select>
+
+    <fieldset id="subjects" disabled>
+      <legend>Subject</legend>
+      <label class="subject-option"><input type="radio" name="subject" value="light"> Light shirt</label>
+      <label class="subject-option"><input type="radio" name="subject" value="dark"> Black shirt + crutches</label>
+    </fieldset>
+
+    <button id="load" type="button" disabled>Load preserved cloud</button>
+
+    <section class="details" aria-live="polite">
+      <div class="badges"><span id="stage" class="badge">Loading</span><span id="points" class="badge muted">— points</span></div>
+      <h2 id="title">Reading catalog…</h2>
+      <p id="method"></p>
+      <p id="camera" class="small"></p>
+      <p id="availability" class="notice"></p>
+    </section>
+
+    <details>
+      <summary>What the labels mean</summary>
+      <p><strong>Reconstruction</strong> performed matching/triangulation. E3, E6, E8 and E10 reused fixed E1 camera poses, so they are refinements rather than fresh camera-estimation runs.</p>
+      <p><strong>Derived cleanup</strong> only filtered points from an earlier reconstruction: E2, E4, E5, E7 and E9.</p>
+      <p>The files are preserved and inspectable. Exact byte-identical Linux reruns are not claimed. E11 is a separate fresh server run.</p>
+    </details>
+  </aside>
+
+  <main class="viewer-shell">
+    <canvas id="viewer" aria-label="Interactive coloured 3D point-cloud viewer"></canvas>
+    <div class="viewer-toolbar">
+      <button id="fit" type="button" disabled>Reset view</button>
+      <label>Point size <input id="point-size" type="range" min="1" max="8" step="0.5" value="2"></label>
+      <label class="background-control">Background
+        <select id="background-preset" aria-label="Background colour preset">
+          <option value="dark">Dark</option>
+          <option value="black">Black</option>
+          <option value="white">White</option>
+          <option value="grey">Grey</option>
+          <option value="custom">Custom</option>
+        </select>
+      </label>
+      <input id="background-custom" type="color" value="#090f1a"
+             aria-label="Custom background colour" title="Choose a custom background colour" disabled>
+    </div>
+    <div id="status" class="status">Choose an experiment and subject, then load its preserved result.</div>
+    <div class="help">Drag to rotate · Shift/right-drag to pan · Scroll to zoom · Double-click to reset</div>
+  </main>
+  <script src="/viewer.js"></script>
+</body>
+</html>

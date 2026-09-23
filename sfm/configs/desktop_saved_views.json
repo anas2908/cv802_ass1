@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "views": [
+    {
+      "id": "MVS",
+      "title": "COLMAP dense fusion (raw saved results)",
+      "stage_type": "dense_reconstruction",
+      "method": "mvs",
+      "subjects": {
+        "light": {
+          "available": true,
+          "point_count": 487451,
+          "relative_ply": "mvs/experiments/light_e10_colmap_mvs_1600/outputs/fused.ply"
+        },
+        "dark": {
+          "available": true,
+          "point_count": 616827,
+          "relative_ply": "mvs/experiments/dark_e3_colmap_mvs_1024_raw_v1/outputs/fused.ply"
+        }
+      }
+    },
+    {
+      "id": "MVSCLEAN",
+      "title": "COLMAP MVS body-mask + crutch-protected cleanup",
+      "stage_type": "derived_cleanup",
+      "method": "mvs",
+      "subjects": {
+        "light": {
+          "available": false,
+          "point_count": null,
+          "relative_ply": null,
+          "reason": "No separately validated light-shirt MVS cleanup was produced; the raw light MVS result remains available."
+        },
+        "dark": {
+          "available": true,
+          "point_count": 455181,
+          "relative_ply": "mvs/outputs/dark-e3-mvs-body90-crutches-v1/point_cloud.ply",
+          "publication_relative": "mvs/outputs/dark-e3-mvs-body90-crutches-v1/publication.json",
+          "ply_sha256": "80664efaafbd2cd2605f40100c794cf03ad7827f16f3227d3c134f460d41dd51"
+        }
+      }
+    },
+    {
+      "id": "VGGSFM",
+      "title": "Official VGGSfM full raw reconstruction",
+      "stage_type": "learned_reconstruction",
+      "method": "vggsfm",
+      "subjects": {
+        "light": {
+          "available": true,
+          "point_count": 414208,
+          "relative_ply": "vggsfm/outputs/light-shirt-vggsfm-v1/point_cloud.ply",
+          "manifest_relative": "vggsfm/outputs/light-shirt-vggsfm-v1/manifest.json",
+          "manifest_run_id": "light-shirt-vggsfm-v1"
+        },
+        "dark": {
+          "available": true,
+          "point_count": 187308,
+          "relative_ply": "vggsfm/outputs/dark-shirt-vggsfm-all290-a10040-fit-v2/point_cloud.ply",
+          "manifest_relative": "vggsfm/outputs/dark-shirt-vggsfm-all290-a10040-fit-v2/manifest.json",
+          "manifest_run_id": "dark-shirt-vggsfm-all290-a10040-fit-v2"
+        }
+      }
+    },
+    {
+      "id": "VGGCLEAN",
+      "title": "VGGSfM native-mask projection cleanup",
+      "stage_type": "derived_cleanup",
+      "method": "vggsfm",
+      "subjects": {
+        "light": {
+          "available": true,
+          "point_count": 138677,
+          "relative_ply": "vggsfm/outputs/light-shirt-vggsfm-v1-mask-projection-clean-v1/point_cloud.ply",
+          "manifest_relative": "vggsfm/outputs/light-shirt-vggsfm-v1-mask-projection-clean-v1/manifest.json",
+          "manifest_run_id": "light-shirt-vggsfm-v1-mask-projection-clean-v1"
+        },
+        "dark": {
+          "available": true,
+          "point_count": 62889,
+          "relative_ply": "vggsfm/outputs/dark-shirt-vggsfm-all290-a10040-fit-v2-mask-crutch-clean-v1/point_cloud.ply",
+          "manifest_relative": "vggsfm/outputs/dark-shirt-vggsfm-all290-a10040-fit-v2-mask-crutch-clean-v1/manifest.json",
+          "manifest_run_id": "dark-shirt-vggsfm-all290-a10040-fit-v2-mask-crutch-clean-v1",
+          "publication_relative": "vggsfm/outputs/dark-shirt-vggsfm-all290-a10040-fit-v2-mask-crutch-clean-v1/publication.json",
+          "ply_sha256": "0ec0e6983502cd567b1616a1cc315e468b889feabcc77c961c645920448b67c8"
+        }
+      }
+    }
+  ]
+}

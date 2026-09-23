@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "description": "All-290-view dark-shirt/crutches VGGSfM profile sized from the measured 125-view light run for one A100 40 GB. No view subsampling; lower image/query/grid budgets are explicit.",
+  "name": "dark-shirt-all290-a10040-fit-v1",
+  "camera_type": "SIMPLE_RADIAL",
+  "shared_camera": false,
+  "query_frame_num": 4,
+  "max_query_pts": 1536,
+  "query_method": "aliked",
+  "fine_tracking": true,
+  "mixed_precision": "fp16",
+  "img_size": 640,
+  "robust_refine": 2,
+  "bundle_adjustment_iterations": 1,
+  "extra_point_pixel_interval": 16,
+  "extra_point_neighbor_frames": 16,
+  "concatenate_extra_points": true,
+  "seed": 0
+}

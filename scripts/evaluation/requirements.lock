@@ -1,0 +1,3 @@
+# Already installed by mvs/scripts/bootstrap_python_environment.sh.
+# Keep this identical to mvs/requirements.lock so no extra environment is needed.
+numpy==2.3.3

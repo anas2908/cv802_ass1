@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "description": "First-pass headless VGGSfM v2 profile for the light-shirt capture on one A100 40 GB GPU.",
+  "name": "light-shirt-a100-quality-v1",
+  "camera_type": "SIMPLE_RADIAL",
+  "shared_camera": false,
+  "query_frame_num": 6,
+  "max_query_pts": 2048,
+  "query_method": "aliked",
+  "fine_tracking": true,
+  "mixed_precision": "fp16",
+  "img_size": 1024,
+  "robust_refine": 2,
+  "bundle_adjustment_iterations": 1,
+  "extra_point_pixel_interval": 10,
+  "extra_point_neighbor_frames": 16,
+  "concatenate_extra_points": true,
+  "seed": 0
+}

@@ -1,0 +1,7 @@
+# Direct Python dependencies for the MVS controller and model audits.
+# pycolmap-cuda12 is kept at the same 4.2.0 release as the COLMAP container.
+# It also provides the explicit dense fallback when the cluster cannot mount
+# the checksum-verified SIF; runtime preflight must prove CUDA support.
+numpy==2.3.3
+Pillow==11.3.0
+pycolmap-cuda12==4.2.0

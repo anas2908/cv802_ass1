@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+channel_priority: strict
+envs_dirs:
+  - /l/users/anas.khan/cv_802_ass1/mvs/envs
+pkgs_dirs:
+  - /l/users/anas.khan/cv_802_ass1/mvs/cache/conda-pkgs
+auto_activate_base: false
+

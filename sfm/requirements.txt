@@ -1,0 +1,10 @@
+# Original Mac GUI + historical preparation/analysis helpers, Python 3.11-3.12.
+# Pins reflect the transferred Mac environment, including previously omitted
+# imports. For the isolated Linux headless engine use requirements-headless-linux-cuda.txt.
+numpy==1.26.4
+open3d==0.19.0
+pycolmap==4.2.0
+Pillow==12.3.0
+scipy==1.17.1
+matplotlib==3.11.2
+imageio-ffmpeg==0.6.0

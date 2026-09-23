@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cv802-mvs"
+version = "0.1.0"
+description = "Auditable headless COLMAP CUDA dense MVS for CV802"
+requires-python = ">=3.10"
+dependencies = ["Pillow==11.3.0"]
+
+[project.scripts]
+cv802-mvs = "cv802_mvs.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

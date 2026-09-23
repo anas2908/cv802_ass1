@@ -1,0 +1,10 @@
+# Python 3.10-3.12; install only in DATA_ROOT/sfm/envs/headless-cuda.
+# The engine is checked against the exact 4.2 API. The ordinary ``pycolmap``
+# wheel is not substituted because CUDA is an explicit production requirement.
+# Redirect PIP_CACHE_DIR, XDG_CACHE_HOME, TMPDIR, and PYTHONPYCACHEPREFIX to
+# /l/users/anas.khan/cv_802_ass1 before installation or execution.
+numpy==1.26.4
+pycolmap-cuda12==4.2.0
+# The original assignment1 backend tests mock Open3D but create image fixtures
+# and exercise the historical quality path through Pillow. No GUI is installed.
+Pillow==11.3.0

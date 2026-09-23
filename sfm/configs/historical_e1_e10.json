@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "reconstruction_root": "sfm/historical/transferred/sfm/reconstructions",
+  "series_note": "E1-E10 are preserved historical Mac results. They are inspectable on the server, but this catalog does not claim byte-identical Linux rerun portability and does not map any entry to E11.",
+  "experiments": [
+    {
+      "id": "E1",
+      "title": "Baseline exhaustive SfM",
+      "stage_type": "reconstruction",
+      "method": "Standard SIFT, exhaustive matching, and camera estimation",
+      "camera_policy": "Historical camera poses estimated by SfM",
+      "display_variant": "Full sparse scene (includes background)",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 22230, "relative_ply": "light_shirt/sparse_full_scene.ply"},
+        "dark": {"available": true, "point_count": 57440, "relative_ply": "black_shirt_crutches/sparse_full_scene.ply"}
+      }
+    },
+    {
+      "id": "E2",
+      "title": "Rectangle cleanup of E1",
+      "stage_type": "derived_cleanup",
+      "method": "Filter already reconstructed E1 points using multi-view person rectangles",
+      "camera_policy": "Reuses E1 cameras; no new feature matching or SfM",
+      "display_variant": "Rectangle-filtered subject point cloud",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 7247, "relative_ply": "light_shirt/subject_preview/subject.ply"},
+        "dark": {"available": true, "point_count": 15546, "relative_ply": "black_shirt_crutches/subject_preview/subject.ply"}
+      }
+    },
+    {
+      "id": "E3",
+      "title": "Higher-detail guided SfM refinement",
+      "stage_type": "reconstruction",
+      "method": "Affine/DSP SIFT, selective pairs, guided subset, and new triangulation",
+      "camera_policy": "Fixed E1 poses with rescaled intrinsics; not fresh camera estimation",
+      "display_variant": "Rectangle-filtered subject preview of the refined sparse model",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 25063, "relative_ply": "light_shirt_quality/subject_preview/subject.ply"},
+        "dark": {"available": true, "point_count": 46111, "relative_ply": "black_shirt_crutches_quality/subject_preview/subject.ply"}
+      }
+    },
+    {
+      "id": "E4",
+      "title": "E3 mask cleanup at 90%",
+      "stage_type": "derived_cleanup",
+      "method": "Filter E3 points using Apple Vision person-mask agreement at 90%",
+      "camera_policy": "Reuses E3/E1 cameras; no new feature matching or SfM",
+      "display_variant": "90% mask-consensus subject point cloud",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 19519, "relative_ply": "experiments/light_person_mask_cleanup/mask_consensus_90/subject.ply"},
+        "dark": {"available": true, "point_count": 32997, "relative_ply": "experiments/black_person_crutches_cleanup/body_mask_consensus_90_crutches/subject.ply"}
+      }
+    },
+    {
+      "id": "E5",
+      "title": "E3 mask cleanup at 97%",
+      "stage_type": "derived_cleanup",
+      "method": "Filter E3 points using stricter Apple Vision person-mask agreement at 97%",
+      "camera_policy": "Reuses E3/E1 cameras; no new feature matching or SfM",
+      "display_variant": "97% mask-consensus subject point cloud",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 14812, "relative_ply": "experiments/light_person_mask_cleanup/mask_consensus_97/subject.ply"},
+        "dark": {"available": true, "point_count": 26790, "relative_ply": "experiments/black_person_crutches_cleanup/body_mask_consensus_97_crutches/subject.ply"}
+      }
+    },
+    {
+      "id": "E6",
+      "title": "Higher-detail SfM refinement, guided OFF",
+      "stage_type": "reconstruction",
+      "method": "E3 features and selective pairs without guided matching, followed by triangulation",
+      "camera_policy": "Fixed E1 poses with rescaled intrinsics; not fresh camera estimation",
+      "display_variant": "Rectangle-filtered subject preview of the refined sparse model",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 22431, "relative_ply": "experiments/E6_guided_off/light_shirt_quality/subject_preview/subject.ply"},
+        "dark": {"available": true, "point_count": 40110, "relative_ply": "experiments/E6_guided_off/black_shirt_crutches_quality/subject_preview/subject.ply"}
+      }
+    },
+    {
+      "id": "E7",
+      "title": "E6 mask cleanup at 90%",
+      "stage_type": "derived_cleanup",
+      "method": "Apply the E4 90% mask policy to E6 points",
+      "camera_policy": "Reuses E6/E1 cameras; no new feature matching or SfM",
+      "display_variant": "90% mask-consensus subject point cloud",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 17614, "relative_ply": "experiments/E7_guided_off_consensus90/light_shirt/subject.ply"},
+        "dark": {"available": true, "point_count": 28429, "relative_ply": "experiments/E7_guided_off_consensus90/black_shirt_crutches/subject.ply"}
+      }
+    },
+    {
+      "id": "E8",
+      "title": "Vocabulary-tree guided SfM refinement",
+      "stage_type": "reconstruction",
+      "method": "E3 features, top-20 vocabulary retrieval, guided subset, and triangulation",
+      "camera_policy": "Fixed E1 poses with rescaled intrinsics; not fresh camera estimation",
+      "display_variant": "Rectangle-filtered subject preview of the refined sparse model",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 24123, "relative_ply": "experiments/E8_vocab_guided/light_shirt_quality/subject_preview/subject.ply"},
+        "dark": {"available": true, "point_count": 43205, "relative_ply": "experiments/E8_vocab_guided/black_shirt_crutches_quality/subject_preview/subject.ply"}
+      }
+    },
+    {
+      "id": "E9",
+      "title": "E8 mask cleanup at 90%",
+      "stage_type": "derived_cleanup",
+      "method": "Apply the E4 90% mask policy to E8 points",
+      "camera_policy": "Reuses E8/E1 cameras; no new feature matching or SfM",
+      "display_variant": "90% mask-consensus subject point cloud",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 18781, "relative_ply": "experiments/E9_vocab_guided_consensus90/light_shirt/subject.ply"},
+        "dark": {"available": true, "point_count": 31097, "relative_ply": "experiments/E9_vocab_guided_consensus90/black_shirt_crutches/subject.ply"}
+      }
+    },
+    {
+      "id": "E10",
+      "title": "Exhaustive guided refinement plus 90% cleanup",
+      "stage_type": "reconstruction",
+      "method": "E3 features, all 7,750 light pairs with guided matching, triangulation, then 90% cleanup",
+      "camera_policy": "Fixed E1 poses with rescaled intrinsics; not fresh camera estimation",
+      "display_variant": "Published 90%-cleaned output from the E10 reconstruction",
+      "exact_rerun_portable": false,
+      "subjects": {
+        "light": {"available": true, "point_count": 21744, "relative_ply": "experiments/E10_quality_exhaustive_guided_consensus90/light_shirt/subject.ply"},
+        "dark": {"available": false, "point_count": null, "relative_ply": null, "reason": "E10 was completed for light shirt only; a dark E10 result was never run."}
+      }
+    }
+  ]
+}

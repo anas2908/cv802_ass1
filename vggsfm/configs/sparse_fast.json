@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "description": "Fast diagnostic reconstruction without fine tracking or non-BA additional points.",
+  "name": "sparse-fast-diagnostic-v1",
+  "camera_type": "SIMPLE_RADIAL",
+  "shared_camera": false,
+  "query_frame_num": 3,
+  "max_query_pts": 1024,
+  "query_method": "aliked",
+  "fine_tracking": false,
+  "mixed_precision": "fp16",
+  "img_size": 1024,
+  "robust_refine": 2,
+  "bundle_adjustment_iterations": 1,
+  "extra_point_pixel_interval": -1,
+  "extra_point_neighbor_frames": 16,
+  "concatenate_extra_points": false,
+  "seed": 0
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-09-19T00:00:00Z",
+  "official_vggsfm": {
+    "repository": "https://github.com/facebookresearch/vggsfm.git",
+    "commit": "e1d9d2eb2b3575525792206fb94b2c749c58dc50",
+    "release_identity": "VGGSfM 2.0 code line"
+  },
+  "lightglue": {
+    "repository": "https://github.com/jytime/LightGlue.git",
+    "commit": "2f23ca2ea9638cecad7f7220795210fc6b8353c3",
+    "reason": "This is the fork used by the official VGGSfM install.sh at the pinned revision."
+  },
+  "model": {
+    "repository": "facebook/VGGSfM",
+    "filename": "vggsfm_v2_0_0.bin",
+    "download_policy": "Official hf_hub_download on first inference; HF_HOME is redirected to DATA_ROOT/vggsfm/cache/huggingface."
+  }
+}
