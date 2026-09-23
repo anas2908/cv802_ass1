@@ -9,6 +9,9 @@ This repository is ready to use on an Apple-silicon Mac. It contains:
 
 No separate image bundle or saved-model download is required.
 
+It also includes a one-command CIAI GPU interface for rebuilding dense MVS or
+VGGSfM results on an A100. That workflow is described in Option 3.
+
 ## Option 1: Open the saved results
 
 This is the fastest option. It does not reconstruct anything and does not need
@@ -79,6 +82,54 @@ once, finish the installation, and repeat the same launcher command:
 xcode-select --install
 ```
 
+## Option 3: Recompute MVS or VGGSfM on CIAI
+
+Run this option on a **CIAI login node**, not on a Mac. The clone is placed on
+Lustre because the repository includes the assignment photographs. Copy and
+paste:
+
+```bash
+cd "/l/users/$USER"
+git clone https://github.com/anas2908/cv802_ass1.git cv802_ass1-source
+cd cv802_ass1-source
+bash scripts/run_ciai_gpu_ui.sh
+```
+
+The launcher requests one A100 40 GB GPU, 16 CPU cores and 96 GB RAM from the
+CIAI debug queue for at most three hours. It may first wait in the Slurm queue.
+Once the allocation starts, the terminal prints exactly two things to use on
+your laptop:
+
+1. an `ssh -N -L ...` tunnel command; and
+2. a private `http://127.0.0.1:8780/?token=...` browser URL.
+
+Run the printed SSH command in a second terminal on your laptop, then open the
+printed URL. Keep both terminals open. In the UI, choose the dataset and either:
+
+- **MVS** — automatically builds or reuses the required sparse SfM camera
+  calibration, then runs COLMAP CUDA image undistortion, PatchMatch Stereo and
+  depth-map fusion; or
+- **VGGSfM** — independently reconstructs from the raw photographs using the
+  pinned official model.
+
+The UI shows overall progress, detailed logs, and live GPU utilization and
+memory. When a run completes, click its result link to rotate, pan, zoom and
+change the background of the colored point cloud.
+
+All generated state belongs to the person running the command. Environments,
+downloaded VGGSfM weights, caches, databases, temporary files, logs and outputs
+are written below:
+
+```text
+/l/users/$USER/cv802_ass1/
+```
+
+MVS has no learned weights. VGGSfM downloads its pretrained weights on the
+first run and reuses them from that Lustre folder afterward. Both methods are
+restartable: if the three-hour allocation ends, rerun the same launcher and
+select the same dataset and method. Press `Control-C` in the CIAI job terminal
+when finished to release the GPU immediately.
+
 ## Already cloned the repository?
 
 Update it and launch either interface:
@@ -98,6 +149,12 @@ For SfM reconstruction:
 
 ```bash
 bash sfm/scripts/run_mac_e1_e10.sh
+```
+
+For the CIAI MVS/VGGSfM interface, run `git pull` in the Lustre clone and then:
+
+```bash
+bash scripts/run_ciai_gpu_ui.sh
 ```
 
 ## Adding another image folder

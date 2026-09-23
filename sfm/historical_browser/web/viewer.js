@@ -510,6 +510,10 @@ async function initialize() {
       option.textContent = `${experiment.id} · ${experiment.title} [${kind}]`;
       experimentSelect.append(option);
     }
+    const requestedExperiment = new URLSearchParams(window.location.search).get("selected");
+    if (requestedExperiment && catalog.experiments.some((item) => item.id === requestedExperiment)) {
+      experimentSelect.value = requestedExperiment;
+    }
     experimentSelect.disabled = false;
     subjectFieldset.disabled = false;
     document.querySelector('input[name="subject"][value="light"]').checked = true;

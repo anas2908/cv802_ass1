@@ -7,3 +7,21 @@ classic SfM and MVS pipelines.
 Use `scripts/prepare_input.py`, `scripts/install_linux.sh`, and the commands in
 the root README.
 
+For the simplest CIAI path, run this from the repository on a login node:
+
+```bash
+bash scripts/run_ciai_gpu_ui.sh
+```
+
+The launcher requests one A100 for up to three hours and opens the shared MVS /
+VGGSfM browser interface. VGGSfM performs checksum-verified input staging,
+installs the pinned official repository and CUDA environment, downloads the
+official pretrained weights on first use, runs independent inference, and
+exports `point_cloud.ply`. It does not reuse classic SfM cameras or MVS output.
+
+Nothing is downloaded to the source checkout or home directory. The official
+source, environment, Torch/Hugging Face model caches, attempts, logs and output
+remain below `/l/users/$USER/cv802_ass1/vggsfm`. A later allocation reuses them.
+The reviewed A100 profiles are `configs/light_shirt.json` and
+`configs/dark_shirt.json`; the dark-shirt profile uses a smaller image size and
+query budget so all 290 photographs fit an A100 40 GB.
