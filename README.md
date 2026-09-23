@@ -73,6 +73,8 @@ Keep that terminal open while using the UI. If Apple command-line tools are
 missing, the launcher will ask you to run `xcode-select --install`; finish that
 one installation and rerun the same launcher command. The UI uses the browser,
 so it does not depend on the deprecated system Tk framework.
+If port 8770 is already occupied, launch with
+`CV802_UI_PORT=8771 bash sfm/scripts/run_mac_e1_e10.sh` instead.
 
 The UI automatically runs missing prerequisites. For example, choosing E7
 first creates E1, E2, E3 and E6 before applying the E7 cleanup. Completed

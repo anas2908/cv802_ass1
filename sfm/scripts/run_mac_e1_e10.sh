@@ -25,6 +25,11 @@ if [[ ! "$MACOS_MAJOR" =~ ^[0-9]+$ ]] || (( MACOS_MAJOR < 14 )); then
 fi
 
 : "${CV802_DATA_ROOT:=$REPO_ROOT/cv802-data}"
+: "${CV802_UI_PORT:=8770}"
+if [[ ! "$CV802_UI_PORT" =~ ^[0-9]+$ ]] || (( CV802_UI_PORT < 1024 || CV802_UI_PORT > 65535 )); then
+    echo "ERROR: CV802_UI_PORT must be an integer from 1024 to 65535." >&2
+    exit 1
+fi
 case "$CV802_DATA_ROOT" in
     /*) ;;
     *) CV802_DATA_ROOT="$REPO_ROOT/$CV802_DATA_ROOT" ;;
@@ -100,5 +105,5 @@ fi
 
 export CV802_ALLOW_NON_SLURM=1
 
-echo "Opening the local reconstruction UI at http://127.0.0.1:8770/"
-exec "$ENV_DIR/bin/python" "$REPO_ROOT/sfm/mac_reconstruction_ui.py" ui --port 8770
+echo "Opening the local reconstruction UI at http://127.0.0.1:$CV802_UI_PORT/"
+exec "$ENV_DIR/bin/python" "$REPO_ROOT/sfm/mac_reconstruction_ui.py" ui --port "$CV802_UI_PORT"
