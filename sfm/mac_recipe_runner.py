@@ -124,6 +124,56 @@ def validate_e8_preparation(target: Path, pairs: Path) -> bool:
     return True
 
 
+def ensure_e10_resume_config(dataset: Path, subject: str) -> bool:
+    """Repair only the known pre-run E10 configuration omission.
+
+    The first portable Mac bundle prepared all exhaustive pairs correctly but
+    inherited E3's non-resumable matching flag.  A retry must repair that small
+    configuration file without discarding the prepared pairs or feature copy.
+    """
+    config_path = dataset / "sfm_refine.json"
+    provenance_path = dataset / "experiment_provenance.json"
+    config = json.loads(config_path.read_text())
+    batch_size = config.get("matching_batch_size", 128)
+    matching_threads = config.get("matching_threads", 1)
+    if (config.get("resume_matching") is True
+            and type(batch_size) is int and batch_size > 0
+            and type(matching_threads) is int and matching_threads in (1, 2, 4)):
+        return False
+    provenance = json.loads(provenance_path.read_text())
+    if (provenance.get("experiment") != "E10_quality_exhaustive_guided"
+            or provenance.get("subject") != subject):
+        raise RuntimeError(f"Refusing to alter unrecognized E10 preparation: {dataset}")
+    ordinary = dataset / "matching_pairs.txt"
+    guided = dataset / "guided_pairs.txt"
+    rows = [line.split() for line in ordinary.read_text().splitlines() if line.strip()]
+    expected_pairs = 7750 if subject == "light_shirt" else 41905
+    if (ordinary.read_bytes() != guided.read_bytes() or len(rows) != expected_pairs
+            or len({tuple(row) for row in rows}) != expected_pairs
+            or any(len(row) != 2 or row[0] >= row[1] for row in rows)):
+        raise RuntimeError("E10 exhaustive pair files failed validation; existing files were preserved")
+    colmap = dataset / "colmap"
+    started_entries = [path for path in colmap.iterdir()
+                       if path.name != "quality_feature_cache" and not path.name.startswith(".")]
+    if started_entries or (dataset / "reconstruction_report.json").exists():
+        raise RuntimeError(
+            "E10 has execution artifacts but a non-resumable configuration; refusing an automatic edit"
+        )
+    previous = dict(config)
+    config.update(resume_matching=True, matching_batch_size=128, matching_threads=1)
+    staged = config_path.with_name(".sfm_refine.resume-repair.json")
+    staged.write_text(json.dumps(config, indent=2) + "\n")
+    os.replace(staged, config_path)
+    repair = {
+        "repair": "enable reviewed restartable exhaustive guided matching",
+        "subject": subject, "previous_config": previous, "updated_config": config,
+        "pair_count": expected_pairs, "pair_sha256": file_sha256(ordinary),
+    }
+    (dataset / "resume_config_repair.json").write_text(json.dumps(repair, indent=2) + "\n")
+    print("Repaired the prepared E10 configuration for checkpointed guided matching.", flush=True)
+    return True
+
+
 def expected_result(root: Path, subject: str, experiment: str) -> Path:
     """Return the display PLY produced by an E1-E10 recipe."""
     reconstructions = root / "reconstructions"
@@ -352,14 +402,11 @@ def ensure_masks(root: Path, subject: str, quality: Path) -> Path:
     return mask_root
 
 
-def ensure_e4_e5(root: Path, subject: str, baseline: Path) -> None:
-    quality = ensure_e3(root, subject, baseline)
+def ensure_mask_prerequisites(root: Path, subject: str, quality: Path) -> tuple[Path, Path | None]:
+    """Prepare frozen mask inputs without creating an E4 or E5 result."""
     masks = ensure_masks(root, subject, quality)
     if subject == "light_shirt":
-        if not (masks / "mask_consensus_90/analysis.json").is_file():
-            run([sys.executable, masks / "filter_person_masks.py",
-                 "--source", quality / "subject_preview"], root)
-        return
+        return masks, None
     protection = masks / "crutch_protection"
     approved = protection / "protection_approved.json"
     if not approved.is_file():
@@ -370,16 +417,35 @@ def ensure_e4_e5(root: Path, subject: str, baseline: Path) -> None:
                       review={"status": "approved_for_experiment",
                               "basis": "Original manually reviewed normalized image corridors, re-evaluated on this fresh model"})
         approved.write_text(json.dumps(record, indent=2) + "\n")
+    return masks, approved
+
+
+def ensure_e4_or_e5(root: Path, subject: str, baseline: Path, experiment: str) -> None:
+    """Create only the selected mask-consensus experiment output."""
+    quality = ensure_e3(root, subject, baseline)
+    masks, approved = ensure_mask_prerequisites(root, subject, quality)
+    threshold = "90" if experiment == "E4" else "97"
+    fraction = ".90" if experiment == "E4" else ".97"
+    if subject == "light_shirt":
+        target = masks / f"mask_consensus_{threshold}"
+        if not (target / "analysis.json").is_file():
+            run([sys.executable, masks / "filter_person_masks.py",
+                 "--source", quality / "subject_preview", "--variants",
+                 f"mask_consensus_{threshold}:{fraction}"], root)
+        return
+    protection = masks / "crutch_protection"
     review = protection / "fresh_candidate_review"
     if not (review / "review.json").is_file():
         run([sys.executable, masks / "filter_person_crutches.py", "--source", quality / "subject_preview",
              "--manifest", masks / "body_mask_manifest.json", "--protection", approved,
              "--candidate-review", review, "--qc-only"], root)
         approve_json(review / "review.json", ready_for_filter=True, status="approved_for_experiment")
-    if not (masks / "body_mask_consensus_90_crutches/analysis.json").is_file():
+    target = masks / f"body_mask_consensus_{threshold}_crutches"
+    if not (target / "analysis.json").is_file():
         run([sys.executable, masks / "filter_person_crutches.py", "--source", quality / "subject_preview",
              "--manifest", masks / "body_mask_manifest.json", "--protection", approved,
-             "--candidate-review", review], root)
+             "--candidate-review", review, "--variants",
+             f"body_mask_consensus_{threshold}_crutches:{fraction}"], root)
 
 
 def run_mask_cleanup(root: Path, experiment: str, subject: str) -> None:
@@ -424,21 +490,21 @@ def execute(dataset: str, experiment: str) -> Path:
         report_progress(12, "Preparing the E3 refined reconstruction")
         ensure_e3(root, subject, baseline)
         report_progress(62, f"{experiment} · generating masks and filtering points")
-        ensure_e4_e5(root, subject, baseline)
+        ensure_e4_or_e5(root, subject, baseline, experiment)
     elif experiment in ("E6", "E7"):
         report_progress(12, "Preparing the E3 features and cameras")
-        ensure_e3(root, subject, baseline)
+        quality = ensure_e3(root, subject, baseline)
         report_progress(48, "E6 · matching without guided matching")
         if not (root / f"reconstructions/experiments/E6_guided_off/{subject}_quality/reconstruction_report.json").is_file():
             run([sys.executable, root / "work/matching-ablation/E6/prepare_and_run.py", subject], root)
         if experiment == "E7":
             report_progress(72, "Preparing the person masks")
-            ensure_e4_e5(root, subject, baseline)
+            ensure_mask_prerequisites(root, subject, quality)
             report_progress(88, "E7 · applying the 90% mask cleanup")
             run_mask_cleanup(root, "E7", subject)
     elif experiment in ("E8", "E9"):
         report_progress(12, "Preparing the E3 features and cameras")
-        ensure_e3(root, subject, baseline)
+        quality = ensure_e3(root, subject, baseline)
         report_progress(48, "E8 · vocabulary matching and triangulation")
         target = root / f"reconstructions/experiments/E8_vocab_guided/{subject}_quality"
         pair_directory = root / "work/matching-ablation/vocab" / subject
@@ -453,16 +519,18 @@ def execute(dataset: str, experiment: str) -> Path:
             run([sys.executable, root / "work/matching-ablation/run_e8.py", subject], root)
         if experiment == "E9":
             report_progress(72, "Preparing the person masks")
-            ensure_e4_e5(root, subject, baseline)
+            ensure_mask_prerequisites(root, subject, quality)
             report_progress(88, "E9 · applying the 90% mask cleanup")
             run_mask_cleanup(root, "E9", subject)
     elif experiment == "E10":
         report_progress(12, "Preparing the E3 reconstruction and masks")
-        ensure_e4_e5(root, subject, baseline)
+        quality = ensure_e3(root, subject, baseline)
+        ensure_mask_prerequisites(root, subject, quality)
         report_progress(52, "Preparing all exhaustive guided pairs")
         internal = root / "work/E10-exhaustive-guided/datasets/light_shirt_quality"
         if not (internal / "sfm_refine.json").is_file():
             run([sys.executable, root / "work/E10-exhaustive-guided/prepare_e10.py", subject], root)
+        ensure_e10_resume_config(internal, subject)
         report_progress(62, "E10 · exhaustive guided matching and reconstruction")
         run([sys.executable, root / "work/E10-exhaustive-guided/run_e10.py", "--subject", subject], root)
     report_progress(97, "Validating the reconstructed point cloud")

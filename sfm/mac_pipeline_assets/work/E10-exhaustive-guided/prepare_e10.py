@@ -51,7 +51,8 @@ def main():
         source_config=json.loads((source/'sfm_refine.json').read_text());config=dict(source_config)
         for key in ('baseline_dataset','boxes','guided_lock'):
             config[key]=os.path.relpath((source/source_config[key]).resolve(),destination)
-        config.update(matching_pairs='matching_pairs.txt',guided_pairs='guided_pairs.txt')
+        config.update(matching_pairs='matching_pairs.txt',guided_pairs='guided_pairs.txt',
+            resume_matching=True,matching_batch_size=128,matching_threads=1)
         baseline=(destination/config['baseline_dataset']).resolve();boxes=(destination/config['boxes']).resolve()
         image_root=(source/'images').resolve()
         assert baseline==ROOT/'reconstructions'/subject

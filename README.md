@@ -56,8 +56,10 @@ The launcher automatically:
 
 In the UI, select `light_shirt` or `dark_shirt`, select an experiment, and click
 **Recompute**. Required earlier experiments run automatically and completed
-prerequisites are reused. E10 is intentionally available only for
-`light_shirt`.
+prerequisites are reused. Only the selected experiment's final output is
+created: for example, E7 may prepare/reuse E6, but it does not create E8 or E9;
+E4 and E5 also create only their selected cleanup threshold. E10 is
+intentionally available only for `light_shirt`.
 
 The UI shows a stage label and progress bar while it runs. After completion,
 click **View reconstructed result** to open the new coloured point cloud in the

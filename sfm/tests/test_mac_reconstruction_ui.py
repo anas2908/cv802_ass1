@@ -3,6 +3,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import mac_recipe_runner as runner
 import mac_reconstruction_ui as ui
@@ -40,6 +41,52 @@ class MacReconstructionUITest(unittest.TestCase):
             }
             (folder / "retrieval_provenance.json").write_text(json.dumps(provenance))
             self.assertTrue(runner.validate_vocab_pairs(folder, "light_shirt"))
+
+    def test_repairs_prepared_e10_before_matching_starts(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            dataset = Path(temporary) / "light_shirt_quality"
+            (dataset / "colmap/quality_feature_cache").mkdir(parents=True)
+            (dataset / "sfm_refine.json").write_text(json.dumps({
+                "matching_pairs": "matching_pairs.txt",
+                "guided_pairs": "guided_pairs.txt",
+            }))
+            (dataset / "experiment_provenance.json").write_text(json.dumps({
+                "experiment": "E10_quality_exhaustive_guided",
+                "subject": "light_shirt",
+            }))
+            names = [f"image_{number:03}.jpg" for number in range(125)]
+            pairs = "".join(
+                f"{first} {second}\n"
+                for index, first in enumerate(names) for second in names[index + 1:]
+            )
+            (dataset / "matching_pairs.txt").write_text(pairs)
+            (dataset / "guided_pairs.txt").write_text(pairs)
+            self.assertTrue(runner.ensure_e10_resume_config(dataset, "light_shirt"))
+            config = json.loads((dataset / "sfm_refine.json").read_text())
+            self.assertIs(config["resume_matching"], True)
+            self.assertEqual(config["matching_batch_size"], 128)
+            self.assertEqual(config["matching_threads"], 1)
+            self.assertFalse(runner.ensure_e10_resume_config(dataset, "light_shirt"))
+
+    def test_e4_and_e5_create_only_the_selected_threshold(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            quality = root / "quality"
+            masks = root / "masks"
+            masks.mkdir()
+            with (mock.patch.object(runner, "ensure_e3", return_value=quality),
+                  mock.patch.object(runner, "ensure_mask_prerequisites",
+                                    return_value=(masks, None)),
+                  mock.patch.object(runner, "run") as run):
+                runner.ensure_e4_or_e5(root, "light_shirt", root / "baseline", "E4")
+                e4_command = [str(value) for value in run.call_args.args[0]]
+                self.assertIn("mask_consensus_90:.90", e4_command)
+                self.assertNotIn("mask_consensus_97:.97", e4_command)
+                run.reset_mock()
+                runner.ensure_e4_or_e5(root, "light_shirt", root / "baseline", "E5")
+                e5_command = [str(value) for value in run.call_args.args[0]]
+                self.assertIn("mask_consensus_97:.97", e5_command)
+                self.assertNotIn("mask_consensus_90:.90", e5_command)
 
     def test_discovers_only_image_datasets(self):
         with tempfile.TemporaryDirectory() as temporary:
