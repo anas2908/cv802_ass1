@@ -60,7 +60,7 @@ mkdir -p \
 
 export CONDA_PKGS_DIRS="${METHOD_ROOT}/cache/conda"
 export CONDA_ENVS_PATH="${METHOD_ROOT}/envs"
-export CONDARC="${CODE_ROOT}/configs/condarc"
+export CONDARC=/dev/null
 export PIP_CACHE_DIR="${METHOD_ROOT}/cache/pip"
 export PIP_CONFIG_FILE=/dev/null
 export TORCH_HOME="${METHOD_ROOT}/cache/torch"

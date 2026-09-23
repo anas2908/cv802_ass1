@@ -708,12 +708,8 @@ class ColmapAPI:
                 return result
 
             pairs = read_pairs(quality["matching_pairs"]) # selective matching (matching_pairs.txt)
-            guided_pairs = read_pairs(quality["guided_pairs"]) #[("imageA.jpg", "imageB.jpg"), ("imageA.jpg", "imageC.jpg")]
-            
-#             In [prepare_and_run.py, line 66 (line 66)](/home/anas.khan/cv802_project/project1/ass1/sfm/legacy_tools/work/matching-ablation/E6/prepare_and_run.py:66):
-# (dataset / 'guided_pairs.txt').write_text('') --> For E6, guided matching is disabled by creating an empty guided-pair file.
-            
-            
+            guided_pairs = read_pairs(quality["guided_pairs"])
+
             if not pairs or not set(guided_pairs).issubset(set(pairs)):
                 raise ValueError("Matching pairs must be nonempty and contain every guided pair")
             if quality["resume_matching"] and (
@@ -1263,19 +1259,5 @@ class ColmapAPI:
 
 
 
-# Person/background cleanup is outside api.py. It is a separate operation on a completed reconstruction.
-# - Initial rectangle cleanup: [make_subject_preview.py (line 192)](/home/anas.khan/cv802_project/project1/ass1/sfm/legacy_tools/work/full-capture/make_subject_preview.py:192).
-# - Light-shirt mask cleanup: [filter_person_masks.py (line 61)](/home/anas.khan/cv802_project/project1/ass1/sfm/legacy_tools/reconstructions/experiments/light_person_mask_cleanup/filter_person_masks.py:61).
-# - Dark-shirt cleanup with crutch protection: [filter_person_crutches.py (line 38)](/home/anas.khan/cv802_project/project1/ass1/sfm/legacy_tools/reconstructions/experiments/black_person_crutches_cleanup/filter_person_crutches.py:38).
-
-
-# run_e10.py
-# ├── run_quality.py → _estimate_cameras() → save reconstruction
-# ├── make_subject_preview.py → rectangle-based filtering #e2
-# └── filter_person_masks.py → 90% mask cleanup #e4,e5
-
-
-#run_cleanup.py - e7,e9
-
-
-# prepare_vocab_pairs.py - e8
+# Person/background cleanup is a separate post-processing step on a completed
+# reconstruction; camera estimation and triangulation end in this module.

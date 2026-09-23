@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+
+# Environments and caches
+.venv/
+venv/
+envs/
+cache/
+tmp/
+downloads/
+
+# Inputs and generated outputs
+images/
+videos/
+masks/
+datasets/*
+!datasets/.gitkeep
+experiments/
+outputs/
+work/
+logs/
+*.db
+*.sqlite
+*.ply
+*.obj
+*.stl
+*.bin
+*.ckpt
+*.pth
+*.pt
+*.sif
+*.zip
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+

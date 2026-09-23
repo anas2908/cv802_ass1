@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "camera_type": "SIMPLE_RADIAL",
+  "shared_camera": false,
+  "query_frame_num": 6,
+  "max_query_pts": 2048,
+  "fine_tracking": true,
+  "mixed_precision": "fp16",
+  "extra_point_pixel_interval": 10,
+  "extra_point_neighbor_frames": 16,
+  "concatenate_extra_points": true
+}

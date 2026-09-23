@@ -1,9 +1,0 @@
-{
-  "experiment_name": "E12_linux_fixed_pose_light_e3_v1",
-  "image_dir": "historical/transferred/sfm/reconstructions/light_shirt_quality/images",
-  "baseline_model": "historical/transferred/sfm/reconstructions/light_shirt/colmap/sparse/0",
-  "database": "historical/transferred/sfm/reconstructions/light_shirt_quality/colmap/database.db",
-  "feature_database": "historical/transferred/sfm/reconstructions/light_shirt_quality/colmap/quality_feature_cache/734068667723157cdc2eaf29123839245eae029a83b7390908801ba430897e3a.db",
-  "feature_metadata": "historical/transferred/sfm/reconstructions/light_shirt_quality/colmap/quality_feature_cache/734068667723157cdc2eaf29123839245eae029a83b7390908801ba430897e3a.json",
-  "num_threads": 4
-}

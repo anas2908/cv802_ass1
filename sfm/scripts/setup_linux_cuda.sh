@@ -4,12 +4,23 @@
 set -euo pipefail
 umask 027
 
-readonly CODE_ROOT=/home/anas.khan/cv802_project/project1/ass1/sfm
-readonly METHOD_ROOT=/l/users/anas.khan/cv_802_ass1/sfm
+readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+readonly CODE_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+readonly PROJECT_DATA_ROOT="${CV802_DATA_ROOT:-/l/users/anas.khan/cv_802_ass1}"
+readonly METHOD_ROOT="${PROJECT_DATA_ROOT}/sfm"
 readonly ENV_PREFIX="$METHOD_ROOT/envs/headless-cuda"
 
-if [[ -z "${SLURM_JOB_ID:-}" || "$(hostname -s)" == *login* ]]; then
-  echo "ERROR: setup_linux_cuda.sh requires the active Slurm GPU job" >&2
+if [[ "${PROJECT_DATA_ROOT}" != /* ]]; then
+  echo "ERROR: CV802_DATA_ROOT must be an absolute path" >&2
+  exit 2
+fi
+if [[ "$(hostname -s)" == *login* ]]; then
+  echo "ERROR: do not install or run reconstruction on a cluster login node" >&2
+  exit 2
+fi
+if [[ -z "${SLURM_JOB_ID:-}" && "${CV802_ALLOW_NON_SLURM:-0}" != 1 ]]; then
+  echo "ERROR: use an active Slurm GPU job" >&2
+  echo "For a personal CUDA machine, set CV802_ALLOW_NON_SLURM=1." >&2
   exit 2
 fi
 if [[ ! -d "$METHOD_ROOT" || ! -w "$METHOD_ROOT" ]]; then
@@ -35,6 +46,8 @@ export CUDA_CACHE_PATH="$METHOD_ROOT/cache/cuda"
 export MPLCONFIGDIR="$METHOD_ROOT/cache/matplotlib"
 export TMPDIR="$METHOD_ROOT/tmp"
 export PYTHONNOUSERSITE=1
+export CV802_SFM_REQUIREMENTS="$CODE_ROOT/requirements-headless-linux-cuda.txt"
+export CV802_SFM_RECEIPT="$METHOD_ROOT/environment-receipt.json"
 
 if [[ ! -x "$ENV_PREFIX/bin/python" ]]; then
   python3.12 -m venv "$ENV_PREFIX"
@@ -61,23 +74,23 @@ if not has_cuda:
 receipt = {
     "schema": "cv802-sfm-environment/v2",
     "recorded_utc": datetime.now(timezone.utc).isoformat(),
-    "slurm_job_id": os.environ["SLURM_JOB_ID"],
+    "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
     "python": os.sys.version,
     "pycolmap": pycolmap.__version__,
     "pycolmap_has_cuda": has_cuda,
     "environment": os.sys.prefix,
     "numpy": numpy.__version__,
     "pillow": PIL.__version__,
-    "requirements_sha256": hashlib.sha256(Path(
-        "/home/anas.khan/cv802_project/project1/ass1/sfm/requirements-headless-linux-cuda.txt"
-    ).read_bytes()).hexdigest(),
+    "requirements_sha256": hashlib.sha256(
+        Path(os.environ["CV802_SFM_REQUIREMENTS"]).read_bytes()
+    ).hexdigest(),
     "storage_environment": {name: os.environ[name] for name in (
         "PIP_CACHE_DIR", "PYTHONPYCACHEPREFIX", "TMPDIR", "XDG_CACHE_HOME",
         "CONDA_PKGS_DIRS", "HF_HOME", "HF_HUB_CACHE", "TORCH_HOME",
         "CUDA_CACHE_PATH", "MPLCONFIGDIR",
     )},
 }
-path = Path("/l/users/anas.khan/cv_802_ass1/sfm/environment-receipt.json")
+path = Path(os.environ["CV802_SFM_RECEIPT"])
 temporary = path.with_suffix(".json.tmp")
 temporary.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
 temporary.replace(path)

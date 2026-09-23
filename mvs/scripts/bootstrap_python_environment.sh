@@ -36,13 +36,19 @@ mkdir -p \
   "${DATA_ROOT}/cache/pip" \
   "${DATA_ROOT}/runtime/tmp"
 
-export CONDARC=${CODE_ROOT}/configs/condarc
+export CONDARC=/dev/null
 export CONDA_ENVS_PATH=${DATA_ROOT}/envs
 export CONDA_PKGS_DIRS=${DATA_ROOT}/cache/conda-pkgs
 export PIP_CACHE_DIR=${DATA_ROOT}/cache/pip
 export TMPDIR=${DATA_ROOT}/runtime/tmp
 
-source /apps/local/conda_init.sh
+if [[ -f /apps/local/conda_init.sh ]]; then
+  # shellcheck source=/dev/null
+  source /apps/local/conda_init.sh
+elif ! command -v conda >/dev/null 2>&1; then
+  echo "ERROR: conda is unavailable" >&2
+  exit 2
+fi
 if [[ ! -x "${ENV_PREFIX}/bin/python" ]]; then
   conda create --yes --prefix "${ENV_PREFIX}" python=3.12 pip=25.2
 fi

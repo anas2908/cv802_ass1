@@ -12,7 +12,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-EXPECTED_PREFIX = Path("/l/users/anas.khan/cv_802_ass1/vggsfm")
+EXPECTED_PREFIX = (
+    Path(os.environ.get("CV802_DATA_ROOT", "/l/users/anas.khan/cv_802_ass1"))
+    .expanduser()
+    .resolve()
+    / "vggsfm"
+)
 
 
 def command_output(command: list[str]) -> str:
