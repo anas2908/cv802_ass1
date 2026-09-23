@@ -45,6 +45,38 @@ Use overlapping photographs of one stationary scene. A GPU is recommended.
 On the cluster, run setup and reconstruction inside a GPU allocation. On a
 personal CUDA machine, set `CV802_ALLOW_NON_SLURM=1` before setup.
 
+### macOS: CPU-only SfM
+
+The Linux/CUDA setup script is for cluster or Linux machines and should not be
+run on macOS. SfM can run locally on a Mac using Python and CPU execution:
+
+```bash
+cd cv802_ass1
+export CV802_DATA_ROOT="$(pwd)/cv802-data"
+export DATASET=light_shirt
+export IMAGE_ROOT="$(pwd)/datasets/$DATASET/images"
+mkdir -p "$CV802_DATA_ROOT"
+
+python3 -m venv "$CV802_DATA_ROOT/sfm/mac-env"
+source "$CV802_DATA_ROOT/sfm/mac-env/bin/activate"
+python -m pip install --upgrade pip
+python -m pip install pycolmap open3d numpy pillow
+
+export CV802_ALLOW_NON_SLURM=1
+cd sfm
+python run_headless.py run \
+  --experiment "$DATASET" \
+  --images "$IMAGE_ROOT" \
+  --camera-model SIMPLE_RADIAL \
+  --matcher exhaustive \
+  --device cpu
+```
+
+This produces the same type of sparse colored point cloud, but CPU execution
+is slower. MVS can also be run locally only when a compatible macOS COLMAP/
+PyCOLMAP installation is available; use the MVS commands below and expect a
+substantially longer runtime. VGGSfM is not recommended on a CPU-only Mac.
+
 ### A. SfM: cameras and sparse colored points
 
 ```bash
