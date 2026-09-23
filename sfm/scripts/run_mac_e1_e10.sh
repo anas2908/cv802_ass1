@@ -35,6 +35,14 @@ case "$CV802_DATA_ROOT" in
     /*) ;;
     *) CV802_DATA_ROOT="$REPO_ROOT/$CV802_DATA_ROOT" ;;
 esac
+mkdir -p "$CV802_DATA_ROOT"
+CV802_DATA_ROOT="$(cd "$CV802_DATA_ROOT" && pwd -P)"
+if [[ "$CV802_DATA_ROOT" == "$REPO_ROOT" || "$CV802_DATA_ROOT" == "$REPO_ROOT/"* ]]; then
+    echo "Ignoring the old data path inside the Git clone."
+    CV802_DATA_ROOT="$REPO_PARENT/cv802-data"
+    mkdir -p "$CV802_DATA_ROOT"
+    CV802_DATA_ROOT="$(cd "$CV802_DATA_ROOT" && pwd -P)"
+fi
 export CV802_DATA_ROOT
 
 # Keep every downloaded tool, Python installation, package cache, environment,

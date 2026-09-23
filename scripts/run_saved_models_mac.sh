@@ -17,8 +17,15 @@ case "$CV802_DATA_ROOT" in
     /*) ;;
     *) CV802_DATA_ROOT="$REPO_ROOT/$CV802_DATA_ROOT" ;;
 esac
-export CV802_DATA_ROOT
 mkdir -p "$CV802_DATA_ROOT"
+CV802_DATA_ROOT="$(cd "$CV802_DATA_ROOT" && pwd -P)"
+if [[ "$CV802_DATA_ROOT" == "$REPO_ROOT" || "$CV802_DATA_ROOT" == "$REPO_ROOT/"* ]]; then
+    echo "Ignoring the old data path inside the Git clone."
+    CV802_DATA_ROOT="$REPO_PARENT/cv802-data"
+    mkdir -p "$CV802_DATA_ROOT"
+    CV802_DATA_ROOT="$(cd "$CV802_DATA_ROOT" && pwd -P)"
+fi
+export CV802_DATA_ROOT
 
 MANAGED_PYTHON="$CV802_DATA_ROOT/sfm/mac-env-py311-v1/bin/python"
 if [[ -x "$MANAGED_PYTHON" ]]; then
