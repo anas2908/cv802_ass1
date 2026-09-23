@@ -121,7 +121,6 @@ $CV802_DATA_ROOT/vggsfm/outputs/${DATASET}_vggsfm/point_cloud.ply
 If you only want to view the saved models, start by cloning the repository:
 
 ```bash
-git clone https://github.com/anas2908/cv802_ass1.git
 cd cv802_ass1
 
 export CV802_DATA_ROOT="$(cd .. && pwd)/cv802-data"
