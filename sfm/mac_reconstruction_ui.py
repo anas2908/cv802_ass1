@@ -20,7 +20,7 @@ import webbrowser
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlsplit
 
 
 HERE = Path(__file__).resolve().parent
@@ -304,13 +304,22 @@ def launch_web_ui(port: int = 8770, open_browser: bool = True) -> int:
             self.wfile.write(body)
 
         def do_GET(self) -> None:  # noqa: N802 - HTTP method name
-            if self.path != "/":
-                self.send_error(HTTPStatus.NOT_FOUND)
+            route = urlsplit(self.path).path
+            if route == "/favicon.ico":
+                self.send_response(HTTPStatus.NO_CONTENT)
+                self.end_headers()
                 return
-            self.send_page()
+            if route in ("/", "/index.html"):
+                self.send_page()
+                return
+            # Some macOS browsers restore a previous path on the same local
+            # port. Bring that tab back to this UI instead of showing a 404.
+            self.send_response(HTTPStatus.SEE_OTHER)
+            self.send_header("Location", "/")
+            self.end_headers()
 
         def do_POST(self) -> None:  # noqa: N802 - HTTP method name
-            if self.path != "/run":
+            if urlsplit(self.path).path != "/run":
                 self.send_error(HTTPStatus.NOT_FOUND)
                 return
             try:
