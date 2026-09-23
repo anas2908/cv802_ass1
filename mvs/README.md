@@ -28,3 +28,5 @@ There are no learned MVS weights. The generated environment, database, dense
 workspace, logs and point cloud remain below
 `/l/users/$USER/cv802_ass1/mvs`. `configs/ciai_template.json` is the reviewed
 A100 recipe; the launcher writes its dataset-specific copy into the data root.
+The same UI can display the raw sparse SfM prerequisite and its independent
+generic quality-cleaned visualization before or after dense MVS.

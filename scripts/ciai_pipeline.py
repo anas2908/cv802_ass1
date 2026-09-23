@@ -53,8 +53,8 @@ def available_datasets() -> list[str]:
 def validate_request(dataset: str, method: str) -> None:
     if dataset not in available_datasets():
         raise ValueError(f"Unknown or empty dataset: {dataset}")
-    if method not in {"mvs", "vggsfm"}:
-        raise ValueError("Method must be 'mvs' or 'vggsfm'")
+    if method not in {"sfm", "mvs", "vggsfm"}:
+        raise ValueError("Method must be 'sfm', 'mvs' or 'vggsfm'")
 
 
 def validate_runtime(data_root: Path) -> dict[str, str]:
@@ -271,7 +271,14 @@ def _write_mvs_config(data_root: Path, experiment: str) -> Path:
     return destination
 
 
-def run_mvs(dataset: str, data_root: Path, progress: Progress, output: Output) -> Path:
+def ensure_sparse_sfm(
+    dataset: str,
+    data_root: Path,
+    progress: Progress,
+    output: Output,
+) -> tuple[Path, Path, Path]:
+    """Create or checksum-validate the sparse calibration shared with MVS."""
+
     env = _runtime_environment(data_root)
     sfm_root = data_root / "sfm"
     sfm_root.mkdir(parents=True, exist_ok=True)
@@ -313,6 +320,40 @@ def run_mvs(dataset: str, data_root: Path, progress: Progress, output: Output) -
         output=output,
     )
     model = sfm_root / "experiments" / sfm_experiment / "outputs" / "colmap" / "sparse" / "0"
+    raw_ply = sfm_root / "experiments" / sfm_experiment / "outputs" / "sparse_colored.ply"
+    return images, model, raw_ply
+
+
+def run_sfm(dataset: str, data_root: Path, progress: Progress, output: Output) -> Path:
+    _images, model, _raw_ply = ensure_sparse_sfm(dataset, data_root, progress, output)
+    env = _runtime_environment(data_root)
+    sfm_python = data_root / "sfm" / "envs" / "headless-cuda" / "bin" / "python"
+    cleaned_root = data_root / "sfm" / "derived" / f"ciai-{dataset}-sfm-clean-v1"
+    cleaned = cleaned_root / "sparse_colored_cleaned.ply"
+    receipt = cleaned_root / "cleanup_receipt.json"
+    cleaned_root.mkdir(parents=True, exist_ok=True)
+    progress(88, "Creating a non-destructive sparse quality cleanup")
+    run_command(
+        [
+            sfm_python,
+            CODE_ROOT / "sfm" / "clean_sparse.py",
+            "--model",
+            model,
+            "--output",
+            cleaned,
+            "--receipt",
+            receipt,
+        ],
+        cwd=CODE_ROOT / "sfm",
+        env=env,
+        output=output,
+    )
+    return cleaned
+
+
+def run_mvs(dataset: str, data_root: Path, progress: Progress, output: Output) -> Path:
+    env = _runtime_environment(data_root)
+    images, model, _raw_ply = ensure_sparse_sfm(dataset, data_root, progress, output)
 
     (data_root / "mvs").mkdir(parents=True, exist_ok=True)
     progress(42, "Installing or checking the CUDA MVS environment")
@@ -442,7 +483,8 @@ def run_pipeline(dataset: str, method: str, data_root: Path, progress: Progress,
     validate_request(dataset, method)
     runtime = validate_runtime(data_root)
     output("Runtime: " + json.dumps(runtime, sort_keys=True))
-    result = run_mvs(dataset, data_root, progress, output) if method == "mvs" else run_vggsfm(dataset, data_root, progress, output)
+    runners = {"sfm": run_sfm, "mvs": run_mvs, "vggsfm": run_vggsfm}
+    result = runners[method](dataset, data_root, progress, output)
     progress(100, f"Complete: {result.name}")
     return result.resolve(strict=True)
 

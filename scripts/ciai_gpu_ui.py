@@ -42,6 +42,18 @@ def discover_results(data_root: Path) -> dict[str, dict[str, object]]:
     for dataset in available_datasets():
         candidates = (
             (
+                "SfM raw",
+                data_root / "sfm" / "experiments" / f"ciai-{dataset}-mvs-sfm-v1" / "outputs" / "sparse_colored.ply",
+                "CUDA feature extraction, exhaustive matching and incremental sparse mapping",
+                "reconstruction",
+            ),
+            (
+                "SfM cleaned",
+                data_root / "sfm" / "derived" / f"ciai-{dataset}-sfm-clean-v1" / "sparse_colored_cleaned.ply",
+                "Derived geometric cleanup of weak and extreme sparse points; source cameras unchanged",
+                "derived_cleanup",
+            ),
+            (
                 "MVS",
                 data_root / "mvs" / "experiments" / f"ciai-{dataset}-mvs1600-v1" / "outputs" / "fused.ply",
                 "COLMAP CUDA PatchMatch Stereo and depth-map fusion",
@@ -61,7 +73,7 @@ def discover_results(data_root: Path) -> dict[str, dict[str, object]]:
                 points = ply_point_count(path)
             except (OSError, ValueError):
                 continue
-            identifier = f"{method}-{dataset}"
+            identifier = f"{method.replace(' ', '-')}-{dataset}"
             results[identifier] = {
                 "id": identifier,
                 "dataset": dataset,
@@ -131,7 +143,7 @@ class UIState:
         with self.lock:
             if self.running:
                 raise RuntimeError("A reconstruction is already running")
-            if dataset not in available_datasets() or method not in {"mvs", "vggsfm"}:
+            if dataset not in available_datasets() or method not in {"sfm", "mvs", "vggsfm"}:
                 raise ValueError("Invalid dataset or method")
             self.running = True
             self.dataset = dataset
@@ -213,7 +225,7 @@ progress{{width:100%;height:22px;margin:12px 0}} pre{{height:310px;overflow:auto
 <p class="muted">Choose one included dataset and one method. All environments, weights, caches and results stay in your own Lustre folder.</p>
 <div class="grid"><section class="card">
 <label for="dataset">Dataset</label><select id="dataset">{options}</select>
-<label for="method">Method</label><select id="method"><option value="mvs">MVS — SfM + COLMAP PatchMatch</option><option value="vggsfm">VGGSfM — learned reconstruction</option></select>
+<label for="method">Method</label><select id="method"><option value="sfm">SfM — raw + generic quality cleanup</option><option value="mvs">MVS — SfM + COLMAP PatchMatch</option><option value="vggsfm">VGGSfM — learned reconstruction</option></select>
 <button id="start">Start or resume reconstruction</button>
 <progress id="progress" max="100" value="0"></progress><div id="stage">Ready</div><p id="error" class="error"></p>
 <h3>Completed results</h3><ul id="results"><li class="muted">No CIAI reconstruction completed yet.</li></ul>

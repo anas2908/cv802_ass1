@@ -9,8 +9,8 @@ This repository is ready to use on an Apple-silicon Mac. It contains:
 
 No separate image bundle or saved-model download is required.
 
-It also includes a one-command CIAI GPU interface for rebuilding dense MVS or
-VGGSfM results on an A100. That workflow is described in Option 3.
+It also includes a one-command CIAI GPU interface for rebuilding sparse SfM,
+dense MVS or VGGSfM results on an A100. That workflow is described in Option 3.
 
 ## Option 1: Open the saved results
 
@@ -82,7 +82,7 @@ once, finish the installation, and repeat the same launcher command:
 xcode-select --install
 ```
 
-## Option 3: Recompute MVS or VGGSfM on CIAI
+## Option 3: Recompute SfM, MVS or VGGSfM on CIAI
 
 Run this option on a **CIAI login node**, not on a Mac. The clone is placed on
 Lustre because the repository includes the assignment photographs. Copy and
@@ -106,11 +106,18 @@ your laptop:
 Run the printed SSH command in a second terminal on your laptop, then open the
 printed URL. Keep both terminals open. In the UI, choose the dataset and either:
 
+- **SfM** — estimates cameras and a raw sparse colored cloud, then creates a
+  separate quality-cleaned display cloud without changing the source model;
 - **MVS** — automatically builds or reuses the required sparse SfM camera
   calibration, then runs COLMAP CUDA image undistortion, PatchMatch Stereo and
   depth-map fusion; or
 - **VGGSfM** — independently reconstructs from the raw photographs using the
   pinned official model.
+
+The generic SfM cleanup rejects weak two-view points, points above a 3-pixel
+reprojection error and extreme coordinate outliers. It is intentionally labeled
+as geometric cleanup, not semantic person segmentation. The raw SfM result is
+also retained and viewable for comparison.
 
 The UI shows overall progress, detailed logs, and live GPU utilization and
 memory. When a run completes, click its result link to rotate, pan, zoom and
@@ -151,7 +158,7 @@ For SfM reconstruction:
 bash sfm/scripts/run_mac_e1_e10.sh
 ```
 
-For the CIAI MVS/VGGSfM interface, run `git pull` in the Lustre clone and then:
+For the CIAI SfM/MVS/VGGSfM interface, run `git pull` in the Lustre clone and then:
 
 ```bash
 bash scripts/run_ciai_gpu_ui.sh
