@@ -23,6 +23,107 @@ def report_progress(percent: int, stage: str) -> None:
     print("CV802_PROGRESS " + json.dumps({"percent": percent, "stage": stage}), flush=True)
 
 
+def file_sha256(path: Path) -> str:
+    """Hash a file without loading a potentially large database into memory."""
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def restore_file_for_hash(destination: Path, backup: Path, expected: str) -> bool:
+    """Atomically restore a known-good generated file when a retry replaced it."""
+    if destination.is_file() and file_sha256(destination) == expected:
+        return False
+    if not backup.is_file() or file_sha256(backup) != expected:
+        raise RuntimeError(
+            f"Neither {destination} nor its preserved backup matches the completed "
+            "feature checkpoint. Existing files were left untouched."
+        )
+    staged = destination.with_name("." + destination.name + ".restore")
+    shutil.copy2(backup, staged)
+    os.replace(staged, destination)
+    print(f"Restored the augmented E3 boxes from {backup}", flush=True)
+    return True
+
+
+def restore_e3_boxes(root: Path, subject: str, quality: Path, native_boxes: Path) -> None:
+    """Keep E3's fallback feature crops byte-identical to its saved checkpoint."""
+    inputs_path = quality / "colmap/sparse/sfm_inputs.json"
+    config_path = quality / "sfm_refine.json"
+    if not inputs_path.is_file() or not config_path.is_file():
+        return
+    # Select the checkpoint referenced by the saved result, ignoring obsolete
+    # cache entries exactly as the read-only quality audit does.
+    audit_directory = root / "work/quality-sfm"
+    sys.path.insert(0, str(audit_directory))
+    try:
+        from audit_database import _select_checkpoint
+        config = json.loads(config_path.read_text())
+        saved = json.loads(inputs_path.read_text())
+        _, metadata, _, _ = _select_checkpoint(quality, config, saved)
+    finally:
+        sys.path.pop(0)
+    expected = metadata.get("signature", {}).get("boxes_sha256")
+    if not isinstance(expected, str) or not expected:
+        raise RuntimeError("The completed E3 checkpoint has no boxes fingerprint")
+    backup = native_boxes.parent.parent / f"{subject}_boxes.json"
+    restore_file_for_hash(native_boxes, backup, expected)
+
+
+def validate_vocab_pairs(folder: Path, subject: str) -> bool:
+    """Return False when absent; reject rather than overwrite partial retrieval output."""
+    if not folder.exists():
+        return False
+    if not folder.is_dir() or folder.is_symlink():
+        raise RuntimeError(f"Unsafe vocabulary-pair output; preserved at {folder}")
+    required = ("matching_pairs.txt", "guided_pairs.txt", "retrieved_neighbors.json")
+    provenance_path = folder / "retrieval_provenance.json"
+    try:
+        provenance = json.loads(provenance_path.read_text())
+        checksums = provenance["output_sha256"]
+        valid = (
+            provenance.get("subject") == subject
+            and provenance.get("ordinary_pairs", 0) > 0
+            and provenance.get("guided_pairs", 0) > 0
+            and all((folder / name).is_file()
+                    and checksums.get(name) == file_sha256(folder / name)
+                    for name in required)
+        )
+    except (OSError, ValueError, TypeError, KeyError):
+        valid = False
+    if not valid:
+        raise RuntimeError(
+            f"Incomplete or incompatible vocabulary-pair output was preserved at {folder}. "
+            "Move that directory aside before deliberately starting retrieval again."
+        )
+    return True
+
+
+def validate_e8_preparation(target: Path, pairs: Path) -> bool:
+    """Recognize an atomically prepared E8 dataset so retries can continue."""
+    if not target.exists():
+        return False
+    try:
+        valid = (
+            target.is_dir() and not target.is_symlink()
+            and (target / "sfm_refine.json").is_file()
+            and (target / "experiment_provenance.json").is_file()
+            and file_sha256(target / "matching_pairs.txt")
+                == file_sha256(pairs / "matching_pairs.txt")
+            and file_sha256(target / "guided_pairs.txt")
+                == file_sha256(pairs / "guided_pairs.txt")
+        )
+    except OSError:
+        valid = False
+    if not valid:
+        raise RuntimeError(
+            f"Incomplete or incompatible E8 preparation was preserved at {target}."
+        )
+    return True
+
+
 def expected_result(root: Path, subject: str, experiment: str) -> Path:
     """Return the display PLY produced by an E1-E10 recipe."""
     reconstructions = root / "reconstructions"
@@ -194,10 +295,14 @@ def ensure_e3(root: Path, subject: str, baseline: Path) -> Path:
     if not native_images.exists():
         native_images.symlink_to((baseline / "images").resolve(), target_is_directory=True)
     shutil.copy2(baseline / "camera_groups.json", native / "camera_groups.json")
-    shutil.copy2(ensure_boxes(root, subject, baseline), native / "boxes.json")
     quality = root / "reconstructions" / f"{subject}_quality"
+    detector_boxes = ensure_boxes(root, subject, baseline)
     if not (quality / "sfm_refine.json").is_file():
+        # The preparation step adds projected fallback crops to this private
+        # copy and stores a durable sibling backup. Never overwrite it later.
+        shutil.copy2(detector_boxes, native / "boxes.json")
         run([sys.executable, root / "work/quality-sfm/prepare_quality_datasets.py", subject], root)
+    restore_e3_boxes(root, subject, quality, native / "boxes.json")
     if not (quality / "reconstruction_report.json").is_file():
         run([sys.executable, root / "work/quality-sfm/run_quality.py", f"{subject}_quality"], root)
     preview = quality / "subject_preview"
@@ -336,9 +441,15 @@ def execute(dataset: str, experiment: str) -> Path:
         ensure_e3(root, subject, baseline)
         report_progress(48, "E8 · vocabulary matching and triangulation")
         target = root / f"reconstructions/experiments/E8_vocab_guided/{subject}_quality"
+        pair_directory = root / "work/matching-ablation/vocab" / subject
         if not (target / "reconstruction_report.json").is_file():
-            run([sys.executable, root / "work/matching-ablation/prepare_vocab_pairs.py", subject], root)
-            run([sys.executable, root / "work/matching-ablation/prepare_e8.py", subject], root)
+            if not validate_vocab_pairs(pair_directory, subject):
+                run([sys.executable, root / "work/matching-ablation/prepare_vocab_pairs.py", subject], root)
+                validate_vocab_pairs(pair_directory, subject)
+            if not validate_e8_preparation(target, pair_directory):
+                run([sys.executable, root / "work/matching-ablation/prepare_e8.py", subject,
+                     "--pairs-directory", pair_directory], root)
+                validate_e8_preparation(target, pair_directory)
             run([sys.executable, root / "work/matching-ablation/run_e8.py", subject], root)
         if experiment == "E9":
             report_progress(72, "Preparing the person masks")

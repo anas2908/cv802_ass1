@@ -46,15 +46,15 @@ def main():
         if args.qc_only:
             command.append('--qc-only')
     stem = args.subject + ('_crutch_qc' if args.qc_only else '_cleanup')
-    log_path = work / (stem + '.log')
-    if log_path.exists():
-        raise FileExistsError(f'Preserving previous log: {log_path}')
+    attempt = work / 'runs' / datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ')
+    attempt.mkdir(parents=True)
+    log_path = attempt / (stem + '.log')
     record = {'experiment': args.experiment, 'subject': args.subject,
               'source': str(source), 'output': str(output / args.subject),
               'same_frozen_masks_and_parameters_as_E4': True,
               'qc_only': args.qc_only, 'command': command,
               'started_utc': datetime.now(timezone.utc).isoformat()}
-    record_path = work / (stem + '.json')
+    record_path = attempt / (stem + '.json')
     record_path.write_text(json.dumps(record, indent=2) + '\n')
     environment = dict(os.environ, OPENBLAS_NUM_THREADS='1', OMP_NUM_THREADS='1')
     with log_path.open('x') as log:

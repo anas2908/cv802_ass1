@@ -9,6 +9,38 @@ import mac_reconstruction_ui as ui
 
 
 class MacReconstructionUITest(unittest.TestCase):
+    def test_restores_augmented_boxes_when_retry_replaced_them(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            destination = root / "boxes.json"
+            backup = root / "light_shirt_boxes.json"
+            destination.write_bytes(b"original detector boxes")
+            backup.write_bytes(b"augmented E3 boxes")
+            expected = runner.file_sha256(backup)
+            self.assertTrue(runner.restore_file_for_hash(destination, backup, expected))
+            self.assertEqual(destination.read_bytes(), backup.read_bytes())
+            self.assertFalse(runner.restore_file_for_hash(destination, backup, expected))
+
+    def test_reuses_verified_vocabulary_pair_output(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary) / "light_shirt"
+            folder.mkdir()
+            outputs = {
+                "matching_pairs.txt": b"a.jpg b.jpg\n",
+                "guided_pairs.txt": b"a.jpg b.jpg\n",
+                "retrieved_neighbors.json": b"{}\n",
+            }
+            for name, content in outputs.items():
+                (folder / name).write_bytes(content)
+            provenance = {
+                "subject": "light_shirt", "ordinary_pairs": 1, "guided_pairs": 1,
+                "output_sha256": {
+                    name: runner.file_sha256(folder / name) for name in outputs
+                },
+            }
+            (folder / "retrieval_provenance.json").write_text(json.dumps(provenance))
+            self.assertTrue(runner.validate_vocab_pairs(folder, "light_shirt"))
+
     def test_discovers_only_image_datasets(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
