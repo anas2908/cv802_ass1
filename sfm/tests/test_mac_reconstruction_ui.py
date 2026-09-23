@@ -31,6 +31,18 @@ class MacReconstructionUITest(unittest.TestCase):
             ui.data_root = old
         self.assertEqual(plan["prerequisites"], ["E1", "E2", "E3"])
 
+    def test_browser_ui_contains_dataset_and_experiment_selectors(self):
+        old = ui.discover_datasets
+        ui.discover_datasets = lambda: {"light_shirt": Path("/tmp/light")}
+        try:
+            page = ui.render_web_ui(ui.ReconstructionState()).decode("utf-8")
+        finally:
+            ui.discover_datasets = old
+        self.assertIn('name="dataset"', page)
+        self.assertIn('value="light_shirt"', page)
+        self.assertIn('name="experiment"', page)
+        self.assertIn('value="E10"', page)
+
 
 if __name__ == "__main__":
     unittest.main()

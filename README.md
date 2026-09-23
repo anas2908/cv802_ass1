@@ -54,38 +54,34 @@ results under `CV802_DATA_ROOT`. E10 is intentionally available only for
 `light_shirt`; the original reviewed crutch-corridor policy is regenerated for
 the dark-shirt cleanup experiments.
 
-Run the following from the repository root. The reconstruction environment
-requires Python 3.12; the macOS system `python3` may still be Python 3.9 and
-cannot install the pinned Apple-silicon Open3D wheel.
+Run these commands from anywhere inside the cloned repository. This launcher
+does not need Homebrew and ignores any old activated Python 3.9 environment.
+It installs a managed Python 3.11, the pinned packages, caches, and the virtual
+environment under `CV802_DATA_ROOT`, verifies them, and opens the local browser
+UI. It requires an Apple-silicon Mac running macOS 14 or newer. The first launch
+downloads the environment; later launches reuse it.
 
 ```bash
+cd "$(git rev-parse --show-toplevel)"
 git pull
-brew install python@3.12
-
 export CV802_DATA_ROOT="$(pwd)/cv802-data"
 mkdir -p "$CV802_DATA_ROOT"
-export CV802_MAC_PYTHON="$(brew --prefix python@3.12)/bin/python3.12"
-"$CV802_MAC_PYTHON" --version
-
-"$CV802_MAC_PYTHON" -m venv "$CV802_DATA_ROOT/sfm/mac-env-py312"
-source "$CV802_DATA_ROOT/sfm/mac-env-py312/bin/activate"
-python -m pip install --upgrade pip
-python -m pip install -r sfm/requirements-mac-e1-e10.txt
-
-export CV802_ALLOW_NON_SLURM=1
-export TK_SILENCE_DEPRECATION=1
-cd sfm
-python mac_reconstruction_ui.py ui
+bash sfm/scripts/run_mac_e1_e10.sh
 ```
+
+Keep that terminal open while using the UI. If Apple command-line tools are
+missing, the launcher will ask you to run `xcode-select --install`; finish that
+one installation and rerun the same launcher command. The UI uses the browser,
+so it does not depend on the deprecated system Tk framework.
 
 The UI automatically runs missing prerequisites. For example, choosing E7
 first creates E1, E2, E3 and E6 before applying the E7 cleanup. Completed
 prerequisites are reused. You can also run without the window:
 
 ```bash
-python mac_reconstruction_ui.py list
-python mac_reconstruction_ui.py plan --dataset light_shirt --experiment E10
-python mac_reconstruction_ui.py run --dataset light_shirt --experiment E10
+"$CV802_DATA_ROOT/sfm/mac-env-py311-v1/bin/python" sfm/mac_reconstruction_ui.py list
+"$CV802_DATA_ROOT/sfm/mac-env-py311-v1/bin/python" sfm/mac_reconstruction_ui.py plan --dataset light_shirt --experiment E10
+"$CV802_DATA_ROOT/sfm/mac-env-py311-v1/bin/python" sfm/mac_reconstruction_ui.py run --dataset light_shirt --experiment E10
 ```
 
 To add another dataset, create `datasets/NAME/images/` and place at least two

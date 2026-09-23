@@ -3,19 +3,24 @@
 
 This UI is deliberately separate from the read-only saved-result browser.
 It discovers datasets from ``REPOSITORY/datasets/*/images`` and launches the
-portable headless engine in a child process so the window remains responsive.
+portable headless engine in a child process while serving a local browser UI.
 """
 
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import os
 import queue
 import subprocess
 import sys
 import threading
+import webbrowser
+from http import HTTPStatus
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import parse_qs
 
 
 HERE = Path(__file__).resolve().parent
@@ -93,7 +98,7 @@ def run_selection(dataset: str, experiment: str) -> int:
     return subprocess.call(command, cwd=HERE, env=dict(os.environ, CV802_ALLOW_NON_SLURM="1"))
 
 
-def launch_ui() -> int:
+def launch_desktop_ui() -> int:
     if sys.platform != "darwin":
         raise RuntimeError("The reconstruction UI is intended for macOS")
     import tkinter as tk
@@ -189,10 +194,167 @@ def launch_ui() -> int:
     return 0
 
 
+class ReconstructionState:
+    """Thread-safe state shared by the local browser UI and one worker."""
+
+    def __init__(self) -> None:
+        self.lock = threading.Lock()
+        self.running = False
+        self.label = "Ready"
+        self.log: list[str] = []
+
+    def snapshot(self) -> tuple[bool, str, str]:
+        with self.lock:
+            return self.running, self.label, "".join(self.log[-4000:])
+
+    def start(self, dataset: str, experiment: str) -> bool:
+        with self.lock:
+            if self.running:
+                return False
+            self.running = True
+            self.label = f"Running {dataset} {experiment}"
+            self.log = []
+        threading.Thread(target=self._worker, args=(dataset, experiment), daemon=True).start()
+        return True
+
+    def _worker(self, dataset: str, experiment: str) -> None:
+        command = [sys.executable, str(Path(__file__).resolve()), "run",
+                   "--dataset", dataset, "--experiment", experiment]
+        try:
+            child = subprocess.Popen(command, cwd=HERE, text=True,
+                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            assert child.stdout is not None
+            for line in child.stdout:
+                with self.lock:
+                    self.log.append(line)
+            code = child.wait()
+            with self.lock:
+                self.log.append(f"\nProcess exited with status {code}.\n")
+                self.label = "Completed" if code == 0 else f"Failed (status {code})"
+        except Exception as error:  # Display worker failures in the local UI.
+            with self.lock:
+                self.log.append(f"\n{type(error).__name__}: {error}\n")
+                self.label = "Failed"
+        finally:
+            with self.lock:
+                self.running = False
+
+
+def render_web_ui(state: ReconstructionState, notice: str = "") -> bytes:
+    datasets = discover_datasets()
+    running, label, log = state.snapshot()
+    dataset_options = "".join(
+        f'<option value="{html.escape(name)}">{html.escape(name)}</option>'
+        for name in datasets
+    )
+    experiment_options = "".join(
+        f'<option value="{name}">{name}</option>' for name in EXPERIMENTS
+    )
+    refresh = '<meta http-equiv="refresh" content="2">' if running else ""
+    disabled = " disabled" if running else ""
+    notice_html = f'<p class="notice">{html.escape(notice)}</p>' if notice else ""
+    document = f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">{refresh}
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CV802 Mac SfM Reconstruction</title>
+<style>
+body{{font:16px system-ui,sans-serif;max-width:1000px;margin:36px auto;padding:0 20px;background:#f5f6f8;color:#17202a}}
+.card{{background:white;border-radius:12px;padding:24px;box-shadow:0 2px 14px #0002}}
+.controls{{display:flex;gap:14px;align-items:end;flex-wrap:wrap}} label{{display:grid;gap:6px}}
+select,button{{font:inherit;padding:9px 12px}} button{{cursor:pointer}} pre{{background:#111;color:#eee;padding:16px;min-height:280px;overflow:auto;white-space:pre-wrap}}
+.status{{font-weight:650}} .notice{{color:#a33}}
+</style></head><body><main class="card"><h1>CV802 SfM Reconstruction</h1>
+<p>Select an included dataset and an E1–E10 experiment. E10 is light-shirt only.</p>
+{notice_html}<form class="controls" method="post" action="/run">
+<label>Dataset<select id="dataset" name="dataset">{dataset_options}</select></label>
+<label>Experiment<select id="experiment" name="experiment">{experiment_options}</select></label>
+<button type="submit"{disabled}>Recompute</button></form>
+<p class="status">Status: {html.escape(label)}</p>
+<pre>{html.escape(log) if log else "Logs will appear here."}</pre>
+<script>
+const dataset = document.getElementById('dataset');
+const experiment = document.getElementById('experiment');
+function updateExperiments() {{
+  const e10 = experiment.querySelector('option[value="E10"]');
+  e10.disabled = dataset.value !== 'light_shirt';
+  if (e10.disabled && experiment.value === 'E10') experiment.value = 'E9';
+}}
+dataset.addEventListener('change', updateExperiments); updateExperiments();
+</script>
+</main></body></html>"""
+    return document.encode("utf-8")
+
+
+def launch_web_ui(port: int = 8770, open_browser: bool = True) -> int:
+    if sys.platform != "darwin":
+        raise RuntimeError("The reconstruction UI is intended for macOS")
+    data_root()
+    if not discover_datasets():
+        raise RuntimeError("No datasets/*/images folders containing images were found")
+    state = ReconstructionState()
+
+    class Handler(BaseHTTPRequestHandler):
+        def send_page(self, notice: str = "", status: HTTPStatus = HTTPStatus.OK) -> None:
+            body = render_web_ui(state, notice)
+            self.send_response(status)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_GET(self) -> None:  # noqa: N802 - HTTP method name
+            if self.path != "/":
+                self.send_error(HTTPStatus.NOT_FOUND)
+                return
+            self.send_page()
+
+        def do_POST(self) -> None:  # noqa: N802 - HTTP method name
+            if self.path != "/run":
+                self.send_error(HTTPStatus.NOT_FOUND)
+                return
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                values = parse_qs(self.rfile.read(length).decode("utf-8"))
+                dataset = values.get("dataset", [""])[0]
+                experiment = values.get("experiment", [""])[0]
+                validate_selection(dataset, experiment, discover_datasets())
+                notice = ("Reconstruction started." if state.start(dataset, experiment)
+                          else "A reconstruction is already running.")
+                self.send_page(notice)
+            except (ValueError, UnicodeError) as error:
+                self.send_page(str(error), HTTPStatus.BAD_REQUEST)
+
+        def log_message(self, _format: str, *_args: object) -> None:
+            return
+
+    try:
+        server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    except OSError as error:
+        raise RuntimeError(
+            f"Cannot use port {port}: {error}. Rerun with --port 8771."
+        ) from error
+    url = f"http://127.0.0.1:{port}/"
+    print(f"CV802 reconstruction UI: {url}", flush=True)
+    print("Keep this terminal open; press Control-C to stop the UI.", flush=True)
+    if open_browser:
+        threading.Timer(0.5, lambda: webbrowser.open(url)).start()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nStopping the reconstruction UI.")
+    finally:
+        server.server_close()
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("ui", help="open the macOS reconstruction window")
+    ui = commands.add_parser("ui", help="open the local macOS browser UI")
+    ui.add_argument("--port", type=int, default=8770)
+    ui.add_argument("--no-browser", action="store_true")
+    commands.add_parser("desktop-ui", help="open the optional legacy Tk window")
     commands.add_parser("list", help="list discovered datasets")
     plan = commands.add_parser("plan", help="print an experiment dependency plan")
     run = commands.add_parser("run", help="run a selected experiment")
@@ -201,7 +363,9 @@ def main(argv: list[str] | None = None) -> int:
         command.add_argument("--experiment", required=True, choices=EXPERIMENTS)
     args = parser.parse_args(argv)
     if args.command == "ui":
-        return launch_ui()
+        return launch_web_ui(args.port, not args.no_browser)
+    if args.command == "desktop-ui":
+        return launch_desktop_ui()
     datasets = discover_datasets()
     if args.command == "list":
         print(json.dumps({name: str(path) for name, path in datasets.items()}, indent=2))

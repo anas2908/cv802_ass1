@@ -1,6 +1,8 @@
+# Reproduces the transferred Apple-silicon recipe environment on Python 3.11.
 numpy==1.26.4
 open3d==0.19.0
 pycolmap==4.2.0
-Pillow>=10,<13
-scipy>=1.11,<2
-matplotlib>=3.8,<4
+Pillow==12.3.0
+scipy==1.17.1
+matplotlib==3.11.2
+imageio-ffmpeg==0.6.0

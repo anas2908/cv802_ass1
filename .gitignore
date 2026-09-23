@@ -11,6 +11,7 @@ envs/
 cache/
 tmp/
 downloads/
+cv802-data/
 
 # Inputs and generated outputs
 images/
