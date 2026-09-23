@@ -124,7 +124,8 @@ def validate_e8_preparation(target: Path, pairs: Path) -> bool:
     return True
 
 
-def ensure_e10_resume_config(dataset: Path, subject: str) -> bool:
+def ensure_e10_resume_config(dataset: Path, subject: str, root: Path | None = None,
+                             workers: int = 4) -> bool:
     """Repair only the known pre-run E10 configuration omission.
 
     The first portable Mac bundle prepared all exhaustive pairs correctly but
@@ -138,7 +139,7 @@ def ensure_e10_resume_config(dataset: Path, subject: str) -> bool:
     matching_threads = config.get("matching_threads", 1)
     if (config.get("resume_matching") is True
             and type(batch_size) is int and batch_size > 0
-            and type(matching_threads) is int and matching_threads in (1, 2, 4)):
+            and matching_threads == workers):
         return False
     provenance = json.loads(provenance_path.read_text())
     if (provenance.get("experiment") != "E10_quality_exhaustive_guided"
@@ -155,12 +156,34 @@ def ensure_e10_resume_config(dataset: Path, subject: str) -> bool:
     colmap = dataset / "colmap"
     started_entries = [path for path in colmap.iterdir()
                        if path.name != "quality_feature_cache" and not path.name.startswith(".")]
-    if started_entries or (dataset / "reconstruction_report.json").exists():
+    reconstruction_complete = (dataset / "reconstruction_report.json").is_file()
+    if reconstruction_complete:
+        print(f"E10 reconstruction is already complete with {matching_threads} workers; reusing it.",
+              flush=True)
+        return False
+    matching_cache = colmap / "quality_matching_cache"
+    manifests = list(matching_cache.glob("*/manifest.json")) if matching_cache.is_dir() else []
+    if manifests and config.get("resume_matching") is not True:
+        raise RuntimeError(
+            "E10 has matching checkpoints but a non-resumable configuration; existing files were preserved"
+        )
+    if (config.get("resume_matching") is True
+            and type(matching_threads) is int and matching_threads in (1, 2, 4)
+            and manifests):
+        if root is None:
+            raise RuntimeError("E10 worker migration requires the reconstruction workspace")
+        print(f"Migrating the stopped E10 checkpoint from {matching_threads} to {workers} workers.",
+              flush=True)
+        run([sys.executable, root / "work/E10-exhaustive-guided/change_workers.py",
+             "--workers", workers], root)
+        return True
+    unexpected = [path for path in started_entries if path != matching_cache]
+    if unexpected or (matching_cache.exists() and not manifests):
         raise RuntimeError(
             "E10 has execution artifacts but a non-resumable configuration; refusing an automatic edit"
         )
     previous = dict(config)
-    config.update(resume_matching=True, matching_batch_size=128, matching_threads=1)
+    config.update(resume_matching=True, matching_batch_size=128, matching_threads=workers)
     staged = config_path.with_name(".sfm_refine.resume-repair.json")
     staged.write_text(json.dumps(config, indent=2) + "\n")
     os.replace(staged, config_path)
@@ -530,7 +553,7 @@ def execute(dataset: str, experiment: str) -> Path:
         internal = root / "work/E10-exhaustive-guided/datasets/light_shirt_quality"
         if not (internal / "sfm_refine.json").is_file():
             run([sys.executable, root / "work/E10-exhaustive-guided/prepare_e10.py", subject], root)
-        ensure_e10_resume_config(internal, subject)
+        ensure_e10_resume_config(internal, subject, root)
         report_progress(62, "E10 · exhaustive guided matching and reconstruction")
         run([sys.executable, root / "work/E10-exhaustive-guided/run_e10.py", "--subject", subject], root)
     report_progress(97, "Validating the reconstructed point cloud")

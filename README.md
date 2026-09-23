@@ -64,8 +64,10 @@ intentionally available only for `light_shirt`.
 The UI shows a stage label and progress bar while it runs. After completion,
 click **View reconstructed result** to open the new coloured point cloud in the
 interactive 3D viewer. Detailed engine output remains available in a collapsed
-log section when it is needed. The newest valid result is restored automatically
-when the reconstruction UI is launched again.
+log section when it is needed. E10 uses four CPU matching workers, saves a
+checkpoint after every 128 pairs, and displays its completed count out of 7,750
+pairs. The newest valid result is restored automatically when the reconstruction
+UI is launched again.
 
 Keep Terminal open during reconstruction. SfM runs on the CPU on macOS, so the
 larger experiments can take a long time.

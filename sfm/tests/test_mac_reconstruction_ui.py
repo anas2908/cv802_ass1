@@ -65,8 +65,40 @@ class MacReconstructionUITest(unittest.TestCase):
             config = json.loads((dataset / "sfm_refine.json").read_text())
             self.assertIs(config["resume_matching"], True)
             self.assertEqual(config["matching_batch_size"], 128)
-            self.assertEqual(config["matching_threads"], 1)
+            self.assertEqual(config["matching_threads"], 4)
             self.assertFalse(runner.ensure_e10_resume_config(dataset, "light_shirt"))
+
+    def test_e10_pair_progress_line_has_ui_percentage_and_workers(self):
+        match = ui.E10_PROGRESS.match(
+            "E10 progress: 1920/7750 guided pairs | 4 workers"
+        )
+        self.assertIsNotNone(match)
+        self.assertEqual(tuple(map(int, match.groups())), (1920, 7750, 4))
+
+    def test_e10_existing_checkpoint_uses_safe_worker_migration(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            dataset = root / "work/E10-exhaustive-guided/datasets/light_shirt_quality"
+            checkpoint = dataset / "colmap/quality_matching_cache/old"
+            checkpoint.mkdir(parents=True)
+            (checkpoint / "manifest.json").write_text("{}")
+            (dataset / "sfm_refine.json").write_text(json.dumps({
+                "matching_pairs": "matching_pairs.txt", "guided_pairs": "guided_pairs.txt",
+                "resume_matching": True, "matching_batch_size": 128, "matching_threads": 1,
+            }))
+            (dataset / "experiment_provenance.json").write_text(json.dumps({
+                "experiment": "E10_quality_exhaustive_guided", "subject": "light_shirt",
+            }))
+            names = [f"image_{number:03}.jpg" for number in range(125)]
+            pairs = "".join(f"{a} {b}\n" for index, a in enumerate(names)
+                            for b in names[index + 1:])
+            (dataset / "matching_pairs.txt").write_text(pairs)
+            (dataset / "guided_pairs.txt").write_text(pairs)
+            with mock.patch.object(runner, "run") as migrate:
+                self.assertTrue(runner.ensure_e10_resume_config(dataset, "light_shirt", root))
+            command = [str(value) for value in migrate.call_args.args[0]]
+            self.assertTrue(command[-2:] == ["--workers", "4"])
+            self.assertIn("change_workers.py", command[1])
 
     def test_e4_and_e5_create_only_the_selected_threshold(self):
         with tempfile.TemporaryDirectory() as temporary:

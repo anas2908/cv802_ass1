@@ -29,6 +29,9 @@ REPOSITORY = HERE.parent
 VIEWER_WEB = HERE / "historical_browser" / "web"
 HISTORICAL_CONFIG = HERE / "configs" / "historical_e1_e10.json"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff"}
+E10_PROGRESS = re.compile(
+    r"^E10 progress: ([0-9]+)/([0-9]+) guided pairs \| ([0-9]+) workers$"
+)
 EXPERIMENTS = tuple(f"E{i}" for i in range(1, 11))
 SUBJECT_FOLDERS = {"light_shirt": "light_shirt", "dark_shirt": "black_shirt_crutches"}
 DEPENDENCIES = {
@@ -331,7 +334,16 @@ class ReconstructionState:
                     else:
                         self.log.append(line)
                         lowered = line.lower()
-                        if "extracting features" in lowered:
+                        pair_progress = E10_PROGRESS.match(line.strip())
+                        if pair_progress:
+                            completed, total, workers = map(int, pair_progress.groups())
+                            fraction = completed / total if total else 0
+                            self.progress = max(self.progress, 62 + round(30 * fraction))
+                            self.stage = (
+                                f"E10 guided matching: {completed:,} / {total:,} pairs "
+                                f"({fraction:.1%}) · {workers} workers"
+                            )
+                        elif "extracting features" in lowered:
                             self.progress = max(self.progress, 25)
                             self.stage = "Extracting image features"
                         elif ("sfm: matching" in lowered

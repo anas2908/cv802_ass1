@@ -10,6 +10,7 @@ import argparse
 import fcntl
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -78,11 +79,41 @@ def main():
             persist()
             print(f'{now()} {subject}: {label}', flush=True)
             with Path(entry['log']).open('x') as log:
-                result = subprocess.run(command, cwd=ROOT, env=env, stdout=log,
-                                        stderr=subprocess.STDOUT)
-            entry.update(finished_utc=now(), returncode=result.returncode)
+                if label == 'reconstruction':
+                    progress_files = sorted(
+                        (WORK / 'datasets' / (subject + '_quality') /
+                         'colmap/quality_matching_cache').glob('*/progress.json'),
+                        key=lambda path: path.stat().st_mtime_ns, reverse=True)
+                    for progress_path in progress_files:
+                        try:
+                            progress = json.loads(progress_path.read_text())
+                            if progress.get('matching_threads') == 4:
+                                print(f"E10 progress: {progress['completed_pairs']}/{progress['total_pairs']} "
+                                      "guided pairs | 4 workers", flush=True)
+                                break
+                        except (OSError, ValueError, KeyError, TypeError):
+                            continue
+                    process = subprocess.Popen(command, cwd=ROOT, env=env, stdout=subprocess.PIPE,
+                                               stderr=subprocess.STDOUT, text=True, bufsize=1)
+                    assert process.stdout is not None
+                    for line in process.stdout:
+                        log.write(line)
+                        match = re.search(r'committed guided pairs ([0-9,]+)/([0-9,]+)', line)
+                        if match:
+                            completed = int(match.group(1).replace(',', ''))
+                            total = int(match.group(2).replace(',', ''))
+                            entry['matching_progress'] = {'completed_pairs': completed,
+                                                          'total_pairs': total, 'workers': 4}
+                            persist()
+                            print(f'E10 progress: {completed}/{total} guided pairs | 4 workers',
+                                  flush=True)
+                    returncode = process.wait()
+                else:
+                    returncode = subprocess.run(command, cwd=ROOT, env=env, stdout=log,
+                                                stderr=subprocess.STDOUT).returncode
+            entry.update(finished_utc=now(), returncode=returncode)
             persist()
-            if result.returncode:
+            if returncode:
                 raise RuntimeError(f'{subject} {label} failed; see {entry["log"]}')
 
         def verify(subject, paths, label):
@@ -148,7 +179,11 @@ def main():
                               complete=not record.get('dark_crutch_review_required', False))
             record['finished_utc'] = now()
             persist()
-            print(json.dumps(record, indent=2), flush=True)
+            print(
+                f"E10 complete: {', '.join(record['subjects'])} | {record['stage']} | "
+                "4 matching workers; full status saved in status.json",
+                flush=True,
+            )
         except BaseException as error:
             record.update(stage='failed', error=str(error), finished_utc=now())
             persist()
