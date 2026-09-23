@@ -102,8 +102,18 @@ $CV802_DATA_ROOT/vggsfm/outputs/my_scene_vggsfm/point_cloud.ply
 
 ## 2. Open the saved models
 
-The verified archive is already included in the clone. Install it into the data
-directory:
+If you only want to view the saved models, start by cloning the repository:
+
+```bash
+git clone https://github.com/anas2908/cv802_ass1.git
+cd cv802_ass1
+
+export CV802_DATA_ROOT="$(cd .. && pwd)/cv802-data"
+mkdir -p "$CV802_DATA_ROOT"
+```
+
+The verified model archive is already included in the clone. Install it into
+the data directory:
 
 ```bash
 python3 scripts/package_saved_results.py install \
