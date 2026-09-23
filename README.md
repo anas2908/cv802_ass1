@@ -54,17 +54,26 @@ results under `CV802_DATA_ROOT`. E10 is intentionally available only for
 `light_shirt`; the original reviewed crutch-corridor policy is regenerated for
 the dark-shirt cleanup experiments.
 
+Run the following from the repository root. The reconstruction environment
+requires Python 3.12; the macOS system `python3` may still be Python 3.9 and
+cannot install the pinned Apple-silicon Open3D wheel.
+
 ```bash
-cd cv802_ass1
+git pull
+brew install python@3.12
+
 export CV802_DATA_ROOT="$(pwd)/cv802-data"
 mkdir -p "$CV802_DATA_ROOT"
+export CV802_MAC_PYTHON="$(brew --prefix python@3.12)/bin/python3.12"
+"$CV802_MAC_PYTHON" --version
 
-python3 -m venv "$CV802_DATA_ROOT/sfm/mac-env"
-source "$CV802_DATA_ROOT/sfm/mac-env/bin/activate"
+"$CV802_MAC_PYTHON" -m venv "$CV802_DATA_ROOT/sfm/mac-env-py312"
+source "$CV802_DATA_ROOT/sfm/mac-env-py312/bin/activate"
 python -m pip install --upgrade pip
 python -m pip install -r sfm/requirements-mac-e1-e10.txt
 
 export CV802_ALLOW_NON_SLURM=1
+export TK_SILENCE_DEPRECATION=1
 cd sfm
 python mac_reconstruction_ui.py ui
 ```
