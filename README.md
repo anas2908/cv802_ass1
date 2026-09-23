@@ -1,221 +1,129 @@
 # CV802 Project 1 — 3D Reconstruction
 
-## Quick start
+This repository is ready to use on an Apple-silicon Mac. It contains:
 
-Copy and paste these commands first:
+- the light-shirt and dark-shirt input photographs;
+- the SfM E1–E10 reconstruction pipeline;
+- the saved E1–E10, MVS, and VGGSfM point clouds; and
+- simple browser interfaces for reconstruction and viewing results.
+
+No separate image bundle or saved-model download is required.
+
+## Option 1: Open the saved results
+
+This is the fastest option. It does not reconstruct anything and does not need
+a GPU. Copy and paste the complete block into Terminal:
 
 ```bash
 git clone https://github.com/anas2908/cv802_ass1.git
 cd cv802_ass1
-export CV802_DATA_ROOT="$(pwd)/cv802-data"
-mkdir -p "$CV802_DATA_ROOT"
+bash scripts/run_saved_models_mac.sh
 ```
 
-This repository has two jobs:
+The script verifies and installs the bundled models, selects a free local port,
+starts the read-only viewer, and opens it in your browser. Use its dropdown to
+view the available SfM E1–E10, MVS, and VGGSfM results for both subjects.
 
-1. Reconstruct a new image folder with **SfM**, **COLMAP MVS**, or **VGGSfM**.
-2. Open the saved E1–E10, MVS, and VGGSfM point clouds in the browser viewer.
-
-The saved display models are included in this repository. New reconstruction
-inputs and runtime files stay outside the Git checkout. Set one absolute data
-directory before running anything:
+Keep the Terminal window open while viewing. Press `Control-C` to stop the
+viewer. A later launch only requires:
 
 ```bash
-export CV802_DATA_ROOT=/absolute/path/to/cv802-data
-mkdir -p "$CV802_DATA_ROOT"
+cd cv802_ass1
+bash scripts/run_saved_models_mac.sh
 ```
 
-Environments, downloaded model weights, databases, caches, and newly generated
-results go under `CV802_DATA_ROOT`. The light-shirt and dark-shirt photos used
-for the included experiments are already in this repository; no separate photo
-download is needed.
+## Option 2: Recompute SfM E1–E10
 
-## 1. Reconstruct a new image folder
+This option reconstructs the included photographs locally on the Mac. It
+requires an Apple-silicon Mac running macOS 14 or newer and an internet
+connection for the first environment installation.
 
-Choose one of the included photo sets from the cloned repository. Run this
-from the repository root (use `dark_shirt` instead if desired):
+Copy and paste:
 
 ```bash
-export CV802_REPO_ROOT="$(pwd)"
-export DATASET=light_shirt
-export IMAGE_ROOT="$CV802_REPO_ROOT/datasets/$DATASET/images"
+git clone https://github.com/anas2908/cv802_ass1.git
+cd cv802_ass1
+bash sfm/scripts/run_mac_e1_e10.sh
 ```
 
-Use overlapping photographs of one stationary scene. A GPU is recommended.
-On the cluster, run setup and reconstruction inside a GPU allocation. On a
-personal CUDA machine, set `CV802_ALLOW_NON_SLURM=1` before setup.
+The launcher automatically:
 
-### macOS: E1–E10 reconstruction UI
+1. installs its own Python 3.11 environment without Homebrew;
+2. installs and verifies Open3D, PyCOLMAP, and the other pinned packages;
+3. keeps the environment, cache, databases, masks, and generated results in a
+   separate `cv802-data` folder beside the clone; and
+4. opens the reconstruction UI at <http://127.0.0.1:8770/>.
 
-The Linux/CUDA setup script is for cluster or Linux machines and should not be
-run on macOS. The Mac UI discovers every `datasets/*/images` folder, lets you
-choose the dataset and experiment, and writes databases, caches, masks and new
-results under `CV802_DATA_ROOT`. E10 is intentionally available only for
-`light_shirt`; the original reviewed crutch-corridor policy is regenerated for
-the dark-shirt cleanup experiments.
+In the UI, select `light_shirt` or `dark_shirt`, select an experiment, and click
+**Recompute**. Required earlier experiments run automatically and completed
+prerequisites are reused. E10 is intentionally available only for
+`light_shirt`.
 
-Run these commands from anywhere inside the cloned repository. This launcher
-does not need Homebrew and ignores any old activated Python 3.9 environment.
-It installs a managed Python 3.11, the pinned packages, caches, and the virtual
-environment under `CV802_DATA_ROOT`, verifies them, and opens the local browser
-UI. It requires an Apple-silicon Mac running macOS 14 or newer. The first launch
-downloads the environment; later launches reuse it.
+Keep Terminal open during reconstruction. SfM runs on the CPU on macOS, so the
+larger experiments can take a long time.
+
+If the launcher reports that Apple command-line tools are missing, run this
+once, finish the installation, and repeat the same launcher command:
+
+```bash
+xcode-select --install
+```
+
+## Already cloned the repository?
+
+Update it and launch either interface:
 
 ```bash
 cd "$(git rev-parse --show-toplevel)"
 git pull
-export CV802_DATA_ROOT="$(pwd)/cv802-data"
-mkdir -p "$CV802_DATA_ROOT"
+```
+
+For saved results:
+
+```bash
+bash scripts/run_saved_models_mac.sh
+```
+
+For SfM reconstruction:
+
+```bash
 bash sfm/scripts/run_mac_e1_e10.sh
 ```
 
-Keep that terminal open while using the UI. If Apple command-line tools are
-missing, the launcher will ask you to run `xcode-select --install`; finish that
-one installation and rerun the same launcher command. The UI uses the browser,
-so it does not depend on the deprecated system Tk framework.
-If port 8770 is already occupied, launch with
-`CV802_UI_PORT=8771 bash sfm/scripts/run_mac_e1_e10.sh` instead.
+## Adding another image folder
 
-The UI automatically runs missing prerequisites. For example, choosing E7
-first creates E1, E2, E3 and E6 before applying the E7 cleanup. Completed
-prerequisites are reused. You can also run without the window:
-
-```bash
-"$CV802_DATA_ROOT/sfm/mac-env-py311-v1/bin/python" sfm/mac_reconstruction_ui.py list
-"$CV802_DATA_ROOT/sfm/mac-env-py311-v1/bin/python" sfm/mac_reconstruction_ui.py plan --dataset light_shirt --experiment E10
-"$CV802_DATA_ROOT/sfm/mac-env-py311-v1/bin/python" sfm/mac_reconstruction_ui.py run --dataset light_shirt --experiment E10
-```
-
-To add another dataset, create `datasets/NAME/images/` and place at least two
-overlapping images below it; it will appear in the dataset dropdown. Generic
-new datasets can run E1 and E2 immediately. E3–E10 use the two assignment-
-specific subject profiles because their guided-pair budgets and cleanup rules
-were defined for these captures. CPU reconstruction, especially E8/E10, may
-take many hours. MVS also requires a compatible macOS COLMAP installation;
-VGGSfM is not recommended on a CPU-only Mac.
-
-### A. SfM: cameras and sparse colored points
-
-```bash
-cd sfm
-bash scripts/setup_linux_cuda.sh
-
-"$CV802_DATA_ROOT/sfm/envs/headless-cuda/bin/python" run_headless.py run \
-  --experiment "$DATASET" \
-  --images "$IMAGE_ROOT" \
-  --camera-model SIMPLE_RADIAL \
-  --matcher exhaustive \
-  --device cuda
-```
-
-The result is written under:
+Create the following folder inside the clone and place at least two overlapping
+images in it:
 
 ```text
-$CV802_DATA_ROOT/sfm/experiments/$DATASET/
+datasets/my_dataset/images/
 ```
 
-### B. MVS: dense colored points
+Restart the reconstruction launcher. `my_dataset` will appear in the dataset
+dropdown. New generic datasets support E1 and E2. E3–E10 use assignment-specific
+subject recipes prepared for the included light-shirt and dark-shirt captures.
 
-MVS uses the original photos plus the calibrated sparse model produced by SfM.
+## If a local port is occupied
+
+Both launchers normally select or use an available local port. You may also
+choose one explicitly:
 
 ```bash
-cd mvs
-bash scripts/bootstrap_python_environment.sh
-MVS_PYTHON="$CV802_DATA_ROOT/mvs/envs/mvs-engine/bin/python"
-
-"$MVS_PYTHON" run_mvs.py stage-inputs \
-  --experiment "$DATASET" \
-  --images-source "$IMAGE_ROOT" \
-  --model-source "$CV802_DATA_ROOT/sfm/experiments/$DATASET/outputs/colmap/sparse/0"
-
-"$MVS_PYTHON" run_mvs.py plan --config configs/example.json
-"$MVS_PYTHON" run_mvs.py run --config configs/example.json --resume
+CV802_VIEWER_PORT=8768 bash scripts/run_saved_models_mac.sh
+CV802_UI_PORT=8771 bash sfm/scripts/run_mac_e1_e10.sh
 ```
-
-The dense point cloud is:
-
-```text
-$CV802_DATA_ROOT/mvs/experiments/$DATASET/outputs/fused.ply
-```
-
-### C. VGGSfM: learned reconstruction
-
-VGGSfM is independent of the COLMAP SfM result. It starts directly from the
-photos and downloads the official pretrained model during setup.
-
-```bash
-cd vggsfm
-python3 scripts/prepare_input.py \
-  --dataset "$DATASET" \
-  --source-images "$IMAGE_ROOT"
-
-bash scripts/install_linux.sh
-VGG_PYTHON="$CV802_DATA_ROOT/vggsfm/envs/vggsfm/bin/python"
-
-"$VGG_PYTHON" run_vggsfm.py doctor --require-ready
-"$VGG_PYTHON" run_vggsfm.py run \
-  --dataset "$DATASET" \
-  --run-id "${DATASET}_vggsfm" \
-  --profile configs/example.json
-```
-
-The point cloud is:
-
-```text
-$CV802_DATA_ROOT/vggsfm/outputs/${DATASET}_vggsfm/point_cloud.ply
-```
-
-## 2. Open the saved models
-
-If you only want to view the saved models, start by cloning the repository:
-
-```bash
-export CV802_DATA_ROOT="$(cd .. && pwd)/cv802-data"
-mkdir -p "$CV802_DATA_ROOT"
-```
-
-The verified model archive is already included in the clone. Install it into
-the data directory:
-
-```bash
-python3 scripts/package_saved_results.py install \
-  --archive saved_models/CV802_Project1_SavedResults_v1.zip
-```
-
-Start the CPU-only browser:
-if for some reason you are already using 8767 port, change it with 8768 or any other port available, also preferably do it in Mac!
-```bash
-cd sfm
-CUDA_VISIBLE_DEVICES='' python3 -B browse_historical.py \
-  --data-root "$CV802_DATA_ROOT" serve --port 8767
-```
-
-Open <http://127.0.0.1:8767/>. or the port which you decided. If the code is running on a remote server, first
-create this tunnel from your laptop:
-
-
-again cross check the port
-```bash
-ssh -N -L 8767:127.0.0.1:8767 USER@SERVER
-```
-
-The dropdown contains the available SfM E1–E10, MVS, and VGGSfM results. The
-viewer does not run reconstruction and does not need a GPU.
 
 ## Repository layout
 
 ```text
-sfm/       classic COLMAP/PyCOLMAP sparse reconstruction and result viewer
-mvs/       COLMAP PatchMatch dense reconstruction
-vggsfm/    official VGGSfM inference wrapper
-scripts/   photo and saved-result installers
-saved_models/  bundled E1–E10, MVS, and VGGSfM display clouds
+datasets/       included light-shirt and dark-shirt photographs
+saved_models/   bundled display point clouds
+sfm/            SfM engine, E1–E10 recipes, and interfaces
+mvs/            COLMAP multi-view stereo implementation
+vggsfm/         VGGSfM implementation
+scripts/        portable saved-result and dataset utilities
 ```
 
-For method-specific command options, run:
-
-```bash
-python3 sfm/run_headless.py --help
-python3 mvs/run_mvs.py --help
-python3 vggsfm/run_vggsfm.py --help
-```
+Detailed method documentation is available in
+[`sfm/README.md`](sfm/README.md), [`mvs/README.md`](mvs/README.md), and
+[`vggsfm/README.md`](vggsfm/README.md).

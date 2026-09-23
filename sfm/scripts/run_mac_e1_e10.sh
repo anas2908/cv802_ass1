@@ -7,6 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_PARENT="$(cd "$REPO_ROOT/.." && pwd)"
 
 if [[ "$(uname -s)" != "Darwin" ]]; then
     echo "ERROR: this launcher is for macOS." >&2
@@ -24,7 +25,7 @@ if [[ ! "$MACOS_MAJOR" =~ ^[0-9]+$ ]] || (( MACOS_MAJOR < 14 )); then
     exit 1
 fi
 
-: "${CV802_DATA_ROOT:=$REPO_ROOT/cv802-data}"
+: "${CV802_DATA_ROOT:=$REPO_PARENT/cv802-data}"
 : "${CV802_UI_PORT:=8770}"
 if [[ ! "$CV802_UI_PORT" =~ ^[0-9]+$ ]] || (( CV802_UI_PORT < 1024 || CV802_UI_PORT > 65535 )); then
     echo "ERROR: CV802_UI_PORT must be an integer from 1024 to 65535." >&2
