@@ -14,15 +14,20 @@ export CV802_DATA_ROOT=/absolute/path/to/cv802-data
 mkdir -p "$CV802_DATA_ROOT"
 ```
 
-Photos, environments, downloaded model weights, databases, caches, and newly
-generated results go under `CV802_DATA_ROOT`.
+Environments, downloaded model weights, databases, caches, and newly generated
+results go under `CV802_DATA_ROOT`. The light-shirt and dark-shirt photos used
+for the included experiments are already in this repository; no separate photo
+download is needed.
 
 ## 1. Reconstruct a new image folder
 
-Put or copy the input photos into:
+Choose one of the included photo sets from the cloned repository. Run this
+from the repository root (use `dark_shirt` instead if desired):
 
-```text
-$CV802_DATA_ROOT/sfm/inputs/my_scene/images/
+```bash
+export CV802_REPO_ROOT="$(pwd)"
+export DATASET=light_shirt
+export IMAGE_ROOT="$CV802_REPO_ROOT/datasets/$DATASET/images"
 ```
 
 Use overlapping photographs of one stationary scene. A GPU is recommended.
@@ -36,8 +41,8 @@ cd sfm
 bash scripts/setup_linux_cuda.sh
 
 "$CV802_DATA_ROOT/sfm/envs/headless-cuda/bin/python" run_headless.py run \
-  --experiment my_scene \
-  --images "$CV802_DATA_ROOT/sfm/inputs/my_scene/images" \
+  --experiment "$DATASET" \
+  --images "$IMAGE_ROOT" \
   --camera-model SIMPLE_RADIAL \
   --matcher exhaustive \
   --device cuda
@@ -46,7 +51,7 @@ bash scripts/setup_linux_cuda.sh
 The result is written under:
 
 ```text
-$CV802_DATA_ROOT/sfm/experiments/my_scene/
+$CV802_DATA_ROOT/sfm/experiments/$DATASET/
 ```
 
 ### B. MVS: dense colored points
@@ -59,9 +64,9 @@ bash scripts/bootstrap_python_environment.sh
 MVS_PYTHON="$CV802_DATA_ROOT/mvs/envs/mvs-engine/bin/python"
 
 "$MVS_PYTHON" run_mvs.py stage-inputs \
-  --experiment my_scene \
-  --images-source "$CV802_DATA_ROOT/sfm/inputs/my_scene/images" \
-  --model-source "$CV802_DATA_ROOT/sfm/experiments/my_scene/outputs/colmap/sparse/0"
+  --experiment "$DATASET" \
+  --images-source "$IMAGE_ROOT" \
+  --model-source "$CV802_DATA_ROOT/sfm/experiments/$DATASET/outputs/colmap/sparse/0"
 
 "$MVS_PYTHON" run_mvs.py plan --config configs/example.json
 "$MVS_PYTHON" run_mvs.py run --config configs/example.json --resume
@@ -70,7 +75,7 @@ MVS_PYTHON="$CV802_DATA_ROOT/mvs/envs/mvs-engine/bin/python"
 The dense point cloud is:
 
 ```text
-$CV802_DATA_ROOT/mvs/experiments/my_scene/outputs/fused.ply
+$CV802_DATA_ROOT/mvs/experiments/$DATASET/outputs/fused.ply
 ```
 
 ### C. VGGSfM: learned reconstruction
@@ -81,23 +86,23 @@ photos and downloads the official pretrained model during setup.
 ```bash
 cd vggsfm
 python3 scripts/prepare_input.py \
-  --dataset my_scene \
-  --source-images "$CV802_DATA_ROOT/sfm/inputs/my_scene/images"
+  --dataset "$DATASET" \
+  --source-images "$IMAGE_ROOT"
 
 bash scripts/install_linux.sh
 VGG_PYTHON="$CV802_DATA_ROOT/vggsfm/envs/vggsfm/bin/python"
 
 "$VGG_PYTHON" run_vggsfm.py doctor --require-ready
 "$VGG_PYTHON" run_vggsfm.py run \
-  --dataset my_scene \
-  --run-id my_scene_vggsfm \
+  --dataset "$DATASET" \
+  --run-id "${DATASET}_vggsfm" \
   --profile configs/example.json
 ```
 
 The point cloud is:
 
 ```text
-$CV802_DATA_ROOT/vggsfm/outputs/my_scene_vggsfm/point_cloud.ply
+$CV802_DATA_ROOT/vggsfm/outputs/${DATASET}_vggsfm/point_cloud.ply
 ```
 
 ## 2. Open the saved models
