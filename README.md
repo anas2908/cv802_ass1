@@ -45,37 +45,47 @@ Use overlapping photographs of one stationary scene. A GPU is recommended.
 On the cluster, run setup and reconstruction inside a GPU allocation. On a
 personal CUDA machine, set `CV802_ALLOW_NON_SLURM=1` before setup.
 
-### macOS: CPU-only SfM
+### macOS: E1–E10 reconstruction UI
 
 The Linux/CUDA setup script is for cluster or Linux machines and should not be
-run on macOS. SfM can run locally on a Mac using Python and CPU execution:
+run on macOS. The Mac UI discovers every `datasets/*/images` folder, lets you
+choose the dataset and experiment, and writes databases, caches, masks and new
+results under `CV802_DATA_ROOT`. E10 is intentionally available only for
+`light_shirt`; the original reviewed crutch-corridor policy is regenerated for
+the dark-shirt cleanup experiments.
 
 ```bash
 cd cv802_ass1
 export CV802_DATA_ROOT="$(pwd)/cv802-data"
-export DATASET=light_shirt
-export IMAGE_ROOT="$(pwd)/datasets/$DATASET/images"
 mkdir -p "$CV802_DATA_ROOT"
 
 python3 -m venv "$CV802_DATA_ROOT/sfm/mac-env"
 source "$CV802_DATA_ROOT/sfm/mac-env/bin/activate"
 python -m pip install --upgrade pip
-python -m pip install pycolmap open3d numpy pillow
+python -m pip install -r sfm/requirements-mac-e1-e10.txt
 
 export CV802_ALLOW_NON_SLURM=1
 cd sfm
-python run_headless.py run \
-  --experiment "$DATASET" \
-  --images "$IMAGE_ROOT" \
-  --camera-model SIMPLE_RADIAL \
-  --matcher exhaustive \
-  --device cpu
+python mac_reconstruction_ui.py ui
 ```
 
-This produces the same type of sparse colored point cloud, but CPU execution
-is slower. MVS can also be run locally only when a compatible macOS COLMAP/
-PyCOLMAP installation is available; use the MVS commands below and expect a
-substantially longer runtime. VGGSfM is not recommended on a CPU-only Mac.
+The UI automatically runs missing prerequisites. For example, choosing E7
+first creates E1, E2, E3 and E6 before applying the E7 cleanup. Completed
+prerequisites are reused. You can also run without the window:
+
+```bash
+python mac_reconstruction_ui.py list
+python mac_reconstruction_ui.py plan --dataset light_shirt --experiment E10
+python mac_reconstruction_ui.py run --dataset light_shirt --experiment E10
+```
+
+To add another dataset, create `datasets/NAME/images/` and place at least two
+overlapping images below it; it will appear in the dataset dropdown. Generic
+new datasets can run E1 and E2 immediately. E3–E10 use the two assignment-
+specific subject profiles because their guided-pair budgets and cleanup rules
+were defined for these captures. CPU reconstruction, especially E8/E10, may
+take many hours. MVS also requires a compatible macOS COLMAP installation;
+VGGSfM is not recommended on a CPU-only Mac.
 
 ### A. SfM: cameras and sparse colored points
 
