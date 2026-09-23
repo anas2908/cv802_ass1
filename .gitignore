@@ -33,9 +33,11 @@ logs/
 *.pt
 *.sif
 *.zip
+!saved_models/
+!saved_models/CV802_Project1_SavedResults_v1.zip
+!saved_models/SHA256SUMS.txt
 
 # Editors and operating systems
 .DS_Store
 .idea/
 .vscode/
-

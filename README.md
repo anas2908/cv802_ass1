@@ -5,17 +5,17 @@ This repository has two jobs:
 1. Reconstruct a new image folder with **SfM**, **COLMAP MVS**, or **VGGSfM**.
 2. Open the saved E1–E10, MVS, and VGGSfM point clouds in the browser viewer.
 
-Large files are intentionally kept outside Git. Set one absolute data directory
-before running anything:
+The saved display models are included in this repository. New reconstruction
+inputs and runtime files stay outside the Git checkout. Set one absolute data
+directory before running anything:
 
 ```bash
 export CV802_DATA_ROOT=/absolute/path/to/cv802-data
 mkdir -p "$CV802_DATA_ROOT"
 ```
 
-The repository contains source code, small configs, and tests only. Photos,
-environments, model weights, databases, caches, and generated results go under
-`CV802_DATA_ROOT`.
+Photos, environments, downloaded model weights, databases, caches, and newly
+generated results go under `CV802_DATA_ROOT`.
 
 ## 1. Reconstruct a new image folder
 
@@ -102,12 +102,12 @@ $CV802_DATA_ROOT/vggsfm/outputs/my_scene_vggsfm/point_cloud.ply
 
 ## 2. Open the saved models
 
-Download `CV802_Project1_SavedResults_v1.zip` from the repository's GitHub
-Release, then install it into the data directory:
+The verified archive is already included in the clone. Install it into the data
+directory:
 
 ```bash
 python3 scripts/package_saved_results.py install \
-  --archive /path/to/CV802_Project1_SavedResults_v1.zip
+  --archive saved_models/CV802_Project1_SavedResults_v1.zip
 ```
 
 Start the CPU-only browser:
@@ -135,6 +135,7 @@ sfm/       classic COLMAP/PyCOLMAP sparse reconstruction and result viewer
 mvs/       COLMAP PatchMatch dense reconstruction
 vggsfm/    official VGGSfM inference wrapper
 scripts/   photo and saved-result installers
+saved_models/  bundled E1–E10, MVS, and VGGSfM display clouds
 ```
 
 For method-specific command options, run:
