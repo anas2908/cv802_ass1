@@ -13,6 +13,7 @@ import html
 import json
 import os
 import queue
+import re
 import subprocess
 import sys
 import threading
@@ -25,6 +26,8 @@ from urllib.parse import parse_qs, urlsplit
 
 HERE = Path(__file__).resolve().parent
 REPOSITORY = HERE.parent
+VIEWER_WEB = HERE / "historical_browser" / "web"
+HISTORICAL_CONFIG = HERE / "configs" / "historical_e1_e10.json"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff"}
 EXPERIMENTS = tuple(f"E{i}" for i in range(1, 11))
 SUBJECT_FOLDERS = {"light_shirt": "light_shirt", "dark_shirt": "black_shirt_crutches"}
@@ -96,6 +99,54 @@ def run_selection(dataset: str, experiment: str) -> int:
     command = [sys.executable, str(HERE / "mac_recipe_runner.py"), dataset, experiment]
     print("$ " + " ".join(command), flush=True)
     return subprocess.call(command, cwd=HERE, env=dict(os.environ, CV802_ALLOW_NON_SLURM="1"))
+
+
+def ply_vertex_count(path: Path) -> int:
+    """Read the declared vertex count without loading a potentially large PLY."""
+    with path.open("rb") as handle:
+        header = handle.read(65536)
+    end = header.find(b"end_header")
+    if end < 0:
+        raise ValueError(f"PLY header is incomplete: {path}")
+    match = re.search(rb"(?m)^element vertex ([0-9]+)\r?$", header[:end])
+    if not match or int(match.group(1)) < 1:
+        raise ValueError(f"PLY has no positive vertex count: {path}")
+    return int(match.group(1))
+
+
+def completed_result(dataset: str, experiment: str) -> dict[str, object]:
+    """Load and validate the recipe receipt used by the interactive viewer."""
+    root = data_root()
+    receipt_path = (root / "sfm/mac-e1-e10-workspace/receipts" /
+                    f"{dataset}_{experiment}.json")
+    receipt = json.loads(receipt_path.read_text())
+    if receipt.get("dataset") != dataset or receipt.get("experiment") != experiment:
+        raise ValueError("The reconstruction receipt does not match the requested run")
+    recorded_result = Path(str(receipt.get("result_ply", "")))
+    if recorded_result.is_symlink():
+        raise ValueError("The reconstructed result may not be a symbolic link")
+    result = recorded_result.resolve(strict=True)
+    try:
+        result.relative_to(root)
+    except ValueError as error:
+        raise ValueError("The reconstructed result is outside CV802_DATA_ROOT") from error
+    if not result.is_file():
+        raise ValueError("The reconstructed result is not a regular PLY file")
+    catalog = json.loads(HISTORICAL_CONFIG.read_text())
+    metadata = next(item for item in catalog["experiments"] if item["id"] == experiment)
+    subject = "dark" if dataset == "dark_shirt" else "light"
+    return {
+        "dataset": dataset,
+        "experiment": experiment,
+        "subject": subject,
+        "path": result,
+        "point_count": ply_vertex_count(result),
+        "title": metadata["title"],
+        "stage_type": metadata["stage_type"],
+        "method": metadata["method"],
+        "camera_policy": metadata["camera_policy"],
+        "display_variant": metadata["display_variant"],
+    }
 
 
 def launch_desktop_ui() -> int:
@@ -201,21 +252,64 @@ class ReconstructionState:
         self.lock = threading.Lock()
         self.running = False
         self.label = "Ready"
+        self.stage = "Choose a dataset and experiment"
+        self.progress = 0
+        self.dataset: str | None = None
+        self.experiment: str | None = None
+        self.result: dict[str, object] | None = None
         self.log: list[str] = []
 
-    def snapshot(self) -> tuple[bool, str, str]:
+    def snapshot(self) -> dict[str, object]:
         with self.lock:
-            return self.running, self.label, "".join(self.log[-4000:])
+            return {
+                "running": self.running,
+                "label": self.label,
+                "stage": self.stage,
+                "progress": self.progress,
+                "dataset": self.dataset,
+                "experiment": self.experiment,
+                "result": dict(self.result) if self.result else None,
+                "log": "".join(self.log[-4000:])[-120000:],
+            }
 
     def start(self, dataset: str, experiment: str) -> bool:
         with self.lock:
             if self.running:
                 return False
             self.running = True
-            self.label = f"Running {dataset} {experiment}"
+            self.label = "Running"
+            self.stage = f"Starting {dataset} {experiment}"
+            self.progress = 1
+            self.dataset = dataset
+            self.experiment = experiment
+            self.result = None
             self.log = []
         threading.Thread(target=self._worker, args=(dataset, experiment), daemon=True).start()
         return True
+
+    def restore_latest(self) -> None:
+        """Restore the newest valid local result after the UI is restarted."""
+        receipts = data_root() / "sfm/mac-e1-e10-workspace/receipts"
+        if not receipts.is_dir():
+            return
+        for path in sorted(receipts.glob("*.json"), key=lambda item: item.stat().st_mtime,
+                           reverse=True):
+            try:
+                receipt = json.loads(path.read_text())
+                dataset = str(receipt["dataset"])
+                experiment = str(receipt["experiment"])
+                validate_selection(dataset, experiment, discover_datasets())
+                result = completed_result(dataset, experiment)
+            except (KeyError, OSError, ValueError, json.JSONDecodeError):
+                continue
+            with self.lock:
+                self.label = "Previous result"
+                self.stage = "Ready to view or recompute"
+                self.progress = 100
+                self.dataset = dataset
+                self.experiment = experiment
+                self.result = result
+            return
 
     def _worker(self, dataset: str, experiment: str) -> None:
         command = [sys.executable, str(Path(__file__).resolve()), "run",
@@ -226,15 +320,41 @@ class ReconstructionState:
             assert child.stdout is not None
             for line in child.stdout:
                 with self.lock:
-                    self.log.append(line)
+                    if line.startswith("CV802_PROGRESS "):
+                        try:
+                            update = json.loads(line.removeprefix("CV802_PROGRESS "))
+                            value = max(0, min(100, int(update["percent"])))
+                            self.progress = max(self.progress, value)
+                            self.stage = str(update["stage"])
+                        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+                            self.log.append(line)
+                    else:
+                        self.log.append(line)
+                        lowered = line.lower()
+                        if "extracting features" in lowered:
+                            self.progress = max(self.progress, 25)
+                            self.stage = "Extracting image features"
+                        elif ("sfm: matching" in lowered
+                              or ("matching " in lowered and " pairs" in lowered)):
+                            self.progress = max(self.progress, 55)
+                            self.stage = "Matching features across images"
+                        elif "triangulat" in lowered or "estimating cameras" in lowered:
+                            self.progress = max(self.progress, 78)
+                            self.stage = "Triangulating the 3D points"
             code = child.wait()
+            result = completed_result(dataset, experiment) if code == 0 else None
             with self.lock:
                 self.log.append(f"\nProcess exited with status {code}.\n")
                 self.label = "Completed" if code == 0 else f"Failed (status {code})"
+                self.stage = ("Result ready to view" if code == 0
+                              else "See the detailed log for the error")
+                self.progress = 100 if code == 0 else self.progress
+                self.result = result
         except Exception as error:  # Display worker failures in the local UI.
             with self.lock:
                 self.log.append(f"\n{type(error).__name__}: {error}\n")
                 self.label = "Failed"
+                self.stage = "See the detailed log for the error"
         finally:
             with self.lock:
                 self.running = False
@@ -242,35 +362,65 @@ class ReconstructionState:
 
 def render_web_ui(state: ReconstructionState, notice: str = "") -> bytes:
     datasets = discover_datasets()
-    running, label, log = state.snapshot()
+    status = state.snapshot()
+    running = bool(status["running"])
+    selected_dataset = status["dataset"]
+    selected_experiment = status["experiment"]
     dataset_options = "".join(
-        f'<option value="{html.escape(name)}">{html.escape(name)}</option>'
+        f'<option value="{html.escape(name)}"'
+        f'{" selected" if name == selected_dataset else ""}>{html.escape(name)}</option>'
         for name in datasets
     )
     experiment_options = "".join(
-        f'<option value="{name}">{name}</option>' for name in EXPERIMENTS
+        f'<option value="{name}"'
+        f'{" selected" if name == selected_experiment else ""}>{name}</option>'
+        for name in EXPERIMENTS
     )
     refresh = '<meta http-equiv="refresh" content="2">' if running else ""
     disabled = " disabled" if running else ""
     notice_html = f'<p class="notice">{html.escape(notice)}</p>' if notice else ""
+    result = status["result"]
+    result_html = ""
+    if isinstance(result, dict):
+        result_html = (
+            '<a class="view-result" href="/viewer?autoload=1">View reconstructed result</a>'
+            f'<p class="result-note">{html.escape(str(result["dataset"]))} · '
+            f'{html.escape(str(result["experiment"]))} · '
+            f'{int(result["point_count"]):,} coloured points</p>'
+        )
+    progress = int(status["progress"])
+    log = str(status["log"])
     document = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">{refresh}
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CV802 Mac SfM Reconstruction</title>
 <style>
-body{{font:16px system-ui,sans-serif;max-width:1000px;margin:36px auto;padding:0 20px;background:#f5f6f8;color:#17202a}}
-.card{{background:white;border-radius:12px;padding:24px;box-shadow:0 2px 14px #0002}}
+body{{font:16px system-ui,sans-serif;max-width:900px;margin:36px auto;padding:0 20px;background:#f3f6fa;color:#17202a}}
+.card{{background:white;border-radius:14px;padding:28px;box-shadow:0 5px 24px #18324f18}}
 .controls{{display:flex;gap:14px;align-items:end;flex-wrap:wrap}} label{{display:grid;gap:6px}}
-select,button{{font:inherit;padding:9px 12px}} button{{cursor:pointer}} pre{{background:#111;color:#eee;padding:16px;min-height:280px;overflow:auto;white-space:pre-wrap}}
-.status{{font-weight:650}} .notice{{color:#a33}}
+select,button{{font:inherit;padding:10px 12px}} button{{cursor:pointer}}
+.status-card{{margin-top:24px;padding:18px;border:1px solid #d9e2ec;border-radius:11px;background:#f8fafc}}
+.status-line{{display:flex;justify-content:space-between;gap:20px;font-weight:700}}
+.stage{{margin:7px 0 12px;color:#526579}} .progress{{height:14px;overflow:hidden;border-radius:999px;background:#dce5ef}}
+.progress>span{{display:block;height:100%;width:{progress}%;border-radius:inherit;background:linear-gradient(90deg,#2476d8,#27b38a);transition:width .4s}}
+.view-result{{display:inline-block;margin-top:18px;padding:11px 15px;border-radius:9px;background:#176f55;color:white;text-decoration:none;font-weight:750}}
+.result-note{{margin:8px 0 0;color:#526579;font-size:14px}}
+details{{margin-top:18px}} summary{{cursor:pointer;color:#526579;font-weight:650}}
+pre{{background:#111827;color:#e6edf5;padding:16px;max-height:340px;overflow:auto;white-space:pre-wrap;border-radius:9px;font-size:12px}}
+.notice{{color:#a33}}
 </style></head><body><main class="card"><h1>CV802 SfM Reconstruction</h1>
 <p>Select an included dataset and an E1–E10 experiment. E10 is light-shirt only.</p>
 {notice_html}<form class="controls" method="post" action="/run">
 <label>Dataset<select id="dataset" name="dataset">{dataset_options}</select></label>
 <label>Experiment<select id="experiment" name="experiment">{experiment_options}</select></label>
 <button type="submit"{disabled}>Recompute</button></form>
-<p class="status">Status: {html.escape(label)}</p>
-<pre>{html.escape(log) if log else "Logs will appear here."}</pre>
+<section class="status-card" aria-live="polite">
+<div class="status-line"><span>{html.escape(str(status["label"]))}</span><span>{progress}%</span></div>
+<p class="stage">{html.escape(str(status["stage"]))}</p>
+<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{progress}"><span></span></div>
+{result_html}
+</section>
+<details><summary>Detailed logs</summary><pre>{html.escape(log) if log else "Logs will appear after reconstruction starts."}</pre></details>
 <script>
 const dataset = document.getElementById('dataset');
 const experiment = document.getElementById('experiment');
@@ -285,6 +435,55 @@ dataset.addEventListener('change', updateExperiments); updateExperiments();
     return document.encode("utf-8")
 
 
+def result_catalog(state: ReconstructionState) -> dict[str, object]:
+    """Build the one-result catalog consumed by the reusable WebGL viewer."""
+    result = state.snapshot()["result"]
+    if not isinstance(result, dict):
+        raise ValueError("No completed reconstruction is ready to view")
+    unavailable = {"available": False, "on_disk": False, "point_count": None,
+                   "reason": "This is not the subject selected for the completed run."}
+    selected = {"available": True, "on_disk": True,
+                "point_count": int(result["point_count"]), "reason": None}
+    subjects = {"light": dict(unavailable), "dark": dict(unavailable)}
+    subjects[str(result["subject"])] = selected
+    return {
+        "schema_version": 1,
+        "series_note": "Fresh local SfM reconstruction result.",
+        "fresh_result": True,
+        "experiments": [{
+            "id": result["experiment"],
+            "title": result["title"],
+            "stage_type": result["stage_type"],
+            "method": result["method"],
+            "camera_policy": result["camera_policy"],
+            "display_variant": result["display_variant"],
+            "subjects": subjects,
+        }],
+    }
+
+
+def result_viewer_page() -> bytes:
+    """Reuse the tested point viewer with wording for a fresh reconstruction."""
+    page = (VIEWER_WEB / "index.html").read_text()
+    replacements = {
+        "CV802 Saved 3D Results Browser": "CV802 Reconstructed Result",
+        "SfM history": "Recomputed SfM result",
+        "Inspect preserved E1–E10, MVS and independent VGGSfM coloured point clouds. This browser is read-only and never starts a reconstruction.":
+            "Inspect the coloured point cloud produced by the completed local reconstruction.",
+        "Load preserved cloud": "Load reconstructed cloud",
+        "Choose an experiment and subject, then load its preserved result.":
+            "Loading the reconstructed point cloud…",
+    }
+    for old, new in replacements.items():
+        page = page.replace(old, new)
+    page = re.sub(r"\s*<details>.*?</details>", "", page, count=1, flags=re.DOTALL)
+    page = page.replace(
+        '<body>',
+        '<body><a href="/" style="position:fixed;z-index:10;left:12px;top:8px;color:#63d6b5">← Reconstruction</a>',
+    )
+    return page.encode("utf-8")
+
+
 def launch_web_ui(port: int = 8770, open_browser: bool = True) -> int:
     if sys.platform != "darwin":
         raise RuntimeError("The reconstruction UI is intended for macOS")
@@ -292,16 +491,23 @@ def launch_web_ui(port: int = 8770, open_browser: bool = True) -> int:
     if not discover_datasets():
         raise RuntimeError("No datasets/*/images folders containing images were found")
     state = ReconstructionState()
+    state.restore_latest()
 
     class Handler(BaseHTTPRequestHandler):
-        def send_page(self, notice: str = "", status: HTTPStatus = HTTPStatus.OK) -> None:
-            body = render_web_ui(state, notice)
+        def send_bytes(self, status: HTTPStatus, content_type: str, body: bytes) -> None:
             self.send_response(status)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Type", content_type)
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
             self.end_headers()
             self.wfile.write(body)
+
+        def send_json(self, status: HTTPStatus, value: object) -> None:
+            self.send_bytes(status, "application/json; charset=utf-8",
+                            json.dumps(value).encode("utf-8"))
+
+        def send_page(self, notice: str = "", status: HTTPStatus = HTTPStatus.OK) -> None:
+            self.send_bytes(status, "text/html; charset=utf-8", render_web_ui(state, notice))
 
         def do_GET(self) -> None:  # noqa: N802 - HTTP method name
             route = urlsplit(self.path).path
@@ -312,6 +518,41 @@ def launch_web_ui(port: int = 8770, open_browser: bool = True) -> int:
             if route in ("/", "/index.html"):
                 self.send_page()
                 return
+            if route == "/viewer":
+                try:
+                    result_catalog(state)
+                    self.send_bytes(HTTPStatus.OK, "text/html; charset=utf-8",
+                                    result_viewer_page())
+                except ValueError as error:
+                    self.send_page(str(error), HTTPStatus.CONFLICT)
+                return
+            if route == "/api/catalog":
+                try:
+                    self.send_json(HTTPStatus.OK, result_catalog(state))
+                except ValueError as error:
+                    self.send_json(HTTPStatus.CONFLICT, {"error": str(error)})
+                return
+            if route in ("/viewer.js", "/style.css"):
+                content_type = ("text/javascript; charset=utf-8" if route.endswith(".js")
+                                else "text/css; charset=utf-8")
+                self.send_bytes(HTTPStatus.OK, content_type,
+                                (VIEWER_WEB / route.removeprefix("/")).read_bytes())
+                return
+            result = state.snapshot()["result"]
+            if isinstance(result, dict):
+                expected_route = f'/cloud/{result["experiment"]}/{result["subject"]}.ply'
+                if route == expected_route:
+                    path = Path(str(result["path"]))
+                    size = path.stat().st_size
+                    self.send_response(HTTPStatus.OK)
+                    self.send_header("Content-Type", "application/octet-stream")
+                    self.send_header("Content-Length", str(size))
+                    self.send_header("Cache-Control", "no-store")
+                    self.end_headers()
+                    with path.open("rb") as handle:
+                        while block := handle.read(1024 * 1024):
+                            self.wfile.write(block)
+                    return
             # Some macOS browsers restore a previous path on the same local
             # port. Bring that tab back to this UI instead of showing a 404.
             self.send_response(HTTPStatus.SEE_OTHER)

@@ -18,6 +18,49 @@ EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".tif", ".tiff"}
 ALIASES = {"light_shirt": "light_shirt", "dark_shirt": "black_shirt_crutches"}
 
 
+def report_progress(percent: int, stage: str) -> None:
+    """Emit a machine-readable UI update without hiding ordinary CLI output."""
+    print("CV802_PROGRESS " + json.dumps({"percent": percent, "stage": stage}), flush=True)
+
+
+def expected_result(root: Path, subject: str, experiment: str) -> Path:
+    """Return the display PLY produced by an E1-E10 recipe."""
+    reconstructions = root / "reconstructions"
+    if experiment == "E1":
+        return reconstructions / subject / "sparse_full_scene.ply"
+    if experiment == "E2":
+        return reconstructions / subject / "subject_preview/subject.ply"
+    if experiment == "E3":
+        return reconstructions / f"{subject}_quality/subject_preview/subject.ply"
+    if experiment in ("E4", "E5"):
+        threshold = "90" if experiment == "E4" else "97"
+        if subject == "black_shirt_crutches":
+            return reconstructions / (
+                f"experiments/black_person_crutches_cleanup/"
+                f"body_mask_consensus_{threshold}_crutches/subject.ply"
+            )
+        return reconstructions / (
+            f"experiments/light_person_mask_cleanup/mask_consensus_{threshold}/subject.ply"
+        )
+    if experiment == "E6":
+        return reconstructions / (
+            f"experiments/E6_guided_off/{subject}_quality/subject_preview/subject.ply"
+        )
+    if experiment == "E7":
+        return reconstructions / f"experiments/E7_guided_off_consensus90/{subject}/subject.ply"
+    if experiment == "E8":
+        return reconstructions / (
+            f"experiments/E8_vocab_guided/{subject}_quality/subject_preview/subject.ply"
+        )
+    if experiment == "E9":
+        return reconstructions / f"experiments/E9_vocab_guided_consensus90/{subject}/subject.ply"
+    if experiment == "E10":
+        return reconstructions / (
+            f"experiments/E10_quality_exhaustive_guided_consensus90/{subject}/subject.ply"
+        )
+    raise ValueError(f"Unknown experiment: {experiment}")
+
+
 def run(command: list[object], cwd: Path, *, allow_existing: bool = False) -> None:
     printable = [str(part) for part in command]
     print("$ " + " ".join(printable), flush=True)
@@ -251,49 +294,78 @@ def run_mask_cleanup(root: Path, experiment: str, subject: str) -> None:
 
 
 def execute(dataset: str, experiment: str) -> Path:
+    report_progress(2, "Preparing the reconstruction workspace")
     root = workspace()
+    report_progress(6, "Checking the selected images")
     subject, baseline = stage_dataset(root, dataset)
     if experiment == "E10" and subject != "light_shirt":
         raise ValueError("E10 is intentionally light-shirt only")
     if subject not in ("light_shirt", "black_shirt_crutches") and experiment not in ("E1", "E2"):
         raise ValueError("New datasets support E1/E2 automatically; E3-E10 need a subject recipe profile")
     if experiment == "E1":
+        report_progress(12, "E1 · extracting, matching, and reconstructing")
         ensure_e1(root, subject, baseline)
     elif experiment == "E2":
+        report_progress(12, "Preparing the E1 baseline")
+        ensure_e1(root, subject, baseline)
+        report_progress(72, "E2 · filtering the subject rectangle")
         ensure_e2(root, subject, baseline)
     elif experiment in ("E3",):
+        report_progress(12, "Preparing E1 and E2 prerequisites")
+        ensure_e2(root, subject, baseline)
+        report_progress(45, "E3 · higher-detail feature matching and triangulation")
         ensure_e3(root, subject, baseline)
     elif experiment in ("E4", "E5"):
+        report_progress(12, "Preparing the E3 refined reconstruction")
+        ensure_e3(root, subject, baseline)
+        report_progress(62, f"{experiment} · generating masks and filtering points")
         ensure_e4_e5(root, subject, baseline)
     elif experiment in ("E6", "E7"):
+        report_progress(12, "Preparing the E3 features and cameras")
         ensure_e3(root, subject, baseline)
+        report_progress(48, "E6 · matching without guided matching")
         if not (root / f"reconstructions/experiments/E6_guided_off/{subject}_quality/reconstruction_report.json").is_file():
             run([sys.executable, root / "work/matching-ablation/E6/prepare_and_run.py", subject], root)
         if experiment == "E7":
+            report_progress(72, "Preparing the person masks")
             ensure_e4_e5(root, subject, baseline)
+            report_progress(88, "E7 · applying the 90% mask cleanup")
             run_mask_cleanup(root, "E7", subject)
     elif experiment in ("E8", "E9"):
+        report_progress(12, "Preparing the E3 features and cameras")
         ensure_e3(root, subject, baseline)
+        report_progress(48, "E8 · vocabulary matching and triangulation")
         target = root / f"reconstructions/experiments/E8_vocab_guided/{subject}_quality"
         if not (target / "reconstruction_report.json").is_file():
             run([sys.executable, root / "work/matching-ablation/prepare_vocab_pairs.py", subject], root)
             run([sys.executable, root / "work/matching-ablation/prepare_e8.py", subject], root)
             run([sys.executable, root / "work/matching-ablation/run_e8.py", subject], root)
         if experiment == "E9":
+            report_progress(72, "Preparing the person masks")
             ensure_e4_e5(root, subject, baseline)
+            report_progress(88, "E9 · applying the 90% mask cleanup")
             run_mask_cleanup(root, "E9", subject)
     elif experiment == "E10":
+        report_progress(12, "Preparing the E3 reconstruction and masks")
         ensure_e4_e5(root, subject, baseline)
+        report_progress(52, "Preparing all exhaustive guided pairs")
         internal = root / "work/E10-exhaustive-guided/datasets/light_shirt_quality"
         if not (internal / "sfm_refine.json").is_file():
             run([sys.executable, root / "work/E10-exhaustive-guided/prepare_e10.py", subject], root)
+        report_progress(62, "E10 · exhaustive guided matching and reconstruction")
         run([sys.executable, root / "work/E10-exhaustive-guided/run_e10.py", "--subject", subject], root)
+    report_progress(97, "Validating the reconstructed point cloud")
+    result = expected_result(root, subject, experiment).resolve()
+    if not result.is_file():
+        raise RuntimeError(f"The recipe completed without its expected point cloud: {result}")
     receipt = {"dataset": dataset, "subject_recipe": subject, "experiment": experiment,
                "workspace": str(root), "source_images": str(images_for(dataset)),
+               "result_ply": str(result),
                "recipe_assets_sha256": hashlib.sha256(str(ASSETS).encode()).hexdigest()}
     receipt_path = root / "receipts" / f"{dataset}_{experiment}.json"
     receipt_path.parent.mkdir(parents=True, exist_ok=True)
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
+    report_progress(100, "Reconstruction complete")
     return receipt_path
 
 

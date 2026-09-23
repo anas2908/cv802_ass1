@@ -66,7 +66,8 @@ function refreshDetails() {
   } else if (experiment.id === "E10") {
     availabilityBox.textContent = "E10 is light-shirt only; no black-shirt E10 was run.";
   } else {
-    availabilityBox.textContent = "Preserved result is ready to inspect.";
+    availabilityBox.textContent = catalog.fresh_result ?
+      "Recomputed result is ready to inspect." : "Preserved result is ready to inspect.";
   }
   loadButton.disabled = !(result.available && result.on_disk);
 }
@@ -445,7 +446,8 @@ function selectionChanged() {
   fitButton.disabled = true;
   draw();
   refreshDetails();
-  setStatus("Selection changed. Load its preserved result to inspect it.");
+  setStatus(catalog.fresh_result ? "Load the recomputed result to inspect it." :
+    "Selection changed. Load its preserved result to inspect it.");
 }
 
 canvas.addEventListener("pointerdown", (event) => {
@@ -512,7 +514,11 @@ async function initialize() {
     subjectFieldset.disabled = false;
     document.querySelector('input[name="subject"][value="light"]').checked = true;
     refreshDetails();
-    setStatus("Choose an experiment and subject, then load its preserved result.");
+    setStatus(catalog.fresh_result ? "The recomputed result is ready to load." :
+      "Choose an experiment and subject, then load its preserved result.");
+    if (new URLSearchParams(window.location.search).get("autoload") === "1") {
+      await loadCloud();
+    }
   } catch (error) {
     setStatus(`Could not read catalog: ${error.message}`, true);
   }
