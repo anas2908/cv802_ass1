@@ -108,9 +108,10 @@ printed URL. Keep both terminals open. In the UI, choose the dataset and either:
 
 - **SfM** — estimates cameras and a raw sparse colored cloud, then creates a
   separate quality-cleaned display cloud without changing the source model;
-- **MVS** — automatically builds or reuses the required sparse SfM camera
-  calibration, then runs COLMAP CUDA image undistortion, PatchMatch Stereo and
-  depth-map fusion; or
+- **MVS** — reproduces the reviewed saved-run recipe: light shirt uses the E10
+  quality model and person masks at 1600 px, while dark shirt uses its E3 model
+  at 1024 px; it then runs COLMAP CUDA image undistortion, PatchMatch Stereo
+  and depth-map fusion; or
 - **VGGSfM** — independently reconstructs from the raw photographs using the
   pinned official model.
 
@@ -136,6 +137,14 @@ first run and reuses them from that Lustre folder afterward. Both methods are
 restartable: if the three-hour allocation ends, rerun the same launcher and
 select the same dataset and method. Press `Control-C` in the CIAI job terminal
 when finished to release the GPU immediately.
+
+For the two included datasets, the MVS UI intentionally uses the calibrated
+inputs from the completed assignment rather than silently replacing them with
+a new generic SfM run. The launcher automatically recognizes the original
+sibling data root `/l/users/$USER/cv_802_ass1`. If those reviewed inputs are
+stored elsewhere, set `CV802_REFERENCE_DATA_ROOT` to that absolute assignment
+data root before starting the launcher. VGGSfM is independent: it uses only the
+raw photographs and its pretrained weights, never E3 or E10 cameras.
 
 ## Already cloned the repository?
 

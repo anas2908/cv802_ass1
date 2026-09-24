@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -85,6 +86,102 @@ class CIAIPipelineTests(unittest.TestCase):
         self.assertEqual(payload["experiment"], "ciai-scene-mvs1600-v1")
         self.assertEqual(payload["data_root"], "${CV802_DATA_ROOT}/mvs")
         self.assertTrue(path.is_relative_to(data))
+
+    def test_reviewed_light_and_dark_mvs_recipes_are_not_interchanged(self) -> None:
+        self.make_dataset()
+        source_template = self.old_pipeline_root / "mvs" / "configs" / "ciai_template.json"
+        template = self.root / "code" / "mvs" / "configs"
+        template.mkdir(parents=True)
+        (template / "ciai_template.json").write_bytes(source_template.read_bytes())
+        data = self.root / "data"
+
+        light_recipe = ciai_pipeline.MVS_REFERENCE_RECIPES["light_shirt"]
+        light = json.loads(
+            ciai_pipeline._write_mvs_config(
+                data, str(light_recipe["experiment"]), light_recipe
+            ).read_text()
+        )
+        self.assertEqual(light["experiment"], "light_e10_colmap_mvs_1600")
+        self.assertEqual(light["max_image_size"], 1600)
+        self.assertEqual(light["masking"]["mode"], "black_background")
+        self.assertEqual(light["patch_match"]["num_iterations"], 5)
+
+        dark_recipe = ciai_pipeline.MVS_REFERENCE_RECIPES["dark_shirt"]
+        dark = json.loads(
+            ciai_pipeline._write_mvs_config(
+                data, str(dark_recipe["experiment"]), dark_recipe
+            ).read_text()
+        )
+        self.assertEqual(dark["experiment"], "dark_e3_colmap_mvs_1024_raw_v1")
+        self.assertEqual(dark["max_image_size"], 1024)
+        self.assertEqual(dark["masking"]["mode"], "none")
+        self.assertEqual(dark["patch_match"]["num_iterations"], 3)
+
+    def test_reference_mvs_inputs_honors_explicit_data_root(self) -> None:
+        reference = self.root / "reviewed"
+        inputs = (
+            reference
+            / "mvs"
+            / "experiments"
+            / "light_e10_colmap_mvs_1600"
+            / "inputs"
+        )
+        (inputs / "images").mkdir(parents=True)
+        (inputs / "masks").mkdir()
+        (inputs / "mask_manifest.json").write_text("{}")
+        sparse = inputs / "sparse"
+        sparse.mkdir()
+        for name in ("cameras.bin", "images.bin", "points3D.bin"):
+            (sparse / name).write_bytes(b"model")
+        old = os.environ.get("CV802_REFERENCE_DATA_ROOT")
+        os.environ["CV802_REFERENCE_DATA_ROOT"] = str(reference)
+        try:
+            found = ciai_pipeline._reference_mvs_inputs(
+                "light_shirt", self.root / "new-data"
+            )
+        finally:
+            if old is None:
+                os.environ.pop("CV802_REFERENCE_DATA_ROOT", None)
+            else:
+                os.environ["CV802_REFERENCE_DATA_ROOT"] = old
+        self.assertEqual(found, inputs)
+
+    def test_reference_calibration_is_verified_and_imported_under_active_root(self) -> None:
+        self.make_dataset("light_shirt")
+        reference = self.root / "legacy" / "mvs" / "experiments" / "light_e10_colmap_mvs_1600"
+        inputs = reference / "inputs"
+        sparse = inputs / "sparse"
+        masks = inputs / "masks" / "camera"
+        sparse.mkdir(parents=True)
+        masks.mkdir(parents=True)
+        for name in ("cameras.bin", "images.bin", "points3D.bin"):
+            (sparse / name).write_bytes(name.encode())
+        (masks / "0000.png").write_bytes(b"mask0")
+        (masks / "0001.png").write_bytes(b"mask1")
+        (inputs / "mask_manifest.json").write_text("{}")
+        records = []
+        for index, payload in enumerate((b"first", b"second")):
+            records.append(
+                {
+                    "role": "registered_image",
+                    "destination_relative": f"inputs/images/camera/{index:04d}.jpg",
+                    "size_bytes": len(payload),
+                    "sha256": hashlib.sha256(payload).hexdigest(),
+                }
+            )
+        manifests = reference / "manifests"
+        manifests.mkdir()
+        (manifests / "input_provenance.json").write_text(json.dumps({"files": records}))
+
+        active = self.root / "active"
+        images, model, imported_masks, manifest = ciai_pipeline._prepare_reference_mvs_sources(
+            "light_shirt", inputs, active, lambda _message: None
+        )
+        self.assertTrue(images.is_relative_to(active))
+        self.assertTrue(model.is_relative_to(active))
+        self.assertEqual((model / "cameras.bin").read_bytes(), b"cameras.bin")
+        self.assertEqual((imported_masks / "camera" / "0001.png").read_bytes(), b"mask1")
+        self.assertEqual(manifest.read_text(), "{}")
 
     def test_ply_point_count_and_result_discovery(self) -> None:
         self.make_dataset()

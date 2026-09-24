@@ -5,7 +5,8 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 CODE_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 PROJECT_DATA_ROOT="${CV802_DATA_ROOT:-/l/users/anas.khan/cv_802_ass1}"
 DATA_ROOT="${PROJECT_DATA_ROOT}/mvs"
-ENV_PREFIX=${DATA_ROOT}/envs/mvs-engine
+ENV_PREFIX=${DATA_ROOT}/envs/mvs-engine-conda
+CONDA_EXE=${CV802_CONDA_EXE:-/apps/local/anaconda3/bin/conda}
 
 if [[ "${PROJECT_DATA_ROOT}" != /* ]]; then
   echo "ERROR: CV802_DATA_ROOT must be an absolute path: ${PROJECT_DATA_ROOT}" >&2
@@ -42,16 +43,30 @@ export CONDA_PKGS_DIRS=${DATA_ROOT}/cache/conda-pkgs
 export PIP_CACHE_DIR=${DATA_ROOT}/cache/pip
 export TMPDIR=${DATA_ROOT}/runtime/tmp
 
+if [[ ! -x "${CONDA_EXE}" ]]; then
+  echo "ERROR: CIAI Conda executable is unavailable: ${CONDA_EXE}" >&2
+  exit 2
+fi
+
 if [[ ! -x "${ENV_PREFIX}/bin/python" ]]; then
-  if ! command -v python3.12 >/dev/null 2>&1; then
-    echo "ERROR: python3.12 is unavailable on this compute node" >&2
+  # Call the cluster Conda executable directly.  Sourcing the legacy
+  # /apps/local/conda_init.sh hook can terminate a strict shell before Conda
+  # prints an error.  A Conda prefix also keeps the resolved Python executable
+  # physically below the method data root, as required by the path policy.
+  if ! "${CONDA_EXE}" create --yes --prefix "${ENV_PREFIX}" python=3.12 pip; then
+    echo "ERROR: failed to create the MVS Conda environment at ${ENV_PREFIX}" >&2
     exit 2
   fi
-  # CIAI's legacy base Conda initializer can exit silently under strict shell
-  # mode. A standard venv is sufficient because all MVS dependencies are
-  # distributed as pinned binary wheels, including pycolmap-cuda12.
-  python3.12 -m venv "${ENV_PREFIX}"
 fi
+
+RESOLVED_PYTHON="$(readlink -f "${ENV_PREFIX}/bin/python")"
+case "${RESOLVED_PYTHON}" in
+  "${ENV_PREFIX}/"*) ;;
+  *)
+    echo "ERROR: MVS Python resolves outside its data-root environment: ${RESOLVED_PYTHON}" >&2
+    exit 2
+    ;;
+esac
 
 "${ENV_PREFIX}/bin/python" -m pip install --upgrade "pip==25.2" "setuptools==80.9.0" "wheel==0.45.1"
 "${ENV_PREFIX}/bin/python" -m pip install \

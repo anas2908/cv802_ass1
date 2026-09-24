@@ -92,11 +92,9 @@ echo "Starting pinned VGGSfM install at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "Run: ${INSTALL_RUN_ID}; Slurm job: ${SLURM_JOB_ID:-none}; node: $(hostname)"
 nvidia-smi -L
 
-if [[ -f /apps/local/conda_init.sh ]]; then
-  # shellcheck source=/dev/null
-  source /apps/local/conda_init.sh
-elif ! command -v conda >/dev/null 2>&1; then
-  echo "ERROR: conda is unavailable; install Miniconda/Anaconda or use the cluster initializer." >&2
+CONDA_EXE=${CV802_CONDA_EXE:-/apps/local/anaconda3/bin/conda}
+if [[ ! -x "${CONDA_EXE}" ]]; then
+  echo "ERROR: CIAI Conda executable is unavailable: ${CONDA_EXE}" >&2
   exit 2
 fi
 
@@ -150,7 +148,13 @@ else
 fi
 
 if [[ ! -x "${ENV_PREFIX}/bin/python" ]]; then
-  conda create --yes --prefix "${ENV_PREFIX}" python=3.10
+  # Invoke Conda directly.  The cluster's legacy conda_init.sh hook can return
+  # non-zero under `set -e` before it exposes the conda function, which caused
+  # the former installer to stop immediately after printing the GPU list.
+  if ! "${CONDA_EXE}" create --yes --prefix "${ENV_PREFIX}" python=3.10 pip; then
+    echo "ERROR: failed to create the VGGSfM Conda environment at ${ENV_PREFIX}" >&2
+    exit 2
+  fi
 fi
 
 ENV_PYTHON="${ENV_PREFIX}/bin/python"

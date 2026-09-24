@@ -40,6 +40,15 @@ def ply_point_count(path: Path) -> int:
 def discover_results(data_root: Path) -> dict[str, dict[str, object]]:
     results: dict[str, dict[str, object]] = {}
     for dataset in available_datasets():
+        if dataset == "light_shirt":
+            mvs_path = data_root / "mvs" / "experiments" / "light_e10_colmap_mvs_1600" / "outputs" / "fused.ply"
+            mvs_description = "COLMAP CUDA MVS from the reviewed light-shirt E10 model"
+        elif dataset == "dark_shirt":
+            mvs_path = data_root / "mvs" / "experiments" / "dark_e3_colmap_mvs_1024_raw_v1" / "outputs" / "fused.ply"
+            mvs_description = "COLMAP CUDA MVS from the reviewed dark-shirt E3 model"
+        else:
+            mvs_path = data_root / "mvs" / "experiments" / f"ciai-{dataset}-mvs1600-v1" / "outputs" / "fused.ply"
+            mvs_description = "COLMAP CUDA PatchMatch Stereo and depth-map fusion"
         candidates = (
             (
                 "SfM raw",
@@ -55,8 +64,8 @@ def discover_results(data_root: Path) -> dict[str, dict[str, object]]:
             ),
             (
                 "MVS",
-                data_root / "mvs" / "experiments" / f"ciai-{dataset}-mvs1600-v1" / "outputs" / "fused.ply",
-                "COLMAP CUDA PatchMatch Stereo and depth-map fusion",
+                mvs_path,
+                mvs_description,
                 "dense_reconstruction",
             ),
             (
@@ -225,7 +234,7 @@ progress{{width:100%;height:22px;margin:12px 0}} pre{{height:310px;overflow:auto
 <p class="muted">Choose one included dataset and one method. All environments, weights, caches and results stay in your own Lustre folder.</p>
 <div class="grid"><section class="card">
 <label for="dataset">Dataset</label><select id="dataset">{options}</select>
-<label for="method">Method</label><select id="method"><option value="sfm">SfM — raw + generic quality cleanup</option><option value="mvs">MVS — SfM + COLMAP PatchMatch</option><option value="vggsfm">VGGSfM — learned reconstruction</option></select>
+<label for="method">Method</label><select id="method"><option value="sfm">SfM — raw + generic quality cleanup</option><option value="mvs">MVS — reviewed E10/E3 cameras + COLMAP PatchMatch</option><option value="vggsfm">VGGSfM — independent learned reconstruction</option></select>
 <button id="start">Start or resume reconstruction</button>
 <progress id="progress" max="100" value="0"></progress><div id="stage">Ready</div><p id="error" class="error"></p>
 <h3>Completed results</h3><ul id="results"><li class="muted">No CIAI reconstruction completed yet.</li></ul>

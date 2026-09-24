@@ -26,6 +26,64 @@ SAFE_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}\Z")
 Progress = Callable[[int, str], None]
 Output = Callable[[str], None]
 
+# These are the two reviewed recipes recorded by the completed assignment
+# runs.  Light MVS starts from E10 and uses its foreground masks.  Dark MVS
+# starts from E3; VGGSfM remains independent and never consumes either model.
+MVS_REFERENCE_RECIPES: dict[str, dict[str, object]] = {
+    "light_shirt": {
+        "experiment": "light_e10_colmap_mvs_1600",
+        "reference_experiment": "light_e10_colmap_mvs_1600",
+        "sfm_label": "E10 quality exhaustive guided consensus90",
+        "use_masks": True,
+        "max_image_size": 1600,
+        "num_threads": 16,
+        "patch_match": {
+            "cache_size_gb": 16,
+            "filter_min_num_consistent": 2,
+            "geom_consistency": True,
+            "num_iterations": 5,
+            "num_samples": 15,
+            "source_images_per_view": 10,
+            "window_radius": 5,
+            "window_step": 1,
+        },
+        "fusion": {
+            "cache_size_gb": 16,
+            "check_num_images": 50,
+            "max_depth_error": 0.01,
+            "max_normal_error": 10.0,
+            "max_reproj_error": 2.0,
+            "min_num_pixels": 5,
+        },
+    },
+    "dark_shirt": {
+        "experiment": "dark_e3_colmap_mvs_1024_raw_v1",
+        "reference_experiment": "dark_e3_colmap_mvs_1024_raw_v1",
+        "sfm_label": "E3 selective-pair quality model",
+        "use_masks": False,
+        "max_image_size": 1024,
+        "num_threads": 4,
+        "patch_match": {
+            "cache_size_gb": 8,
+            "filter_min_num_consistent": 2,
+            "geom_consistency": True,
+            "num_iterations": 3,
+            "num_samples": 15,
+            "source_images_per_view": 5,
+            "window_radius": 5,
+            "window_step": 1,
+        },
+        "fusion": {
+            "cache_size_gb": 8,
+            "check_num_images": 50,
+            "max_depth_error": 0.01,
+            "max_normal_error": 10.0,
+            "max_reproj_error": 2.0,
+            "min_num_pixels": 5,
+        },
+    },
+}
+
 
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -258,9 +316,26 @@ def run_command(
         raise RuntimeError(f"Command failed with status {status}: {' '.join(argv)}")
 
 
-def _write_mvs_config(data_root: Path, experiment: str) -> Path:
+def _write_mvs_config(
+    data_root: Path, experiment: str, recipe: dict[str, object] | None = None
+) -> Path:
     template = json.loads((CODE_ROOT / "mvs" / "configs" / "ciai_template.json").read_text())
     template["experiment"] = experiment
+    if recipe is not None:
+        template["max_image_size"] = int(recipe["max_image_size"])
+        template["execution"]["num_threads"] = int(recipe["num_threads"])
+        template["patch_match"] = dict(recipe["patch_match"])
+        template["fusion"] = dict(recipe["fusion"])
+        if bool(recipe["use_masks"]):
+            template["masking"] = {
+                "mode": "black_background",
+                "masks": "inputs/masks",
+                "manifest": "inputs/mask_manifest.json",
+                "threshold": 128,
+                "dilation_pixels": 3,
+            }
+        else:
+            template["masking"] = {"mode": "none"}
     config_dir = data_root / "mvs" / "configs"
     config_dir.mkdir(parents=True, exist_ok=True)
     destination = config_dir / f"{experiment}.json"
@@ -269,6 +344,158 @@ def _write_mvs_config(data_root: Path, experiment: str) -> Path:
         raise RuntimeError(f"Existing MVS recipe differs; preserved at {destination}")
     destination.write_text(encoded, encoding="utf-8")
     return destination
+
+
+def _reference_mvs_inputs(dataset: str, data_root: Path) -> Path | None:
+    """Locate the verified inputs from the successful assignment MVS run.
+
+    Existing staged inputs in the new data root win.  A prior assignment data
+    root can be supplied explicitly with CV802_REFERENCE_DATA_ROOT.  For the
+    original CIAI layout we also recognize the sibling ``cv_802_ass1`` root.
+    No home-directory path or user name is hard-coded.
+    """
+
+    recipe = MVS_REFERENCE_RECIPES[dataset]
+    experiment = str(recipe["experiment"])
+    current = data_root / "mvs" / "experiments" / experiment
+    if (current / "manifests" / "input_provenance.json").is_file():
+        return current / "inputs"
+
+    roots: list[Path] = []
+    configured = os.environ.get("CV802_REFERENCE_DATA_ROOT", "").strip()
+    if configured:
+        candidate = Path(configured).expanduser()
+        if not candidate.is_absolute():
+            raise RuntimeError("CV802_REFERENCE_DATA_ROOT must be an absolute path")
+        roots.append(candidate.resolve())
+    roots.append(data_root.parent / "cv_802_ass1")
+
+    for root in roots:
+        inputs = (
+            root
+            / "mvs"
+            / "experiments"
+            / str(recipe["reference_experiment"])
+            / "inputs"
+        )
+        if (
+            (inputs / "images").is_dir()
+            and (inputs / "sparse" / "cameras.bin").is_file()
+            and (inputs / "sparse" / "images.bin").is_file()
+            and (inputs / "sparse" / "points3D.bin").is_file()
+        ):
+            if bool(recipe["use_masks"]) and not (
+                (inputs / "masks").is_dir()
+                and (inputs / "mask_manifest.json").is_file()
+            ):
+                continue
+            return inputs
+    return None
+
+
+def _prepare_reference_mvs_sources(
+    dataset: str,
+    reference: Path,
+    data_root: Path,
+    output: Output,
+) -> tuple[Path, Path, Path | None, Path | None]:
+    """Import reviewed calibration/masks and prove repository photos match.
+
+    The MVS engine deliberately accepts staging sources only from the active
+    data root.  Legacy assignment results may be in a sibling data root, so we
+    copy just the model and required masks into a checksum-verified reference
+    area.  Photographs are staged from the repository and checked against the
+    successful run's provenance instead of being duplicated from the legacy
+    experiment.
+    """
+
+    recipe = MVS_REFERENCE_RECIPES[dataset]
+    images = stage_images(
+        dataset, data_root / "sfm" / "inputs" / dataset / "images", output
+    )
+    provenance_path = reference.parent / "manifests" / "input_provenance.json"
+    if not provenance_path.is_file():
+        raise RuntimeError(f"Reviewed MVS input provenance is missing: {provenance_path}")
+    provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+    image_records = [
+        record for record in provenance.get("files", [])
+        if isinstance(record, dict) and record.get("role") == "registered_image"
+    ]
+    for record in image_records:
+        relative = Path(str(record["destination_relative"])).relative_to("inputs/images")
+        image = images / relative
+        if (
+            not image.is_file()
+            or image.stat().st_size != int(record["size_bytes"])
+            or _sha256(image) != record["sha256"]
+        ):
+            raise RuntimeError(
+                f"Repository photograph differs from the reviewed MVS input: {relative}"
+            )
+    if len(image_records) < 2:
+        raise RuntimeError("Reviewed MVS provenance contains no usable image inventory")
+    output(f"Verified {len(image_records)} photographs against the saved MVS provenance")
+
+    try:
+        reference.resolve(strict=True).relative_to(data_root.resolve(strict=True))
+        inside_active_root = True
+    except ValueError:
+        inside_active_root = False
+    if inside_active_root:
+        masks = reference / "masks" if bool(recipe["use_masks"]) else None
+        manifest = reference / "mask_manifest.json" if masks else None
+        return images, reference / "sparse", masks, manifest
+
+    destination = data_root / "mvs" / "reference_inputs" / dataset
+    wanted: list[tuple[Path, Path]] = [
+        (source, Path("sparse") / source.name)
+        for source in sorted((reference / "sparse").iterdir())
+        if source.is_file()
+    ]
+    if bool(recipe["use_masks"]):
+        wanted.extend(
+            (source, Path("masks") / source.relative_to(reference / "masks"))
+            for source in sorted((reference / "masks").rglob("*"))
+            if source.is_file()
+        )
+        wanted.append((reference / "mask_manifest.json", Path("mask_manifest.json")))
+
+    def verify_import(root: Path) -> None:
+        actual = sorted(path.relative_to(root) for path in root.rglob("*") if path.is_file())
+        expected = sorted(relative for _source, relative in wanted)
+        if actual != expected:
+            raise RuntimeError(f"Reviewed MVS import inventory differs at {root}")
+        for source, relative in wanted:
+            copied = root / relative
+            if copied.stat().st_size != source.stat().st_size or _sha256(copied) != _sha256(source):
+                raise RuntimeError(f"Reviewed MVS import checksum mismatch: {copied}")
+
+    if destination.exists():
+        verify_import(destination)
+        output(f"Reused checksum-verified {recipe['sfm_label']} calibration")
+    else:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix=f".{dataset}-reference-", dir=destination.parent) as temporary:
+            staged = Path(temporary) / "reference"
+            staged.mkdir()
+            for source, relative in wanted:
+                target = staged / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                before = source.stat()
+                digest = _sha256(source)
+                shutil.copy2(source, target)
+                after = source.stat()
+                if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+                    raise RuntimeError(f"Reviewed MVS source changed during import: {source}")
+                if target.stat().st_size != before.st_size or _sha256(target) != digest:
+                    raise RuntimeError(f"Reviewed MVS import checksum mismatch: {target}")
+            verify_import(staged)
+            staged.rename(destination)
+        output(f"Imported and verified {recipe['sfm_label']} calibration")
+
+    masks = destination / "masks" if bool(recipe["use_masks"]) else None
+    manifest = destination / "mask_manifest.json" if masks else None
+    return images, destination / "sparse", masks, manifest
 
 
 def ensure_sparse_sfm(
@@ -353,33 +580,59 @@ def run_sfm(dataset: str, data_root: Path, progress: Progress, output: Output) -
 
 def run_mvs(dataset: str, data_root: Path, progress: Progress, output: Output) -> Path:
     env = _runtime_environment(data_root)
-    images, model, _raw_ply = ensure_sparse_sfm(dataset, data_root, progress, output)
+    recipe = MVS_REFERENCE_RECIPES.get(dataset)
+    if recipe is not None:
+        reference = _reference_mvs_inputs(dataset, data_root)
+        if reference is None:
+            raise RuntimeError(
+                f"The reviewed {recipe['sfm_label']} MVS inputs are unavailable. "
+                "Set CV802_REFERENCE_DATA_ROOT to the assignment data root that "
+                f"contains mvs/experiments/{recipe['reference_experiment']}/inputs."
+            )
+        images, model, masks, mask_manifest = _prepare_reference_mvs_sources(
+            dataset, reference, data_root, output
+        )
+        mvs_experiment = str(recipe["experiment"])
+        output(f"MVS calibration: {recipe['sfm_label']} ({reference})")
+    else:
+        images, model, _raw_ply = ensure_sparse_sfm(dataset, data_root, progress, output)
+        masks = mask_manifest = None
+        mvs_experiment = f"ciai-{dataset}-mvs1600-v1"
 
     (data_root / "mvs").mkdir(parents=True, exist_ok=True)
     progress(42, "Installing or checking the CUDA MVS environment")
     run_command(["bash", CODE_ROOT / "mvs" / "scripts" / "bootstrap_python_environment.sh"], cwd=CODE_ROOT, env=env, output=output)
-    mvs_python = data_root / "mvs" / "envs" / "mvs-engine" / "bin" / "python"
-    mvs_experiment = f"ciai-{dataset}-mvs1600-v1"
+    mvs_python = data_root / "mvs" / "envs" / "mvs-engine-conda" / "bin" / "python"
 
-    progress(50, "Copying the registered images and calibrated cameras into MVS")
+    progress(50, "Copying the reviewed registered images and calibrated cameras into MVS")
+    stage_command: list[object] = [
+        mvs_python,
+        CODE_ROOT / "mvs" / "run_mvs.py",
+        "stage-inputs",
+        "--experiment",
+        mvs_experiment,
+        "--images-source",
+        images,
+        "--model-source",
+        model,
+    ]
+    if recipe is not None and bool(recipe["use_masks"]):
+        stage_command.extend(
+            [
+                "--masks-source",
+                masks,
+                "--mask-manifest-source",
+                mask_manifest,
+            ]
+        )
+    stage_command.append("--resume")
     run_command(
-        [
-            mvs_python,
-            CODE_ROOT / "mvs" / "run_mvs.py",
-            "stage-inputs",
-            "--experiment",
-            mvs_experiment,
-            "--images-source",
-            images,
-            "--model-source",
-            model,
-            "--resume",
-        ],
+        stage_command,
         cwd=CODE_ROOT / "mvs",
         env=env,
         output=output,
     )
-    config = _write_mvs_config(data_root, mvs_experiment)
+    config = _write_mvs_config(data_root, mvs_experiment, recipe)
 
     progress(56, "Validating the MVS inputs and CUDA runtime")
     run_command(

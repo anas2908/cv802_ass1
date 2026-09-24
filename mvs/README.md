@@ -1,5 +1,11 @@
 # MVS
 
+The CIAI reconstruction interface follows the completed assignment recipes:
+light shirt uses the reviewed E10 sparse model, foreground masks, and a
+1600-pixel PatchMatch run; dark shirt uses the reviewed E3 sparse model and a
+1024-pixel PatchMatch run. VGGSfM is a separate reconstruction and does not
+provide cameras to this pipeline.
+
 `run_mvs.py` turns a calibrated COLMAP sparse model into a dense colored point
 cloud using image undistortion, PatchMatch Stereo, consistency filtering, and
 depth-map fusion.
