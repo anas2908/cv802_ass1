@@ -60,7 +60,9 @@ mkdir -p \
 
 export CONDA_PKGS_DIRS="${METHOD_ROOT}/cache/conda"
 export CONDA_ENVS_PATH="${METHOD_ROOT}/envs"
-export CONDARC=/dev/null
+# CIAI's Conda 4.11 exits silently with status 1 if CONDARC=/dev/null.
+# Package and environment locations are controlled by the two variables above.
+unset CONDARC
 export PIP_CACHE_DIR="${METHOD_ROOT}/cache/pip"
 export PIP_CONFIG_FILE=/dev/null
 export TORCH_HOME="${METHOD_ROOT}/cache/torch"

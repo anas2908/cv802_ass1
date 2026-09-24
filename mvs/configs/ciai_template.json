@@ -11,7 +11,7 @@
   },
   "colmap": {
     "backend": "pycolmap",
-    "python": "envs/mvs-engine-conda/bin/python",
+    "python": "envs/mvs-engine/bin/python",
     "binary": "colmap",
     "gpu_index": "0"
   },

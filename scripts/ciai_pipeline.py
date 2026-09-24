@@ -602,7 +602,7 @@ def run_mvs(dataset: str, data_root: Path, progress: Progress, output: Output) -
     (data_root / "mvs").mkdir(parents=True, exist_ok=True)
     progress(42, "Installing or checking the CUDA MVS environment")
     run_command(["bash", CODE_ROOT / "mvs" / "scripts" / "bootstrap_python_environment.sh"], cwd=CODE_ROOT, env=env, output=output)
-    mvs_python = data_root / "mvs" / "envs" / "mvs-engine-conda" / "bin" / "python"
+    mvs_python = data_root / "mvs" / "envs" / "mvs-engine" / "bin" / "python"
 
     progress(50, "Copying the reviewed registered images and calibrated cameras into MVS")
     stage_command: list[object] = [

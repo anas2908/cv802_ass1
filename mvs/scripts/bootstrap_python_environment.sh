@@ -5,8 +5,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 CODE_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 PROJECT_DATA_ROOT="${CV802_DATA_ROOT:-/l/users/anas.khan/cv_802_ass1}"
 DATA_ROOT="${PROJECT_DATA_ROOT}/mvs"
-ENV_PREFIX=${DATA_ROOT}/envs/mvs-engine-conda
-CONDA_EXE=${CV802_CONDA_EXE:-/apps/local/anaconda3/bin/conda}
+ENV_PREFIX=${DATA_ROOT}/envs/mvs-engine
 
 if [[ "${PROJECT_DATA_ROOT}" != /* ]]; then
   echo "ERROR: CV802_DATA_ROOT must be an absolute path: ${PROJECT_DATA_ROOT}" >&2
@@ -37,26 +36,25 @@ mkdir -p \
   "${DATA_ROOT}/cache/pip" \
   "${DATA_ROOT}/runtime/tmp"
 
-export CONDARC=/dev/null
-export CONDA_ENVS_PATH=${DATA_ROOT}/envs
-export CONDA_PKGS_DIRS=${DATA_ROOT}/cache/conda-pkgs
 export PIP_CACHE_DIR=${DATA_ROOT}/cache/pip
 export TMPDIR=${DATA_ROOT}/runtime/tmp
 
-if [[ ! -x "${CONDA_EXE}" ]]; then
-  echo "ERROR: CIAI Conda executable is unavailable: ${CONDA_EXE}" >&2
-  exit 2
+if [[ ! -x "${ENV_PREFIX}/bin/python" ]]; then
+  python3.12 -m venv --copies "${ENV_PREFIX}"
 fi
 
-if [[ ! -x "${ENV_PREFIX}/bin/python" ]]; then
-  # Call the cluster Conda executable directly.  Sourcing the legacy
-  # /apps/local/conda_init.sh hook can terminate a strict shell before Conda
-  # prints an error.  A Conda prefix also keeps the resolved Python executable
-  # physically below the method data root, as required by the path policy.
-  if ! "${CONDA_EXE}" create --yes --prefix "${ENV_PREFIX}" python=3.12 pip; then
-    echo "ERROR: failed to create the MVS Conda environment at ${ENV_PREFIX}" >&2
+# Python's default venv creates a symlink to /usr/bin/python3.12.  MVS
+# correctly rejects a resolved interpreter outside its data root.  Repair an
+# already-installed environment in place, retaining its packages and scripts.
+if [[ -L "${ENV_PREFIX}/bin/python3.12" ]]; then
+  RESOLVED_TARGET="$(readlink -f "${ENV_PREFIX}/bin/python3.12")"
+  SYSTEM_PYTHON="$(readlink -f "$(command -v python3.12)")"
+  if [[ "${RESOLVED_TARGET}" != "${SYSTEM_PYTHON}" ]]; then
+    echo "ERROR: unexpected MVS Python symlink target: ${RESOLVED_TARGET}" >&2
     exit 2
   fi
+  unlink "${ENV_PREFIX}/bin/python3.12"
+  python3.12 -m venv --copies --upgrade "${ENV_PREFIX}"
 fi
 
 RESOLVED_PYTHON="$(readlink -f "${ENV_PREFIX}/bin/python")"
