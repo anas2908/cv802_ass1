@@ -197,6 +197,12 @@ fi
   "pycolmap==3.10.0" "pyceres==2.3" "poselib==2.0.2"
 "${ENV_PYTHON}" -m pip install --no-deps --editable "${LIGHTGLUE_ROOT}"
 "${ENV_PYTHON}" -m pip install --editable "${OFFICIAL_ROOT}"
+# LightGlue is installed without dependency resolution so its unbounded
+# OpenCV/NumPy requirements cannot replace the pinned headless OpenCV and
+# NumPy 1.26 stack.  Kornia is nevertheless required by both LightGlue and
+# VGGSfM's geometry code; use the versions from the validated CIAI run.
+"${ENV_PYTHON}" -m pip install --no-deps \
+  "kornia==0.8.2" "kornia_rs==0.1.14"
 
 # LightGlue declares unbounded NumPy/OpenCV dependencies.  Keep the official
 # VGGSfM NumPy 1.26 requirement and the headless OpenCV build authoritative;
@@ -206,7 +212,7 @@ fi
   "numpy==1.26.3" "opencv-python-headless==4.10.0.84"
 
 "${ENV_PYTHON}" -c \
-  "import cv2, json, numpy, torch; assert numpy.__version__ == '1.26.3'; assert torch.cuda.is_available(); print(json.dumps({'torch': torch.__version__, 'cuda': torch.version.cuda, 'gpu': torch.cuda.get_device_name(0), 'numpy': numpy.__version__, 'opencv': cv2.__version__}))"
+  "import cv2, json, kornia, numpy, torch; from lightglue import ALIKED, SIFT, SuperPoint; from vggsfm.runners.runner import VGGSfMRunner; assert numpy.__version__ == '1.26.3'; assert kornia.__version__ == '0.8.2'; assert torch.cuda.is_available(); print(json.dumps({'torch': torch.__version__, 'cuda': torch.version.cuda, 'gpu': torch.cuda.get_device_name(0), 'numpy': numpy.__version__, 'opencv': cv2.__version__, 'kornia': kornia.__version__}))"
 "${ENV_PYTHON}" "${CODE_ROOT}/scripts/write_install_receipt.py" \
   --output "${METHOD_ROOT}/install_receipt.json" \
   --official-root "${OFFICIAL_ROOT}" \
