@@ -111,8 +111,8 @@ def available_datasets() -> list[str]:
 def validate_request(dataset: str, method: str) -> None:
     if dataset not in available_datasets():
         raise ValueError(f"Unknown or empty dataset: {dataset}")
-    if method not in {"sfm", "mvs", "vggsfm"}:
-        raise ValueError("Method must be 'sfm', 'mvs' or 'vggsfm'")
+    if method not in {"sfm", "mvs", "vggsfm", "vggsfm_cleanup"}:
+        raise ValueError("Method must be 'sfm', 'mvs', 'vggsfm' or 'vggsfm_cleanup'")
 
 
 def validate_runtime(data_root: Path) -> dict[str, str]:
@@ -732,11 +732,36 @@ def run_vggsfm(dataset: str, data_root: Path, progress: Progress, output: Output
     return result
 
 
+def run_vggsfm_cleanup(dataset: str, data_root: Path, progress: Progress, output: Output) -> Path:
+    """Clean an existing VGGSfM cloud without rerunning learned inference."""
+    run_id = f"ciai-{dataset}-vggsfm-v1"
+    method_root = data_root / "vggsfm"
+    raw = method_root / "outputs" / run_id / "point_cloud.ply"
+    if not raw.is_file():
+        raise FileNotFoundError(f"No raw VGGSfM cloud at {raw}; run VGGSfM first")
+    cleaned = method_root / "outputs" / f"{run_id}-geometry-clean-v1" / "point_cloud.ply"
+    python = method_root / "envs" / "vggsfm" / "bin" / "python"
+    if not python.is_file():
+        raise FileNotFoundError(f"VGGSfM environment is missing: {python}")
+    progress(15, "Checking raw VGGSfM output")
+    progress(35, "Removing isolated spatial outliers (CPU; no inference rerun)")
+    run_command(
+        [python, CODE_ROOT / "vggsfm" / "scripts" / "clean_point_cloud.py",
+         "--source", raw, "--output", cleaned],
+        cwd=CODE_ROOT / "vggsfm", env=_runtime_environment(data_root), output=output,
+    )
+    progress(95, "Verifying the separate cleaned cloud")
+    if not cleaned.is_file() or cleaned.stat().st_size < 100:
+        raise RuntimeError(f"Cleanup did not produce a usable cloud at {cleaned}")
+    return cleaned
+
+
 def run_pipeline(dataset: str, method: str, data_root: Path, progress: Progress, output: Output) -> Path:
     validate_request(dataset, method)
     runtime = validate_runtime(data_root)
     output("Runtime: " + json.dumps(runtime, sort_keys=True))
-    runners = {"sfm": run_sfm, "mvs": run_mvs, "vggsfm": run_vggsfm}
+    runners = {"sfm": run_sfm, "mvs": run_mvs, "vggsfm": run_vggsfm,
+               "vggsfm_cleanup": run_vggsfm_cleanup}
     result = runners[method](dataset, data_root, progress, output)
     progress(100, f"Complete: {result.name}")
     return result.resolve(strict=True)
@@ -744,6 +769,6 @@ def run_pipeline(dataset: str, method: str, data_root: Path, progress: Progress,
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        raise SystemExit("usage: ciai_pipeline.py DATASET {mvs|vggsfm} /absolute/data/root")
+        raise SystemExit("usage: ciai_pipeline.py DATASET {sfm|mvs|vggsfm|vggsfm_cleanup} /absolute/data/root")
     result_path = run_pipeline(sys.argv[1], sys.argv[2], Path(sys.argv[3]), lambda p, s: print(f"[{p:3d}%] {s}", flush=True), lambda s: print(s, flush=True))
     print(result_path)

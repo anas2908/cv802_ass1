@@ -19,6 +19,12 @@ installs the pinned official repository and CUDA environment, downloads the
 official pretrained weights on first use, runs independent inference, and
 exports `point_cloud.ply`. It does not reuse classic SfM cameras or MVS output.
 
+After inference, select **VGGSfM cleanup** in the CIAI UI to create a separate
+CPU-filtered cloud. This does not rerun inference or alter the raw cloud.
+It is statistical 3D outlier removal, not the earlier mask-based person/crutch
+cleanup. The filter settings and raw/output checksums are saved beside the
+cleaned PLY in `cleanup_receipt.json`.
+
 Nothing is downloaded to the source checkout or home directory. The official
 source, environment, Torch/Hugging Face model caches, attempts, logs and output
 remain below `/l/users/$USER/cv802_ass1/vggsfm`. A later allocation reuses them.

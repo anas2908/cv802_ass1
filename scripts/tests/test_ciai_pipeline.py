@@ -193,6 +193,18 @@ class CIAIPipelineTests(unittest.TestCase):
         found = ciai_gpu_ui.discover_results(data)
         self.assertEqual(found["MVS-scene"]["point_count"], 3)
 
+    def test_vggsfm_cleanup_is_a_separate_result_and_ui_choice(self) -> None:
+        self.make_dataset()
+        data = self.root / "data"
+        raw = data / "vggsfm" / "outputs" / "ciai-scene-vggsfm-v1" / "point_cloud.ply"
+        cleaned = data / "vggsfm" / "outputs" / "ciai-scene-vggsfm-v1-geometry-clean-v1" / "point_cloud.ply"
+        write_ply(raw, 3)
+        write_ply(cleaned, 2)
+        found = ciai_gpu_ui.discover_results(data)
+        self.assertEqual(found["VGGSfM-scene"]["point_count"], 3)
+        self.assertEqual(found["VGGSfM-geometric-cleanup-scene"]["point_count"], 2)
+        self.assertIn('value="vggsfm_cleanup"', ciai_gpu_ui.main_page(["scene"]).decode())
+
     def test_generated_ui_keeps_javascript_newline_escape(self) -> None:
         page = ciai_gpu_ui.main_page(["scene"]).decode("utf-8")
         self.assertIn("s.logs.join('\\n')", page)

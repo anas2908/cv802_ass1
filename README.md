@@ -113,12 +113,20 @@ printed URL. Keep both terminals open. In the UI, choose the dataset and either:
   at 1024 px; it then runs COLMAP CUDA image undistortion, PatchMatch Stereo
   and depth-map fusion; or
 - **VGGSfM** — independently reconstructs from the raw photographs using the
-  pinned official model.
+  pinned official model; or
+- **VGGSfM cleanup** — after that raw run finishes, removes isolated 3D
+  outliers on the CPU without rerunning inference. The raw cloud stays intact,
+  and both versions appear as separate viewer links.
 
 The generic SfM cleanup rejects weak two-view points, points above a 3-pixel
 reprojection error and extreme coordinate outliers. It is intentionally labeled
 as geometric cleanup, not semantic person segmentation. The raw SfM result is
 also retained and viewable for comparison.
+
+VGGSfM cleanup is likewise geometric: it filters points with unusually large
+nearest-neighbour distances. It does **not** reproduce the historical
+person-mask/crutch review, and may remove thin structures or leave coherent
+background. Inspect raw and cleaned clouds before choosing one to present.
 
 The UI shows overall progress, detailed logs, and live GPU utilization and
 memory. When a run completes, click its result link to rotate, pan, zoom and
