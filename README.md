@@ -95,6 +95,18 @@ cd cv802_ass1-source
 bash scripts/run_ciai_gpu_ui.sh
 ```
 
+For a genuinely fresh test on the **same account**, set a new data root before
+the launcher; deleting and recloning source code does not clear prior results:
+
+```bash
+export CV802_DATA_ROOT="/l/users/$USER/cv802_ass1_fresh_test"
+export CV802_REFERENCE_DATA_ROOT="/l/users/$USER/cv_802_ass1"
+bash scripts/run_ciai_gpu_ui.sh
+```
+
+The fresh data root receives new models and outputs; the reference root is
+read only for the reviewed MVS inputs and the VGGSfM Mac masks/corridors.
+
 The launcher requests one A100 40 GB GPU, 16 CPU cores and 96 GB RAM from the
 CIAI debug queue for at most three hours. It may first wait in the Slurm queue.
 Once the allocation starts, the terminal prints exactly two things to use on
@@ -114,19 +126,29 @@ printed URL. Keep both terminals open. In the UI, choose the dataset and either:
   and depth-map fusion; or
 - **VGGSfM** — independently reconstructs from the raw photographs using the
   pinned official model; or
-- **VGGSfM cleanup** — after that raw run finishes, removes isolated 3D
-  outliers on the CPU without rerunning inference. The raw cloud stays intact,
-  and both versions appear as separate viewer links.
+- **VGGSfM Mac-mask cleanup** — after that raw run finishes, copy the reviewed
+  Apple/Mac person masks from the previous assignment data root, project the
+  current VGGSfM points into them using VGGSfM's own cameras, and create a
+  separate person-focused cloud. The dark-shirt recipe also protects points
+  supported by the reviewed 2D crutch corridors; or
+- **VGGSfM geometric cleanup** — a portable fallback that only removes
+  isolated 3D outliers and does not use segmentation.
 
 The generic SfM cleanup rejects weak two-view points, points above a 3-pixel
 reprojection error and extreme coordinate outliers. It is intentionally labeled
 as geometric cleanup, not semantic person segmentation. The raw SfM result is
 also retained and viewable for comparison.
 
-VGGSfM cleanup is likewise geometric: it filters points with unusually large
-nearest-neighbour distances. It does **not** reproduce the historical
-person-mask/crutch review, and may remove thin structures or leave coherent
-background. Inspect raw and cleaned clouds before choosing one to present.
+The VGGSfM Mac-mask option follows the historical cleanup rule: at least six
+usable image projections and 90% person-mask agreement; dark-shirt crutch
+points can also be retained by three separated reviewed corridor views. It
+does not reuse E1/E10 poses or 3D geometry. It requires the historical mask
+data at `/l/users/$USER/cv_802_ass1/vggsfm/inputs`, or another prior data root
+set with `CV802_REFERENCE_DATA_ROOT=/absolute/path/to/prior-data`. Only masks
+and 2D corridors are copied into the new VGGSfM data folder; the raw cloud is
+never changed. These masks are not bundled in GitHub, so a user without them
+can still use the geometric option, but cannot reproduce mask cleanup until
+the masks are supplied. Projection agreement is not an occlusion test.
 
 The UI shows overall progress, detailed logs, and live GPU utilization and
 memory. When a run completes, click its result link to rotate, pan, zoom and

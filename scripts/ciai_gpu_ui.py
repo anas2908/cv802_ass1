@@ -80,6 +80,12 @@ def discover_results(data_root: Path) -> dict[str, dict[str, object]]:
                 "CPU statistical outlier removal; no person mask or new inference",
                 "derived_cleanup",
             ),
+            (
+                "VGGSfM Mac-mask cleanup",
+                data_root / "vggsfm" / "outputs" / f"ciai-{dataset}-vggsfm-v1-mac-mask-clean-v1" / "point_cloud.ply",
+                "Historical Mac person masks projected with this VGGSfM run's own cameras; dark crutches protected by reviewed corridors",
+                "derived_cleanup",
+            ),
         )
         for method, path, description, stage_type in candidates:
             if not path.is_file():
@@ -158,7 +164,7 @@ class UIState:
         with self.lock:
             if self.running:
                 raise RuntimeError("A reconstruction is already running")
-            if dataset not in available_datasets() or method not in {"sfm", "mvs", "vggsfm", "vggsfm_cleanup"}:
+            if dataset not in available_datasets() or method not in {"sfm", "mvs", "vggsfm", "vggsfm_cleanup", "vggsfm_mask_cleanup"}:
                 raise ValueError("Invalid dataset or method")
             self.running = True
             self.dataset = dataset
@@ -240,7 +246,7 @@ progress{{width:100%;height:22px;margin:12px 0}} pre{{height:310px;overflow:auto
 <p class="muted">Choose one included dataset and one method. All environments, weights, caches and results stay in your own Lustre folder.</p>
 <div class="grid"><section class="card">
 <label for="dataset">Dataset</label><select id="dataset">{options}</select>
-<label for="method">Method</label><select id="method"><option value="sfm">SfM — raw + generic quality cleanup</option><option value="mvs">MVS — reviewed E10/E3 cameras + COLMAP PatchMatch</option><option value="vggsfm">VGGSfM — independent learned reconstruction</option><option value="vggsfm_cleanup">VGGSfM cleanup — existing raw cloud, no inference rerun</option></select>
+<label for="method">Method</label><select id="method"><option value="sfm">SfM — raw + generic quality cleanup</option><option value="mvs">MVS — reviewed E10/E3 cameras + COLMAP PatchMatch</option><option value="vggsfm">VGGSfM — independent learned reconstruction</option><option value="vggsfm_mask_cleanup">VGGSfM Mac-mask cleanup — person-only, no inference rerun</option><option value="vggsfm_cleanup">VGGSfM geometric cleanup — isolated outliers only</option></select>
 <button id="start">Start or resume reconstruction</button>
 <progress id="progress" max="100" value="0"></progress><div id="stage">Ready</div><p id="error" class="error"></p>
 <h3>Completed results</h3><ul id="results"><li class="muted">No CIAI reconstruction completed yet.</li></ul>

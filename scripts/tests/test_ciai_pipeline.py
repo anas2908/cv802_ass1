@@ -205,6 +205,15 @@ class CIAIPipelineTests(unittest.TestCase):
         self.assertEqual(found["VGGSfM-geometric-cleanup-scene"]["point_count"], 2)
         self.assertIn('value="vggsfm_cleanup"', ciai_gpu_ui.main_page(["scene"]).decode())
 
+    def test_vggsfm_mac_mask_cleanup_is_separate_from_geometric_cleanup(self) -> None:
+        self.make_dataset("light_shirt")
+        data = self.root / "data"
+        cloud = data / "vggsfm" / "outputs" / "ciai-light_shirt-vggsfm-v1-mac-mask-clean-v1" / "point_cloud.ply"
+        write_ply(cloud, 2)
+        found = ciai_gpu_ui.discover_results(data)
+        self.assertEqual(found["VGGSfM-Mac-mask-cleanup-light_shirt"]["point_count"], 2)
+        self.assertIn('value="vggsfm_mask_cleanup"', ciai_gpu_ui.main_page(["light_shirt"]).decode())
+
     def test_generated_ui_keeps_javascript_newline_escape(self) -> None:
         page = ciai_gpu_ui.main_page(["scene"]).decode("utf-8")
         self.assertIn("s.logs.join('\\n')", page)

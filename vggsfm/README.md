@@ -19,11 +19,14 @@ installs the pinned official repository and CUDA environment, downloads the
 official pretrained weights on first use, runs independent inference, and
 exports `point_cloud.ply`. It does not reuse classic SfM cameras or MVS output.
 
-After inference, select **VGGSfM cleanup** in the CIAI UI to create a separate
-CPU-filtered cloud. This does not rerun inference or alter the raw cloud.
-It is statistical 3D outlier removal, not the earlier mask-based person/crutch
-cleanup. The filter settings and raw/output checksums are saved beside the
-cleaned PLY in `cleanup_receipt.json`.
+After inference, select **VGGSfM Mac-mask cleanup** to reproduce the saved
+person-mask projection rule using the current VGGSfM cameras and historical
+Mac masks from `CV802_REFERENCE_DATA_ROOT` (default: sibling `cv_802_ass1`).
+The dark-shirt recipe also uses the historical reviewed image-space crutch
+corridors. No historical 3D geometry or camera poses are reused. Select
+**VGGSfM geometric cleanup** only if masks are unavailable; it is a different,
+less selective outlier filter. Both are CPU post-processes and keep the raw
+output untouched. Each writes a separate PLY and `cleanup_receipt.json`.
 
 Nothing is downloaded to the source checkout or home directory. The official
 source, environment, Torch/Hugging Face model caches, attempts, logs and output

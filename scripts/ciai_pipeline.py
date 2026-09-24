@@ -111,8 +111,8 @@ def available_datasets() -> list[str]:
 def validate_request(dataset: str, method: str) -> None:
     if dataset not in available_datasets():
         raise ValueError(f"Unknown or empty dataset: {dataset}")
-    if method not in {"sfm", "mvs", "vggsfm", "vggsfm_cleanup"}:
-        raise ValueError("Method must be 'sfm', 'mvs', 'vggsfm' or 'vggsfm_cleanup'")
+    if method not in {"sfm", "mvs", "vggsfm", "vggsfm_cleanup", "vggsfm_mask_cleanup"}:
+        raise ValueError("Unknown reconstruction or cleanup method")
 
 
 def validate_runtime(data_root: Path) -> dict[str, str]:
@@ -756,12 +756,51 @@ def run_vggsfm_cleanup(dataset: str, data_root: Path, progress: Progress, output
     return cleaned
 
 
+def run_vggsfm_mask_cleanup(dataset: str, data_root: Path, progress: Progress, output: Output) -> Path:
+    """Apply the historical Mac masks in this VGGSfM run's own camera frame."""
+    if dataset not in {"light_shirt", "dark_shirt"}:
+        raise ValueError("Historical Mac masks exist only for light_shirt and dark_shirt")
+    method_root = data_root / "vggsfm"
+    run_id = f"ciai-{dataset}-vggsfm-v1"
+    raw = method_root / "outputs" / run_id / "point_cloud.ply"
+    if not raw.is_file():
+        raise FileNotFoundError(f"No raw VGGSfM cloud at {raw}; run VGGSfM first")
+    python = method_root / "envs" / "vggsfm" / "bin" / "python"
+    if not python.is_file():
+        raise FileNotFoundError(f"VGGSfM environment is missing: {python}")
+    reference = os.environ.get("CV802_REFERENCE_DATA_ROOT", "").strip()
+    if reference and not Path(reference).expanduser().is_absolute():
+        raise ValueError("CV802_REFERENCE_DATA_ROOT must be an absolute path")
+    reference_root = Path(reference).expanduser().resolve() if reference else data_root.parent / "cv_802_ass1"
+    progress(10, "Verifying and copying the historical Mac masks into VGGSfM storage")
+    result = method_root / "outputs" / f"{run_id}-mac-mask-clean-v1" / "point_cloud.ply"
+
+    def mask_stage(line: str) -> None:
+        match = re.search(r"Mask projection (\d+)/(\d+) views", line)
+        if match:
+            progress(20 + int(65 * int(match.group(1)) / int(match.group(2))),
+                     f"Projecting points into Mac masks: {match.group(1)}/{match.group(2)} views")
+
+    run_command(
+        [python, CODE_ROOT / "vggsfm" / "scripts" / "clean_with_mac_masks.py",
+         "--dataset", dataset, "--data-root", data_root,
+         "--reference-root", reference_root],
+        cwd=CODE_ROOT / "vggsfm", env=_runtime_environment(data_root),
+        output=output, on_line=mask_stage,
+    )
+    progress(95, "Verifying the separate mask-cleaned point cloud")
+    if not result.is_file() or result.stat().st_size < 100:
+        raise RuntimeError(f"Mac-mask cleanup did not produce a usable cloud at {result}")
+    return result
+
+
 def run_pipeline(dataset: str, method: str, data_root: Path, progress: Progress, output: Output) -> Path:
     validate_request(dataset, method)
     runtime = validate_runtime(data_root)
     output("Runtime: " + json.dumps(runtime, sort_keys=True))
     runners = {"sfm": run_sfm, "mvs": run_mvs, "vggsfm": run_vggsfm,
-               "vggsfm_cleanup": run_vggsfm_cleanup}
+               "vggsfm_cleanup": run_vggsfm_cleanup,
+               "vggsfm_mask_cleanup": run_vggsfm_mask_cleanup}
     result = runners[method](dataset, data_root, progress, output)
     progress(100, f"Complete: {result.name}")
     return result.resolve(strict=True)
@@ -769,6 +808,6 @@ def run_pipeline(dataset: str, method: str, data_root: Path, progress: Progress,
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        raise SystemExit("usage: ciai_pipeline.py DATASET {sfm|mvs|vggsfm|vggsfm_cleanup} /absolute/data/root")
+        raise SystemExit("usage: ciai_pipeline.py DATASET METHOD /absolute/data/root")
     result_path = run_pipeline(sys.argv[1], sys.argv[2], Path(sys.argv[3]), lambda p, s: print(f"[{p:3d}%] {s}", flush=True), lambda s: print(s, flush=True))
     print(result_path)
