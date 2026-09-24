@@ -19,6 +19,8 @@ import sys
 import tempfile
 from typing import Callable, Iterable
 
+from reviewed_assets import install_mvs_reference
+
 
 CODE_ROOT = Path(__file__).resolve().parent.parent
 IMAGE_SUFFIXES = frozenset({".jpg", ".jpeg", ".png", ".tif", ".tiff", ".bmp", ".webp"})
@@ -32,7 +34,6 @@ Output = Callable[[str], None]
 MVS_REFERENCE_RECIPES: dict[str, dict[str, object]] = {
     "light_shirt": {
         "experiment": "light_e10_colmap_mvs_1600",
-        "reference_experiment": "light_e10_colmap_mvs_1600",
         "sfm_label": "E10 quality exhaustive guided consensus90",
         "use_masks": True,
         "max_image_size": 1600,
@@ -58,7 +59,6 @@ MVS_REFERENCE_RECIPES: dict[str, dict[str, object]] = {
     },
     "dark_shirt": {
         "experiment": "dark_e3_colmap_mvs_1024_raw_v1",
-        "reference_experiment": "dark_e3_colmap_mvs_1024_raw_v1",
         "sfm_label": "E3 selective-pair quality model",
         "use_masks": False,
         "max_image_size": 1024,
@@ -346,74 +346,21 @@ def _write_mvs_config(
     return destination
 
 
-def _reference_mvs_inputs(dataset: str, data_root: Path) -> Path | None:
-    """Locate the verified inputs from the successful assignment MVS run.
-
-    Existing staged inputs in the new data root win.  A prior assignment data
-    root can be supplied explicitly with CV802_REFERENCE_DATA_ROOT.  For the
-    original CIAI layout we also recognize the sibling ``cv_802_ass1`` root.
-    No home-directory path or user name is hard-coded.
-    """
-
-    recipe = MVS_REFERENCE_RECIPES[dataset]
-    experiment = str(recipe["experiment"])
-    current = data_root / "mvs" / "experiments" / experiment
-    if (current / "manifests" / "input_provenance.json").is_file():
-        return current / "inputs"
-
-    roots: list[Path] = []
-    configured = os.environ.get("CV802_REFERENCE_DATA_ROOT", "").strip()
-    if configured:
-        candidate = Path(configured).expanduser()
-        if not candidate.is_absolute():
-            raise RuntimeError("CV802_REFERENCE_DATA_ROOT must be an absolute path")
-        roots.append(candidate.resolve())
-    roots.append(data_root.parent / "cv_802_ass1")
-
-    for root in roots:
-        inputs = (
-            root
-            / "mvs"
-            / "experiments"
-            / str(recipe["reference_experiment"])
-            / "inputs"
-        )
-        if (
-            (inputs / "images").is_dir()
-            and (inputs / "sparse" / "cameras.bin").is_file()
-            and (inputs / "sparse" / "images.bin").is_file()
-            and (inputs / "sparse" / "points3D.bin").is_file()
-        ):
-            if bool(recipe["use_masks"]) and not (
-                (inputs / "masks").is_dir()
-                and (inputs / "mask_manifest.json").is_file()
-            ):
-                continue
-            return inputs
-    return None
-
-
 def _prepare_reference_mvs_sources(
     dataset: str,
     reference: Path,
     data_root: Path,
     output: Output,
 ) -> tuple[Path, Path, Path | None, Path | None]:
-    """Import reviewed calibration/masks and prove repository photos match.
-
-    The MVS engine deliberately accepts staging sources only from the active
-    data root.  Legacy assignment results may be in a sibling data root, so we
-    copy just the model and required masks into a checksum-verified reference
-    area.  Photographs are staged from the repository and checked against the
-    successful run's provenance instead of being duplicated from the legacy
-    experiment.
-    """
+    """Prove Git photos match the bundled calibration staged in the data root."""
 
     recipe = MVS_REFERENCE_RECIPES[dataset]
     images = stage_images(
         dataset, data_root / "sfm" / "inputs" / dataset / "images", output
     )
-    provenance_path = reference.parent / "manifests" / "input_provenance.json"
+    if not reference.resolve(strict=True).is_relative_to(data_root.resolve(strict=True)):
+        raise ValueError("Reviewed MVS calibration must be staged under the active data root")
+    provenance_path = reference / "input_provenance.json"
     if not provenance_path.is_file():
         raise RuntimeError(f"Reviewed MVS input provenance is missing: {provenance_path}")
     provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
@@ -434,68 +381,20 @@ def _prepare_reference_mvs_sources(
             )
     if len(image_records) < 2:
         raise RuntimeError("Reviewed MVS provenance contains no usable image inventory")
+    names = {Path(record["destination_relative"]).relative_to("inputs/images").as_posix()
+             for record in image_records}
+    staged_names = {path.relative_to(images).as_posix() for path in images.rglob("*") if path.is_file()}
+    if len(names) != len(image_records) or names != staged_names:
+        raise RuntimeError("Bundled MVS image inventory differs from the repository photographs")
     output(f"Verified {len(image_records)} photographs against the saved MVS provenance")
-
-    try:
-        reference.resolve(strict=True).relative_to(data_root.resolve(strict=True))
-        inside_active_root = True
-    except ValueError:
-        inside_active_root = False
-    if inside_active_root:
-        masks = reference / "masks" if bool(recipe["use_masks"]) else None
-        manifest = reference / "mask_manifest.json" if masks else None
-        return images, reference / "sparse", masks, manifest
-
-    destination = data_root / "mvs" / "reference_inputs" / dataset
-    wanted: list[tuple[Path, Path]] = [
-        (source, Path("sparse") / source.name)
-        for source in sorted((reference / "sparse").iterdir())
-        if source.is_file()
-    ]
-    if bool(recipe["use_masks"]):
-        wanted.extend(
-            (source, Path("masks") / source.relative_to(reference / "masks"))
-            for source in sorted((reference / "masks").rglob("*"))
-            if source.is_file()
-        )
-        wanted.append((reference / "mask_manifest.json", Path("mask_manifest.json")))
-
-    def verify_import(root: Path) -> None:
-        actual = sorted(path.relative_to(root) for path in root.rglob("*") if path.is_file())
-        expected = sorted(relative for _source, relative in wanted)
-        if actual != expected:
-            raise RuntimeError(f"Reviewed MVS import inventory differs at {root}")
-        for source, relative in wanted:
-            copied = root / relative
-            if copied.stat().st_size != source.stat().st_size or _sha256(copied) != _sha256(source):
-                raise RuntimeError(f"Reviewed MVS import checksum mismatch: {copied}")
-
-    if destination.exists():
-        verify_import(destination)
-        output(f"Reused checksum-verified {recipe['sfm_label']} calibration")
-    else:
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(prefix=f".{dataset}-reference-", dir=destination.parent) as temporary:
-            staged = Path(temporary) / "reference"
-            staged.mkdir()
-            for source, relative in wanted:
-                target = staged / relative
-                target.parent.mkdir(parents=True, exist_ok=True)
-                before = source.stat()
-                digest = _sha256(source)
-                shutil.copy2(source, target)
-                after = source.stat()
-                if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
-                    raise RuntimeError(f"Reviewed MVS source changed during import: {source}")
-                if target.stat().st_size != before.st_size or _sha256(target) != digest:
-                    raise RuntimeError(f"Reviewed MVS import checksum mismatch: {target}")
-            verify_import(staged)
-            staged.rename(destination)
-        output(f"Imported and verified {recipe['sfm_label']} calibration")
-
-    masks = destination / "masks" if bool(recipe["use_masks"]) else None
-    manifest = destination / "mask_manifest.json" if masks else None
-    return images, destination / "sparse", masks, manifest
+    model = reference / "sparse"
+    if not all((model / name).is_file() for name in ("cameras.bin", "images.bin", "points3D.bin")):
+        raise RuntimeError("Bundled MVS sparse model is incomplete")
+    masks = reference / "masks" if bool(recipe["use_masks"]) else None
+    manifest = reference / "mask_manifest.json" if masks else None
+    if masks and (not masks.is_dir() or not manifest.is_file()):
+        raise RuntimeError("Bundled MVS masks are incomplete")
+    return images, model, masks, manifest
 
 
 def ensure_sparse_sfm(
@@ -582,13 +481,8 @@ def run_mvs(dataset: str, data_root: Path, progress: Progress, output: Output) -
     env = _runtime_environment(data_root)
     recipe = MVS_REFERENCE_RECIPES.get(dataset)
     if recipe is not None:
-        reference = _reference_mvs_inputs(dataset, data_root)
-        if reference is None:
-            raise RuntimeError(
-                f"The reviewed {recipe['sfm_label']} MVS inputs are unavailable. "
-                "Set CV802_REFERENCE_DATA_ROOT to the assignment data root that "
-                f"contains mvs/experiments/{recipe['reference_experiment']}/inputs."
-            )
+        progress(5, "Installing Git-bundled reviewed MVS cameras and masks")
+        reference = install_mvs_reference(dataset, data_root, output)
         images, model, masks, mask_manifest = _prepare_reference_mvs_sources(
             dataset, reference, data_root, output
         )
@@ -768,10 +662,6 @@ def run_vggsfm_mask_cleanup(dataset: str, data_root: Path, progress: Progress, o
     python = method_root / "envs" / "vggsfm" / "bin" / "python"
     if not python.is_file():
         raise FileNotFoundError(f"VGGSfM environment is missing: {python}")
-    reference = os.environ.get("CV802_REFERENCE_DATA_ROOT", "").strip()
-    if reference and not Path(reference).expanduser().is_absolute():
-        raise ValueError("CV802_REFERENCE_DATA_ROOT must be an absolute path")
-    reference_root = Path(reference).expanduser().resolve() if reference else data_root.parent / "cv_802_ass1"
     progress(10, "Verifying and copying the historical Mac masks into VGGSfM storage")
     result = method_root / "outputs" / f"{run_id}-mac-mask-clean-v1" / "point_cloud.ply"
 
@@ -783,8 +673,7 @@ def run_vggsfm_mask_cleanup(dataset: str, data_root: Path, progress: Progress, o
 
     run_command(
         [python, CODE_ROOT / "vggsfm" / "scripts" / "clean_with_mac_masks.py",
-         "--dataset", dataset, "--data-root", data_root,
-         "--reference-root", reference_root],
+         "--dataset", dataset, "--data-root", data_root],
         cwd=CODE_ROOT / "vggsfm", env=_runtime_environment(data_root),
         output=output, on_line=mask_stage,
     )

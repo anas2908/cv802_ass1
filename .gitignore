@@ -19,6 +19,8 @@ videos/
 masks/
 datasets/*
 !datasets/.gitkeep
+!datasets/reviewed/
+!datasets/reviewed/**
 experiments/
 outputs/
 work/

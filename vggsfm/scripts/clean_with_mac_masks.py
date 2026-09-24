@@ -80,7 +80,7 @@ def verify_staged(folder: Path) -> dict:
     return receipt
 
 
-def stage_masks(dataset: str, method_root: Path, reference_root: Path) -> tuple[Path, dict]:
+def stage_masks(dataset: str, method_root: Path, reference_root: Path | None = None) -> tuple[Path, dict]:
     """Copy only image-space evidence into the current VGGSfM data root."""
     if dataset not in SOURCE_NAMES:
         raise ValueError("Mac masks are available only for light_shirt and dark_shirt")
@@ -88,13 +88,12 @@ def stage_masks(dataset: str, method_root: Path, reference_root: Path) -> tuple[
     destination = inputs / f"{dataset}_mac_masks"
     if destination.exists():
         return destination, verify_staged(destination)
-    source = reference_root / "vggsfm" / "inputs" / SOURCE_NAMES[dataset]
+    source = (reference_root / "vggsfm" / "inputs" / SOURCE_NAMES[dataset]
+              if reference_root is not None else
+              Path(__file__).resolve().parents[2] / "datasets" / "reviewed" / "mac_masks" / dataset)
     source_receipt = source / "receipt.json"
     if not source_receipt.is_file():
-        raise FileNotFoundError(
-            f"Mac masks not found at {source_receipt}. Set CV802_REFERENCE_DATA_ROOT "
-            "to the prior assignment data root containing vggsfm/inputs."
-        )
+        raise FileNotFoundError(f"Repository is missing bundled Mac masks: {source_receipt}")
     original = json.loads(source_receipt.read_text())
     rows = source_rows(original)
     inputs.mkdir(parents=True, exist_ok=True)
@@ -156,7 +155,7 @@ def raw_input_records(raw_root: Path, request_path: Path, mask_receipt_path: Pat
     return {str(path): sha256(path) for path in paths}
 
 
-def derive(dataset: str, data_root: Path, reference_root: Path) -> dict:
+def derive(dataset: str, data_root: Path, reference_root: Path | None = None) -> dict:
     """Create a separate mask-cleaned point cloud; never replace the raw one."""
     method_root = data_root / "vggsfm"
     run_id = f"ciai-{dataset}-vggsfm-v1"
@@ -308,7 +307,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", choices=tuple(SOURCE_NAMES), required=True)
     parser.add_argument("--data-root", required=True, type=Path)
-    parser.add_argument("--reference-root", required=True, type=Path)
+    parser.add_argument("--reference-root", type=Path,
+                        help="Optional legacy source for migration; normal runs use Git-bundled masks")
     args = parser.parse_args()
     print(json.dumps(derive(args.dataset, args.data_root, args.reference_root), indent=2, sort_keys=True))
     return 0

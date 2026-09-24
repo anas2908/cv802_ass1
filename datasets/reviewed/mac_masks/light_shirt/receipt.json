@@ -1,0 +1,1134 @@
+{
+  "dataset": "light_shirt",
+  "mask_count": 125,
+  "provenance": "Historical Apple Vision person masks, original image dimensions; no 3D geometry or poses.",
+  "rows": [
+    {
+      "bytes": 144347,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_13mm/0030_IMG_8493.jpg",
+      "mask_relative": "masks/photos_iphone_11_13mm/0030_IMG_8493.png",
+      "mode": "L",
+      "sha256": "82eda8227f98ccf7e5be95c0f1237ade97558b6d3229250421803322941ad1af",
+      "width": 3024
+    },
+    {
+      "bytes": 116930,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_13mm/0032_IMG_8491.jpg",
+      "mask_relative": "masks/photos_iphone_11_13mm/0032_IMG_8491.png",
+      "mode": "L",
+      "sha256": "c345423f17540ceab6837d45d9e9a84dbda435b55c87892a3bdb5d5de00365b3",
+      "width": 3024
+    },
+    {
+      "bytes": 86563,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_13mm/0050_IMG_6787.jpg",
+      "mask_relative": "masks/photos_iphone_11_13mm/0050_IMG_6787.png",
+      "mode": "L",
+      "sha256": "d6e8e022373a171e63a8cb44eefd54b0896b6c93a885c36492aa23877d679a34",
+      "width": 3024
+    },
+    {
+      "bytes": 87303,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_13mm/0052_IMG_6788.jpg",
+      "mask_relative": "masks/photos_iphone_11_13mm/0052_IMG_6788.png",
+      "mode": "L",
+      "sha256": "7e8015cff8bd13cff732f3ead7b5ef6f196d69053a6093bc3631971aee3e8efe",
+      "width": 3024
+    },
+    {
+      "bytes": 160426,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0000_IMG_6763.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0000_IMG_6763.png",
+      "mode": "L",
+      "sha256": "dacf05ff3de175dcc99cb4ed594af8b1db78a2f2b2a39ab7729ef003f6baff19",
+      "width": 3024
+    },
+    {
+      "bytes": 266071,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0001_IMG_6764.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0001_IMG_6764.png",
+      "mode": "L",
+      "sha256": "aef795617bf372bd44615e7ecf23a0f9e35092defb456de4222e1c3d86e5ea90",
+      "width": 3024
+    },
+    {
+      "bytes": 180904,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0006_IMG_6765.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0006_IMG_6765.png",
+      "mode": "L",
+      "sha256": "999597d246a1c4290647c6436d2a4a07c44fdc20e4716d8ed077fe81da41b842",
+      "width": 3024
+    },
+    {
+      "bytes": 152817,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0007_IMG_8378.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0007_IMG_8378.png",
+      "mode": "L",
+      "sha256": "9c726726a356fdc003ad644417f54788ea749911e4dbae014a72ac1343ed89b0",
+      "width": 3024
+    },
+    {
+      "bytes": 161272,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0009_IMG_8377.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0009_IMG_8377.png",
+      "mode": "L",
+      "sha256": "9e9d26ab78e163b855676374bcef730d9d050546b4f7a297706a87ab98516ca9",
+      "width": 3024
+    },
+    {
+      "bytes": 162270,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0012_IMG_8376.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0012_IMG_8376.png",
+      "mode": "L",
+      "sha256": "02e2ea155d8667d35f5b058f2423c9911bd3907549e50ece4945d31f2b1c4f1c",
+      "width": 3024
+    },
+    {
+      "bytes": 182172,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0013_IMG_8375.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0013_IMG_8375.png",
+      "mode": "L",
+      "sha256": "63e3cf976571227692bacecd708a00ae3fe6c3668417438033c01dcffd3f8908",
+      "width": 3024
+    },
+    {
+      "bytes": 189168,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0016_IMG_6770.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0016_IMG_6770.png",
+      "mode": "L",
+      "sha256": "f17d687a46998f48af65817bc147051924f46d0a479ad2fa5729405a0cdce3f5",
+      "width": 3024
+    },
+    {
+      "bytes": 173214,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0017_IMG_8373.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0017_IMG_8373.png",
+      "mode": "L",
+      "sha256": "128faa8a4361e0672f8577bd38216474ad2715a27b165be53e0498f11f29f82e",
+      "width": 3024
+    },
+    {
+      "bytes": 181933,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0020_IMG_6772.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0020_IMG_6772.png",
+      "mode": "L",
+      "sha256": "696d92e8b29010372d668bb9776418246d9bd2286f6849a94cd4cf2a264a4e4b",
+      "width": 3024
+    },
+    {
+      "bytes": 183099,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0021_IMG_6773.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0021_IMG_6773.png",
+      "mode": "L",
+      "sha256": "d27bbd5668e6aab9574ddee3ded725487a25765927f41ffb9bdd64b6535cbffd",
+      "width": 3024
+    },
+    {
+      "bytes": 177665,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0024_IMG_8370.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0024_IMG_8370.png",
+      "mode": "L",
+      "sha256": "46de79912eba66e063093d750286101e2abc126df4470de6538c0559e7f3fe05",
+      "width": 3024
+    },
+    {
+      "bytes": 147421,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0025_IMG_6775.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0025_IMG_6775.png",
+      "mode": "L",
+      "sha256": "4a061802750529e279ebb7d56724b6bdb0e56ea13e7bf042dd30eb84adf174db",
+      "width": 3024
+    },
+    {
+      "bytes": 151132,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0028_IMG_8368.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0028_IMG_8368.png",
+      "mode": "L",
+      "sha256": "b9d66743913ce179b89a1b565568c5a64fd8f5ab4e21741e6e4a98224fd82500",
+      "width": 3024
+    },
+    {
+      "bytes": 181484,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0033_IMG_6779.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0033_IMG_6779.png",
+      "mode": "L",
+      "sha256": "61b899b885cc450f645617797b9877e681451dff440537521b14aaf4744ea5ce",
+      "width": 3024
+    },
+    {
+      "bytes": 155790,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0036_IMG_8367.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0036_IMG_8367.png",
+      "mode": "L",
+      "sha256": "f66463a935336fcfaa6f3afe1c9bf71df410b8cd78c7932a6e7c2d3397b2fb6f",
+      "width": 3024
+    },
+    {
+      "bytes": 137672,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0037_IMG_6781.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0037_IMG_6781.png",
+      "mode": "L",
+      "sha256": "41cee35110d6d364d1ab979b93e7a624d7396de18ce1f88edf27a481d272811d",
+      "width": 3024
+    },
+    {
+      "bytes": 147511,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0039_IMG_6782.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0039_IMG_6782.png",
+      "mode": "L",
+      "sha256": "415bdf4844355e1019bb19526252a0053ac87dfe7f49da5ca085d2ecc9efe560",
+      "width": 3024
+    },
+    {
+      "bytes": 137368,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0041_IMG_6783.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0041_IMG_6783.png",
+      "mode": "L",
+      "sha256": "8f753b94a3f73b61db8879bc62e07ad755fb889b42e4900cc4e5d4ff72d8dc16",
+      "width": 3024
+    },
+    {
+      "bytes": 142843,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0043_IMG_8360.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0043_IMG_8360.png",
+      "mode": "L",
+      "sha256": "72c5c15013aabfb337a3041a099554f20bf722f0b11a9474fa41f2506965c887",
+      "width": 3024
+    },
+    {
+      "bytes": 163973,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0045_IMG_8363.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0045_IMG_8363.png",
+      "mode": "L",
+      "sha256": "88036fb792abcf1e512f6e7609918ec140492591dea069a659ee950273194805",
+      "width": 3024
+    },
+    {
+      "bytes": 167410,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0047_IMG_6786.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0047_IMG_6786.png",
+      "mode": "L",
+      "sha256": "fb1eb14820c2b4a0765bb2dfd4c02495bd132b72107125a406b48f122cf3a64a",
+      "width": 3024
+    },
+    {
+      "bytes": 157235,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0053_IMG_8355.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0053_IMG_8355.png",
+      "mode": "L",
+      "sha256": "d07f8aae457f4fa8330ff202b36b041a200cad3a77e559ab9baa97d35330c7ee",
+      "width": 3024
+    },
+    {
+      "bytes": 126001,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0056_IMG_6790.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0056_IMG_6790.png",
+      "mode": "L",
+      "sha256": "9abfd8d9697f164ba095350cf029c798e0259608488fa952eaff09988ba048a4",
+      "width": 3024
+    },
+    {
+      "bytes": 129224,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0057_IMG_6791.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0057_IMG_6791.png",
+      "mode": "L",
+      "sha256": "98655ceae958e769c2ca434cbddfceea7d6908b606f27be6e24287c538e7773e",
+      "width": 3024
+    },
+    {
+      "bytes": 159613,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0060_IMG_6792.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0060_IMG_6792.png",
+      "mode": "L",
+      "sha256": "841655c2213968aa54834626b34fbf100cd7f0c2d9f22dcb2cb7a8461cd8cf73",
+      "width": 3024
+    },
+    {
+      "bytes": 154841,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0062_IMG_8352.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0062_IMG_8352.png",
+      "mode": "L",
+      "sha256": "3c15bec888a47b1f58012d9b5bebea449fdfba8717504e9c344f165d8755a897",
+      "width": 3024
+    },
+    {
+      "bytes": 138102,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0064_IMG_8350.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0064_IMG_8350.png",
+      "mode": "L",
+      "sha256": "7b40554c05c37549833615d074aa00c5dddd6157c8bda40596327de5f60b91cc",
+      "width": 3024
+    },
+    {
+      "bytes": 134081,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0066_IMG_6795.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0066_IMG_6795.png",
+      "mode": "L",
+      "sha256": "0d315156e2457a7740225276bc25000dc1fe5d344846065ca38e245a6841593e",
+      "width": 3024
+    },
+    {
+      "bytes": 153598,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0068_IMG_6796.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0068_IMG_6796.png",
+      "mode": "L",
+      "sha256": "29e4ddf48a9d7ef2eb3efa952a800390c952d900dfb6642b5a615bc25b5fb019",
+      "width": 3024
+    },
+    {
+      "bytes": 141701,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0070_IMG_6797.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0070_IMG_6797.png",
+      "mode": "L",
+      "sha256": "69b557078713fda9543a1ef3bbea8f39f75730aff95b430f2fd32b168a8d53de",
+      "width": 3024
+    },
+    {
+      "bytes": 151126,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0072_IMG_6798.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0072_IMG_6798.png",
+      "mode": "L",
+      "sha256": "01ceb7600afc8200d4fd6ebf086aa15e5e148416a8fa3d7683cfedaaa7564687",
+      "width": 3024
+    },
+    {
+      "bytes": 132603,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0074_IMG_6799.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0074_IMG_6799.png",
+      "mode": "L",
+      "sha256": "efe4d7aed41813a7f45374f41577d7b6eca04ffa02fd0472a3042dbec028f52d",
+      "width": 3024
+    },
+    {
+      "bytes": 174795,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0075_IMG_6800.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0075_IMG_6800.png",
+      "mode": "L",
+      "sha256": "6c459fa123ff69f73ffa8da5528ad277ceb787549651d540560a4fe09a766cc9",
+      "width": 3024
+    },
+    {
+      "bytes": 176813,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0077_IMG_8345.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0077_IMG_8345.png",
+      "mode": "L",
+      "sha256": "e6df84e3748bcf4468548a0ec97136b46cacd83ae56f20407e8722c99d51013c",
+      "width": 3024
+    },
+    {
+      "bytes": 157225,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0079_IMG_8346.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0079_IMG_8346.png",
+      "mode": "L",
+      "sha256": "38f55a0ce0a5974bc1d28b0dd11b34949cc9af8a9fa7771f1f994778e788fb1e",
+      "width": 3024
+    },
+    {
+      "bytes": 153711,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0081_IMG_8354.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0081_IMG_8354.png",
+      "mode": "L",
+      "sha256": "1e315306b61525e09cf81e1a188eda65f21d4f614e324d6b100bdeb396bce64f",
+      "width": 3024
+    },
+    {
+      "bytes": 170373,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0083_IMG_8348.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0083_IMG_8348.png",
+      "mode": "L",
+      "sha256": "4034f9dc030acab7b5327499419fcb5ebf39fe82b1b11281045e8dd605d8f55b",
+      "width": 3024
+    },
+    {
+      "bytes": 160559,
+      "height": 4032,
+      "image_relative": "photos_iphone_11_26mm/0085_IMG_6805.jpg",
+      "mask_relative": "masks/photos_iphone_11_26mm/0085_IMG_6805.png",
+      "mode": "L",
+      "sha256": "aa8d681e6003503cf0d4716c8d846cba08c34b5d8ff2f93b6d9d32ae86bda20a",
+      "width": 3024
+    },
+    {
+      "bytes": 97225,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_14mm/0029_IMG_8304.jpg",
+      "mask_relative": "masks/photos_iphone_13_14mm/0029_IMG_8304.png",
+      "mode": "L",
+      "sha256": "3ef0689d95b03b9e121c67a8e1370098ef20aa53dbd66e1ca2911a0366c10297",
+      "width": 3024
+    },
+    {
+      "bytes": 97125,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_14mm/0031_IMG_8305.jpg",
+      "mask_relative": "masks/photos_iphone_13_14mm/0031_IMG_8305.png",
+      "mode": "L",
+      "sha256": "3d591d9806ba11be7561872c9e9332f63027274202d3f68beada0e836baab99d",
+      "width": 3024
+    },
+    {
+      "bytes": 91504,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_14mm/0049_IMG_8314.jpg",
+      "mask_relative": "masks/photos_iphone_13_14mm/0049_IMG_8314.png",
+      "mode": "L",
+      "sha256": "c26e11741b1dfb7d2cc45cfa6c98dc926842defd614ceabb336899bf0de057ae",
+      "width": 3024
+    },
+    {
+      "bytes": 91750,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_14mm/0051_IMG_8315.jpg",
+      "mask_relative": "masks/photos_iphone_13_14mm/0051_IMG_8315.png",
+      "mode": "L",
+      "sha256": "90c5aef6eaf160bdb105fb4d90fa59fca22e58e4d7a451f94bcd7533bafae63c",
+      "width": 3024
+    },
+    {
+      "bytes": 130505,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_14mm/0087_IMG_8333.jpg",
+      "mask_relative": "masks/photos_iphone_13_14mm/0087_IMG_8333.png",
+      "mode": "L",
+      "sha256": "a9f00834464203797174dfb059733bd6693d10cb9509af89dae4b523bb63d327",
+      "width": 3024
+    },
+    {
+      "bytes": 98176,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_14mm/0088_IMG_8334.jpg",
+      "mask_relative": "masks/photos_iphone_13_14mm/0088_IMG_8334.png",
+      "mode": "L",
+      "sha256": "367202b2a383406d2cecc63716206e92b3401a1e9926da612d665d2928d556a2",
+      "width": 3024
+    },
+    {
+      "bytes": 112977,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_14mm/0089_IMG_8335.jpg",
+      "mask_relative": "masks/photos_iphone_13_14mm/0089_IMG_8335.png",
+      "mode": "L",
+      "sha256": "3bd7477550e86987faa198530770fa090878df21b41ff44d9bca26d957b44009",
+      "width": 3024
+    },
+    {
+      "bytes": 87337,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_14mm/0090_IMG_8336.jpg",
+      "mask_relative": "masks/photos_iphone_13_14mm/0090_IMG_8336.png",
+      "mode": "L",
+      "sha256": "11f8a8bb52f67a6252fed08ef7e687151d272b1eec37df84ac42cdc91d42c47f",
+      "width": 3024
+    },
+    {
+      "bytes": 157288,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0002_IMG_8289.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0002_IMG_8289.png",
+      "mode": "L",
+      "sha256": "60a0dc137f53f35bae95ae45e18fa04dadcad9205bfccfbc41bbf1a289eb22a3",
+      "width": 3024
+    },
+    {
+      "bytes": 158066,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0003_IMG_8290.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0003_IMG_8290.png",
+      "mode": "L",
+      "sha256": "3ff9f64459f7dbede4625d753655be3bf48d0b8949e58a3723f6f41e1e6880b3",
+      "width": 3024
+    },
+    {
+      "bytes": 176656,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0004_IMG_8291.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0004_IMG_8291.png",
+      "mode": "L",
+      "sha256": "d28b79f8ccee78a40d72fb37a16bce7bcdeac58f4d9354676889ebdefd85a1c7",
+      "width": 3024
+    },
+    {
+      "bytes": 130481,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0005_IMG_8292.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0005_IMG_8292.png",
+      "mode": "L",
+      "sha256": "0ddc1e9cfcd9ddf4dc2042d1461c5555e96f58037b625e9c337afdaf9a596373",
+      "width": 3024
+    },
+    {
+      "bytes": 154983,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0008_IMG_8293.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0008_IMG_8293.png",
+      "mode": "L",
+      "sha256": "63fb383619df0cb2243dcd1b73dc9bb2a4062c8cc4f6399f65f4c1235a5afe08",
+      "width": 3024
+    },
+    {
+      "bytes": 164591,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0010_IMG_8294.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0010_IMG_8294.png",
+      "mode": "L",
+      "sha256": "d2a7d52fc647c398795c0dfbe5a21285ad048e263b44c253b1c116846756b84c",
+      "width": 3024
+    },
+    {
+      "bytes": 163908,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0011_IMG_8295.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0011_IMG_8295.png",
+      "mode": "L",
+      "sha256": "e0aaf53e3a4e8b1b7fa7bfb6dd1a08838032a7d5b252a644c36a7b2f2343668c",
+      "width": 3024
+    },
+    {
+      "bytes": 162118,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0014_IMG_8296.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0014_IMG_8296.png",
+      "mode": "L",
+      "sha256": "abae07eb49e86122aac1a668e0d7f3ebf9950e2a025d30640afefe7898390aea",
+      "width": 3024
+    },
+    {
+      "bytes": 153158,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0015_IMG_8297.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0015_IMG_8297.png",
+      "mode": "L",
+      "sha256": "ebb87e4b20d6f9283d15807b79e0d8472c897407e9b1320d7728031bb7bd6278",
+      "width": 3024
+    },
+    {
+      "bytes": 170114,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0018_IMG_8298.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0018_IMG_8298.png",
+      "mode": "L",
+      "sha256": "19a4644e8dcc56ffb292f4a563e31629e5446ca57ca30c2b6aec5300c6181cfa",
+      "width": 3024
+    },
+    {
+      "bytes": 172319,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0019_IMG_8299.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0019_IMG_8299.png",
+      "mode": "L",
+      "sha256": "2c85052f44a1228be95bc882245bb6696624606b334ac5088ff53d7d57dee961",
+      "width": 3024
+    },
+    {
+      "bytes": 151883,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0022_IMG_8300.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0022_IMG_8300.png",
+      "mode": "L",
+      "sha256": "f3b5fb2bd9ad36562e2ef74521253fcab993f35adbe567b07c061ff32d45ce9b",
+      "width": 3024
+    },
+    {
+      "bytes": 154406,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0023_IMG_8301.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0023_IMG_8301.png",
+      "mode": "L",
+      "sha256": "d714650bad77d55965b44b43ebfc8ceecae435d1c4800220b753c32f92b1d9c8",
+      "width": 3024
+    },
+    {
+      "bytes": 177975,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0026_IMG_8302.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0026_IMG_8302.png",
+      "mode": "L",
+      "sha256": "d9fa88dadc21fd94f33b9ca872606b78ce0de450755e90ef9b5981e4c24649a2",
+      "width": 3024
+    },
+    {
+      "bytes": 168184,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0027_IMG_8303.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0027_IMG_8303.png",
+      "mode": "L",
+      "sha256": "175022025fdb0a33ecd7bddf93dadfddf2e66c41739b907f777193cad25c84d2",
+      "width": 3024
+    },
+    {
+      "bytes": 142798,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0034_IMG_8306.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0034_IMG_8306.png",
+      "mode": "L",
+      "sha256": "3dd4effa4594f5f6c003c0575756637466aab6cca6dc91664e6a6fd39fa7855b",
+      "width": 3024
+    },
+    {
+      "bytes": 141510,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0035_IMG_8307.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0035_IMG_8307.png",
+      "mode": "L",
+      "sha256": "276c08e2d43c1e806547b3523d71dd89618f0e90bc55534547a64ef75e3cc463",
+      "width": 3024
+    },
+    {
+      "bytes": 128531,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0038_IMG_8308.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0038_IMG_8308.png",
+      "mode": "L",
+      "sha256": "42381178ba50ffef82dfea6dcc8de60167ecf02cc93d9485d93d8b0b0d3d9aa8",
+      "width": 3024
+    },
+    {
+      "bytes": 132682,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0040_IMG_8309.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0040_IMG_8309.png",
+      "mode": "L",
+      "sha256": "0a143360a33983fcb0727f0f76fe7bc28a95ca838264aff623872d769235b182",
+      "width": 3024
+    },
+    {
+      "bytes": 231428,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0042_IMG_8310.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0042_IMG_8310.png",
+      "mode": "L",
+      "sha256": "da9a8ac47c6823d202261557c239b291e84cdb11b1c1be422676d3bb91ec41ed",
+      "width": 3024
+    },
+    {
+      "bytes": 145537,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0044_IMG_8311.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0044_IMG_8311.png",
+      "mode": "L",
+      "sha256": "2cad903cd15ae847e29deabad95fba7c6342d1ae8c150345af259bdbe5aa4788",
+      "width": 3024
+    },
+    {
+      "bytes": 169282,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0046_IMG_8312.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0046_IMG_8312.png",
+      "mode": "L",
+      "sha256": "6c245030fccf331df5336fc63dbd524184ec905b7bce9965cd19e6000b6893f7",
+      "width": 3024
+    },
+    {
+      "bytes": 160705,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0048_IMG_8313.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0048_IMG_8313.png",
+      "mode": "L",
+      "sha256": "2c577440cb8c2bddb3bc59877dbbeff61f01bc6400b648335e89d23a3955ec56",
+      "width": 3024
+    },
+    {
+      "bytes": 162710,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0054_IMG_8316.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0054_IMG_8316.png",
+      "mode": "L",
+      "sha256": "e7b9f272628176e86b2e4af648a8ece4ad55e188e9b99d94285a5e89ed7a9088",
+      "width": 3024
+    },
+    {
+      "bytes": 123304,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0055_IMG_8317.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0055_IMG_8317.png",
+      "mode": "L",
+      "sha256": "0a4e70fadf3dd9f517a9d64b6a5159f2e5e5ae28d68bd148b70d0d927fbfc4b7",
+      "width": 3024
+    },
+    {
+      "bytes": 131397,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0058_IMG_8318.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0058_IMG_8318.png",
+      "mode": "L",
+      "sha256": "a99055d9de6663321dcd62e139843d28d5fdf205da14bd8853c29ac3370b3fbf",
+      "width": 3024
+    },
+    {
+      "bytes": 136536,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0059_IMG_8319.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0059_IMG_8319.png",
+      "mode": "L",
+      "sha256": "d42592c9b256e75eaeb42efda7bebfb19b3bb89a0fb12c8d22b6ca487e885a90",
+      "width": 3024
+    },
+    {
+      "bytes": 135540,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0061_IMG_8320.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0061_IMG_8320.png",
+      "mode": "L",
+      "sha256": "c2caeac543c03b7c5c2ec1ae03a3318b2d9617f6122ae506163719cc41f6394d",
+      "width": 3024
+    },
+    {
+      "bytes": 129481,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0063_IMG_8321.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0063_IMG_8321.png",
+      "mode": "L",
+      "sha256": "364b95a4d88eeed899eb00df62fea54b049018bcbbcb6f8e4c0c6680c4d5068b",
+      "width": 3024
+    },
+    {
+      "bytes": 144055,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0065_IMG_8322.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0065_IMG_8322.png",
+      "mode": "L",
+      "sha256": "de6262c42dfcbcebe366f455dc2d83570638f8e62e24b1be916e6f9ecbcd1094",
+      "width": 3024
+    },
+    {
+      "bytes": 138326,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0067_IMG_8323.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0067_IMG_8323.png",
+      "mode": "L",
+      "sha256": "7c8886e2c14e68ff9e6c9224c622cc8f455facd747c5fb5485a4047e4e407736",
+      "width": 3024
+    },
+    {
+      "bytes": 134248,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0069_IMG_8324.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0069_IMG_8324.png",
+      "mode": "L",
+      "sha256": "4729b31c8986e529bba3327b92ba3f84dedfade3459965ef3504a51bf65f2fed",
+      "width": 3024
+    },
+    {
+      "bytes": 140167,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0071_IMG_8325.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0071_IMG_8325.png",
+      "mode": "L",
+      "sha256": "8b2eee33465ef5701f658e9bda374474a1cf98ea71b32477a7417d94d7fd229e",
+      "width": 3024
+    },
+    {
+      "bytes": 147757,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0073_IMG_8326.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0073_IMG_8326.png",
+      "mode": "L",
+      "sha256": "ac5882f5373c362784f9f6c81188fa38b8c7b8a59a12347ef9ce721d02fe4a7e",
+      "width": 3024
+    },
+    {
+      "bytes": 183531,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0076_IMG_8327.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0076_IMG_8327.png",
+      "mode": "L",
+      "sha256": "851edca5e1844f2056cfa30613424032dde2cdd2b7bc79a19263ade8d618e3b9",
+      "width": 3024
+    },
+    {
+      "bytes": 180575,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0078_IMG_8328.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0078_IMG_8328.png",
+      "mode": "L",
+      "sha256": "f19ac7f4d6fa719daf26a127fafb46ce4ea2927d2e3b8dfcff305b56fc5fb71c",
+      "width": 3024
+    },
+    {
+      "bytes": 153443,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0080_IMG_8329.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0080_IMG_8329.png",
+      "mode": "L",
+      "sha256": "0862ee72179e35b1f9ce16df115c084146451bd937c62aafa43a08a0806ad93c",
+      "width": 3024
+    },
+    {
+      "bytes": 164489,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0082_IMG_8330.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0082_IMG_8330.png",
+      "mode": "L",
+      "sha256": "cc9bba00a13a56f26c5ef7f81536b0caead6232c594105b61065232220cf749f",
+      "width": 3024
+    },
+    {
+      "bytes": 155567,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0084_IMG_8331.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0084_IMG_8331.png",
+      "mode": "L",
+      "sha256": "2b95cb7d6bc729a911c4602fe9e21aac0d786eaf394dc4c20af03f83df934ede",
+      "width": 3024
+    },
+    {
+      "bytes": 166271,
+      "height": 4032,
+      "image_relative": "photos_iphone_13_26mm/0086_IMG_8332.jpg",
+      "mask_relative": "masks/photos_iphone_13_26mm/0086_IMG_8332.png",
+      "mode": "L",
+      "sha256": "8bea329b7d26a18be280bd1c2c68884525894ba8e4398f888c54a3219ca26bec",
+      "width": 3024
+    },
+    {
+      "bytes": 43056,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t000083.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t000083.png",
+      "mode": "L",
+      "sha256": "9d9ca0e044e88b24594dcf38b7a51e21a209798fc5a81650a98b2fd3a7ed2d6f",
+      "width": 1080
+    },
+    {
+      "bytes": 40334,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t000583.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t000583.png",
+      "mode": "L",
+      "sha256": "d56c19a420cc6b1983982f86cf8d46288ad3b0f04e553e7cb6b1c40979226f88",
+      "width": 1080
+    },
+    {
+      "bytes": 39026,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t001417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t001417.png",
+      "mode": "L",
+      "sha256": "9b3a756bf2fb41ff0a2a244a3cf87100df7104fda99243413ce50cf03a32909a",
+      "width": 1080
+    },
+    {
+      "bytes": 37730,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t001917.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t001917.png",
+      "mode": "L",
+      "sha256": "0e28dd15518d288b0611b23a3dc669e461903896c555a71e738da26ee63e274e",
+      "width": 1080
+    },
+    {
+      "bytes": 38204,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t002083.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t002083.png",
+      "mode": "L",
+      "sha256": "9474939641a8786bed4f5252933c3f58b6a51439649de6a271240aebc583bd47",
+      "width": 1080
+    },
+    {
+      "bytes": 33467,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t002750.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t002750.png",
+      "mode": "L",
+      "sha256": "3d47747fd6fc19ff247ee7bbf84d55d42db9e16cb370e68817a25166f2891ca6",
+      "width": 1080
+    },
+    {
+      "bytes": 44682,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t003417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t003417.png",
+      "mode": "L",
+      "sha256": "718f8772750628cc1c82bc9ecb9f36ed7485064bda1dc7f44070533e735b6ac9",
+      "width": 1080
+    },
+    {
+      "bytes": 39269,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t003917.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t003917.png",
+      "mode": "L",
+      "sha256": "3eea37bd83e3d6d1567dd40d94ec8154178fe4bb33a6d76fb58ba0ad4f713698",
+      "width": 1080
+    },
+    {
+      "bytes": 37957,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t004250.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t004250.png",
+      "mode": "L",
+      "sha256": "f94936940590c037ba37c5d3b18e16809ed7b4bfa5c5d7f0d6a4958e11790887",
+      "width": 1080
+    },
+    {
+      "bytes": 39655,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t004917.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t004917.png",
+      "mode": "L",
+      "sha256": "d4409d6484ef1c8c27a53b056c6209f676ae951df67edb2a5736472561a5aac1",
+      "width": 1080
+    },
+    {
+      "bytes": 38621,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t005250.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t005250.png",
+      "mode": "L",
+      "sha256": "1ca14d4c4f318ebf368e13a9ca1d8cb5f3089fe9435f0a5add220cc4938737dc",
+      "width": 1080
+    },
+    {
+      "bytes": 44692,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t005917.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t005917.png",
+      "mode": "L",
+      "sha256": "b27c44fcb34cf13b923a652c80401dd97f5419985ada4e820918227edfb385e6",
+      "width": 1080
+    },
+    {
+      "bytes": 37649,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t006417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t006417.png",
+      "mode": "L",
+      "sha256": "4524401b9095778bbe0ecc0ea7b98819a3dc9fdd7d03cc31fd097dba3ebacfda",
+      "width": 1080
+    },
+    {
+      "bytes": 43419,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t006750.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t006750.png",
+      "mode": "L",
+      "sha256": "5bfbe4d976da6443791e899dd7eacc8e22b3b9c1baade02e6e2241080ffdf4fa",
+      "width": 1080
+    },
+    {
+      "bytes": 40406,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t007417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t007417.png",
+      "mode": "L",
+      "sha256": "8b46c3dab32518280f71a68ce3429e5743d59c38fa417d981d6347cabfdd44d9",
+      "width": 1080
+    },
+    {
+      "bytes": 45231,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t007750.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t007750.png",
+      "mode": "L",
+      "sha256": "80d1b5d3ab47be382a11ade6e82b5101ebb6fefb96d8b6757b34e3869bbb9e21",
+      "width": 1080
+    },
+    {
+      "bytes": 37769,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t008250.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t008250.png",
+      "mode": "L",
+      "sha256": "24001df702d2282cb38f18dc26ca64afb24aa888a6dbff21f476e579f4c7d1a6",
+      "width": 1080
+    },
+    {
+      "bytes": 43387,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t008583.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t008583.png",
+      "mode": "L",
+      "sha256": "0472d98d1cb851607cf84e4a66852889a48baa2428d3c49778fda3cac9fc851b",
+      "width": 1080
+    },
+    {
+      "bytes": 38263,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t009417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t009417.png",
+      "mode": "L",
+      "sha256": "41354873a3396779f868cc700d77bfdd5c60e91fc4ec8b483c3a43a136103824",
+      "width": 1080
+    },
+    {
+      "bytes": 41032,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t009583.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t009583.png",
+      "mode": "L",
+      "sha256": "60c7aed88f8cb91714cc4ef33d897c4075b6b9bd1225cb19f6238a9669975876",
+      "width": 1080
+    },
+    {
+      "bytes": 40497,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t010417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t010417.png",
+      "mode": "L",
+      "sha256": "970611b53e1889b54d442b596d0945eee19b68825fb1ab7166f4edbd167b9116",
+      "width": 1080
+    },
+    {
+      "bytes": 35453,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t010917.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t010917.png",
+      "mode": "L",
+      "sha256": "6d932da599be1a92a92a31d2b9c2a626ef973c4f28d604670ad3cd11203ab558",
+      "width": 1080
+    },
+    {
+      "bytes": 44721,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t011083.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t011083.png",
+      "mode": "L",
+      "sha256": "336db7436b21c0296c5ce4c4b7dcedbedceb84c0c3a316c7b49ef1fdc1e96b72",
+      "width": 1080
+    },
+    {
+      "bytes": 36600,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t011917.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t011917.png",
+      "mode": "L",
+      "sha256": "aecf34d3f492b31a6b846b6a1f740edac1e0c24be749fad2fdcdcd730b54634c",
+      "width": 1080
+    },
+    {
+      "bytes": 47996,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t012417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t012417.png",
+      "mode": "L",
+      "sha256": "7404578c190234d237ac95841239ac594ec8c995508589f3e16a752191869ab6",
+      "width": 1080
+    },
+    {
+      "bytes": 35568,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t012583.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t012583.png",
+      "mode": "L",
+      "sha256": "17d51240e23a5e873e824ab12a70475ad9d13c76de3090e0109628f158a2f8a8",
+      "width": 1080
+    },
+    {
+      "bytes": 47968,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t013417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t013417.png",
+      "mode": "L",
+      "sha256": "fd1d5b42a186e92ea0c207fb417f28236bae1e9cb366c87c71f62363363fee25",
+      "width": 1080
+    },
+    {
+      "bytes": 45059,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t013583.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t013583.png",
+      "mode": "L",
+      "sha256": "0e10bfbe17ab990f90ab4b583a8f0356fb3cd8c63a662b833a243d75830f20f8",
+      "width": 1080
+    },
+    {
+      "bytes": 36038,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t014417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t014417.png",
+      "mode": "L",
+      "sha256": "58307461f6506c2c9fcd2f1ecbcf77e7f1d267f2e4f75685737f785cef2a5c46",
+      "width": 1080
+    },
+    {
+      "bytes": 41186,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t014583.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t014583.png",
+      "mode": "L",
+      "sha256": "91b9745c7e34cddf38545cbb36666f897f5e768216a57bb0cd31e62e0b712545",
+      "width": 1080
+    },
+    {
+      "bytes": 41187,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t018083.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t018083.png",
+      "mode": "L",
+      "sha256": "dcff08e54bab4fbfcdcf17370bd63a826fd076cd7b2e415c49480f81320c43d6",
+      "width": 1080
+    },
+    {
+      "bytes": 39854,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t018917.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t018917.png",
+      "mode": "L",
+      "sha256": "2dc40856be0342892e015143365eb8caa26445ba825df688ef0b98efcf8d1662",
+      "width": 1080
+    },
+    {
+      "bytes": 32207,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t019417.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t019417.png",
+      "mode": "L",
+      "sha256": "6e46f1cbfb2e0dd141ad5ae838676b844a5a0e58e2d0434bddcba68f8a8a5cd3",
+      "width": 1080
+    },
+    {
+      "bytes": 33189,
+      "height": 1920,
+      "image_relative": "video_IMG_8338/IMG_8338_t019583.jpg",
+      "mask_relative": "masks/video_IMG_8338/IMG_8338_t019583.png",
+      "mode": "L",
+      "sha256": "d419706c13214c678efb5344a656ccffd00046762343832b1fe4cd5e30a10940",
+      "width": 1080
+    }
+  ],
+  "schema_version": 1,
+  "status": "complete"
+}

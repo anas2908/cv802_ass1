@@ -6,7 +6,7 @@ umask 027
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 CODE_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 CLUSTER_USER="${USER:?USER is not set}"
-export CV802_DATA_ROOT="${CV802_DATA_ROOT:-/l/users/${CLUSTER_USER}/cv802_ass1}"
+export CV802_DATA_ROOT="${CV802_DATA_ROOT:-/l/users/${CLUSTER_USER}/cv802_ass1-runs}"
 
 if [[ -z "${SLURM_JOB_ID:-}" ]]; then
   echo "ERROR: no active Slurm allocation. Start scripts/run_ciai_gpu_ui.sh instead." >&2

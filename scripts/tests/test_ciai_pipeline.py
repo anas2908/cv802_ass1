@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -117,39 +116,10 @@ class CIAIPipelineTests(unittest.TestCase):
         self.assertEqual(dark["masking"]["mode"], "none")
         self.assertEqual(dark["patch_match"]["num_iterations"], 3)
 
-    def test_reference_mvs_inputs_honors_explicit_data_root(self) -> None:
-        reference = self.root / "reviewed"
-        inputs = (
-            reference
-            / "mvs"
-            / "experiments"
-            / "light_e10_colmap_mvs_1600"
-            / "inputs"
-        )
-        (inputs / "images").mkdir(parents=True)
-        (inputs / "masks").mkdir()
-        (inputs / "mask_manifest.json").write_text("{}")
-        sparse = inputs / "sparse"
-        sparse.mkdir()
-        for name in ("cameras.bin", "images.bin", "points3D.bin"):
-            (sparse / name).write_bytes(b"model")
-        old = os.environ.get("CV802_REFERENCE_DATA_ROOT")
-        os.environ["CV802_REFERENCE_DATA_ROOT"] = str(reference)
-        try:
-            found = ciai_pipeline._reference_mvs_inputs(
-                "light_shirt", self.root / "new-data"
-            )
-        finally:
-            if old is None:
-                os.environ.pop("CV802_REFERENCE_DATA_ROOT", None)
-            else:
-                os.environ["CV802_REFERENCE_DATA_ROOT"] = old
-        self.assertEqual(found, inputs)
-
-    def test_reference_calibration_is_verified_and_imported_under_active_root(self) -> None:
+    def test_staged_calibration_is_verified_inside_active_root(self) -> None:
         self.make_dataset("light_shirt")
-        reference = self.root / "legacy" / "mvs" / "experiments" / "light_e10_colmap_mvs_1600"
-        inputs = reference / "inputs"
+        active = self.root / "active"
+        inputs = active / "mvs" / "reference_inputs" / "light_shirt"
         sparse = inputs / "sparse"
         masks = inputs / "masks" / "camera"
         sparse.mkdir(parents=True)
@@ -169,11 +139,8 @@ class CIAIPipelineTests(unittest.TestCase):
                     "sha256": hashlib.sha256(payload).hexdigest(),
                 }
             )
-        manifests = reference / "manifests"
-        manifests.mkdir()
-        (manifests / "input_provenance.json").write_text(json.dumps({"files": records}))
+        (inputs / "input_provenance.json").write_text(json.dumps({"files": records}))
 
-        active = self.root / "active"
         images, model, imported_masks, manifest = ciai_pipeline._prepare_reference_mvs_sources(
             "light_shirt", inputs, active, lambda _message: None
         )

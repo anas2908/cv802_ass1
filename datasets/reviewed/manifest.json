@@ -1,0 +1,99 @@
+{
+  "datasets": {
+    "dark_shirt": {
+      "masks": {
+        "mask_count": 290,
+        "receipt": {
+          "bytes": 92246,
+          "sha256": "9180b5e32f15c1ce1665701c2ebd0364e6dffc8ad89ebe6978a97112ba70ca79"
+        }
+      },
+      "mvs": {
+        "dataset": "dark_shirt",
+        "experiment": "dark_e3_colmap_mvs_1024_raw_v1",
+        "input_provenance": {
+          "bytes": 70898,
+          "sha256": "0e4b68fb4f4d3aa01b8a94b610547ce2a1320631f0037be27e3bbdf58385d1bf"
+        },
+        "mask_manifest": null,
+        "schema_version": 1,
+        "sparse_archive": {
+          "bytes": 43650363,
+          "sha256": "cafdfa4fa60c384e764df3f56acc8b4b64d61ff0af40b645007e5e013eaf3a6d"
+        },
+        "sparse_files": {
+          "cameras.bin": {
+            "bytes": 232,
+            "sha256": "22604dcc96a4081f0454c20ac67dd522d70c7b9269b9f824bfeb9571b082786c"
+          },
+          "frames.bin": {
+            "bytes": 24368,
+            "sha256": "bd653c4f322bb92ce21b385f5922403ad0a4ae67f1edd2be87ea761fb7e3bd34"
+          },
+          "images.bin": {
+            "bytes": 107375900,
+            "sha256": "65b6651c5aaff05a59bede4e2da325dd06face2a7873d793a629c930f3c8b7d8"
+          },
+          "points3D.bin": {
+            "bytes": 8946002,
+            "sha256": "bfce2c078a0f6795bcf3671158275820a6faecaf26601e9bc1b86f59414dafb1"
+          },
+          "rigs.bin": {
+            "bytes": 72,
+            "sha256": "73acc8da2787b753f8dfd8514389f64a51e70c7a4ebc7ab9d47cf695b385ea3d"
+          }
+        }
+      }
+    },
+    "light_shirt": {
+      "masks": {
+        "mask_count": 125,
+        "receipt": {
+          "bytes": 39910,
+          "sha256": "b020f42d5a315d12d7a1be26abc766325dc01fc98f8d21b346f7132127bb5bb8"
+        }
+      },
+      "mvs": {
+        "dataset": "light_shirt",
+        "experiment": "light_e10_colmap_mvs_1600",
+        "input_provenance": {
+          "bytes": 30668,
+          "sha256": "3fd1cf69e92567014591d5f822852c2f566f9945958e372a98dc2060514b4d28"
+        },
+        "mask_manifest": {
+          "bytes": 39701,
+          "sha256": "96564a2506cbc8aaff529ff7a1b72b401d21baa22a28fc0ae502d4bde0d3e13b"
+        },
+        "schema_version": 1,
+        "sparse_archive": {
+          "bytes": 15589045,
+          "sha256": "8d32286dd0e7cc024f56905131fda721ce81a3a7fd35926e7cf2601839fe19ac"
+        },
+        "sparse_files": {
+          "cameras.bin": {
+            "bytes": 288,
+            "sha256": "d57e35746b75e8863501dd17db2043d0558dc0d859b3750b5d2a073cce72ff7d"
+          },
+          "frames.bin": {
+            "bytes": 10508,
+            "sha256": "d74e81c6404bbe6029cac97fd70f391241c8aa1ee8e04b38af1ac74c414bdafc"
+          },
+          "images.bin": {
+            "bytes": 41812104,
+            "sha256": "7e714d41514049fef5fc7da420331adad8bba4da2b878a8b9d823243318e8655"
+          },
+          "points3D.bin": {
+            "bytes": 1998832,
+            "sha256": "f71e47b3d6f341a6e5fbf27b3d2caf94edb7415e581ea70b9e52d2b28e995c1b"
+          },
+          "rigs.bin": {
+            "bytes": 88,
+            "sha256": "6dc6e925a99a755cc1eaa0f2a4c6b47fab11f73587b6bb88ae8c1a645c86b4ac"
+          }
+        }
+      }
+    }
+  },
+  "schema_version": 1,
+  "scope": "Assignment-specific Mac masks, 2D crutch corridors, and reviewed MVS sparse calibrations. Photos are in datasets/<dataset>/images."
+}

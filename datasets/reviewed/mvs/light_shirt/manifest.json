@@ -1,0 +1,39 @@
+{
+  "dataset": "light_shirt",
+  "experiment": "light_e10_colmap_mvs_1600",
+  "input_provenance": {
+    "bytes": 30668,
+    "sha256": "3fd1cf69e92567014591d5f822852c2f566f9945958e372a98dc2060514b4d28"
+  },
+  "mask_manifest": {
+    "bytes": 39701,
+    "sha256": "96564a2506cbc8aaff529ff7a1b72b401d21baa22a28fc0ae502d4bde0d3e13b"
+  },
+  "schema_version": 1,
+  "sparse_archive": {
+    "bytes": 15589045,
+    "sha256": "8d32286dd0e7cc024f56905131fda721ce81a3a7fd35926e7cf2601839fe19ac"
+  },
+  "sparse_files": {
+    "cameras.bin": {
+      "bytes": 288,
+      "sha256": "d57e35746b75e8863501dd17db2043d0558dc0d859b3750b5d2a073cce72ff7d"
+    },
+    "frames.bin": {
+      "bytes": 10508,
+      "sha256": "d74e81c6404bbe6029cac97fd70f391241c8aa1ee8e04b38af1ac74c414bdafc"
+    },
+    "images.bin": {
+      "bytes": 41812104,
+      "sha256": "7e714d41514049fef5fc7da420331adad8bba4da2b878a8b9d823243318e8655"
+    },
+    "points3D.bin": {
+      "bytes": 1998832,
+      "sha256": "f71e47b3d6f341a6e5fbf27b3d2caf94edb7415e581ea70b9e52d2b28e995c1b"
+    },
+    "rigs.bin": {
+      "bytes": 88,
+      "sha256": "6dc6e925a99a755cc1eaa0f2a4c6b47fab11f73587b6bb88ae8c1a645c86b4ac"
+    }
+  }
+}

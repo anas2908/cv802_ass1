@@ -10,9 +10,11 @@ provide cameras to this pipeline.
 cloud using image undistortion, PatchMatch Stereo, consistency filtering, and
 depth-map fusion.
 
-MVS must be run after SfM because it needs the registered images and camera
-model. The CIAI browser workflow creates or resumes that SfM prerequisite
-automatically; the user does not have to supply a model manually.
+MVS needs registered images and calibrated cameras. For the two included
+datasets, the reviewed E10/E3 sparse calibrations and light-shirt masks are
+bundled in `datasets/reviewed`, so the user does not have to run SfM first or
+have the original assignment data folder. A newly added dataset uses the
+generic SfM prerequisite instead.
 
 From a CIAI login node, use the single launcher documented in the root README:
 
@@ -24,7 +26,7 @@ The launcher allocates one A100 for up to three hours. In the UI, selecting
 MVS performs these resumable stages:
 
 1. checksum-verified image staging into the user's Lustre data root;
-2. CUDA sparse SfM camera calibration;
+2. installation of the bundled E10/E3 cameras (or generic SfM for a new dataset);
 3. independent MVS input staging;
 4. image undistortion;
 5. CUDA PatchMatch Stereo with geometric consistency; and
@@ -32,7 +34,6 @@ MVS performs these resumable stages:
 
 There are no learned MVS weights. The generated environment, database, dense
 workspace, logs and point cloud remain below
-`/l/users/$USER/cv802_ass1/mvs`. `configs/ciai_template.json` is the reviewed
+`/l/users/$USER/cv802_ass1-runs/mvs` by default. `configs/ciai_template.json` is the reviewed
 A100 recipe; the launcher writes its dataset-specific copy into the data root.
-The same UI can display the raw sparse SfM prerequisite and its independent
-generic quality-cleaned visualization before or after dense MVS.
+The same UI can run and display a separate generic sparse SfM experiment.

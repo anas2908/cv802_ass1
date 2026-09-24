@@ -95,17 +95,20 @@ cd cv802_ass1-source
 bash scripts/run_ciai_gpu_ui.sh
 ```
 
-For a genuinely fresh test on the **same account**, set a new data root before
-the launcher; deleting and recloning source code does not clear prior results:
+All assignment-specific photographs, Mac masks, reviewed E10/E3 MVS camera
+models and 2D crutch annotations are in this clone. You do not need the old
+`cv_802_ass1` folder. The launcher uses a new `cv802_ass1-runs` data folder by
+default, so it does not display results from the previous assignment. To do
+another independent run on the **same account**, choose another data root:
 
 ```bash
 export CV802_DATA_ROOT="/l/users/$USER/cv802_ass1_fresh_test"
-export CV802_REFERENCE_DATA_ROOT="/l/users/$USER/cv_802_ass1"
 bash scripts/run_ciai_gpu_ui.sh
 ```
 
-The fresh data root receives new models and outputs; the reference root is
-read only for the reviewed MVS inputs and the VGGSfM Mac masks/corridors.
+The data root receives only environments, downloads, caches, copied inputs,
+logs and generated outputs. Deleting and recloning source code does not erase
+an existing data root.
 
 The launcher requests one A100 40 GB GPU, 16 CPU cores and 96 GB RAM from the
 CIAI debug queue for at most three hours. It may first wait in the Slurm queue.
@@ -127,7 +130,7 @@ printed URL. Keep both terminals open. In the UI, choose the dataset and either:
 - **VGGSfM** — independently reconstructs from the raw photographs using the
   pinned official model; or
 - **VGGSfM Mac-mask cleanup** — after that raw run finishes, copy the reviewed
-  Apple/Mac person masks from the previous assignment data root, project the
+  Apple/Mac person masks from this clone, project the
   current VGGSfM points into them using VGGSfM's own cameras, and create a
   separate person-focused cloud. The dark-shirt recipe also protects points
   supported by the reviewed 2D crutch corridors; or
@@ -142,13 +145,10 @@ also retained and viewable for comparison.
 The VGGSfM Mac-mask option follows the historical cleanup rule: at least six
 usable image projections and 90% person-mask agreement; dark-shirt crutch
 points can also be retained by three separated reviewed corridor views. It
-does not reuse E1/E10 poses or 3D geometry. It requires the historical mask
-data at `/l/users/$USER/cv_802_ass1/vggsfm/inputs`, or another prior data root
-set with `CV802_REFERENCE_DATA_ROOT=/absolute/path/to/prior-data`. Only masks
-and 2D corridors are copied into the new VGGSfM data folder; the raw cloud is
-never changed. These masks are not bundled in GitHub, so a user without them
-can still use the geometric option, but cannot reproduce mask cleanup until
-the masks are supplied. Projection agreement is not an occlusion test.
+does not reuse E1/E10 poses or 3D geometry. The verified masks and 2D
+corridors are bundled under `datasets/reviewed`; the selected method copies
+them into its data folder. The raw cloud is never changed. Projection
+agreement is not an occlusion test.
 
 The UI shows overall progress, detailed logs, and live GPU utilization and
 memory. When a run completes, click its result link to rotate, pan, zoom and
@@ -159,7 +159,7 @@ downloaded VGGSfM weights, caches, databases, temporary files, logs and outputs
 are written below:
 
 ```text
-/l/users/$USER/cv802_ass1/
+/l/users/$USER/cv802_ass1-runs/
 ```
 
 MVS has no learned weights. VGGSfM downloads its pretrained weights on the
@@ -168,13 +168,12 @@ restartable: if the three-hour allocation ends, rerun the same launcher and
 select the same dataset and method. Press `Control-C` in the CIAI job terminal
 when finished to release the GPU immediately.
 
-For the two included datasets, the MVS UI intentionally uses the calibrated
-inputs from the completed assignment rather than silently replacing them with
-a new generic SfM run. The launcher automatically recognizes the original
-sibling data root `/l/users/$USER/cv_802_ass1`. If those reviewed inputs are
-stored elsewhere, set `CV802_REFERENCE_DATA_ROOT` to that absolute assignment
-data root before starting the launcher. VGGSfM is independent: it uses only the
-raw photographs and its pretrained weights, never E3 or E10 cameras.
+For the two included datasets, the MVS UI stages the bundled reviewed E10/E3
+calibrations rather than silently replacing them with a new generic SfM run.
+VGGSfM is independent: it uses only the raw photographs and its pretrained
+weights, never E3 or E10 cameras. Python packages and official VGGSfM weights
+are downloaded automatically on first use, so an internet connection and the
+CIAI GPU allocation are still required; no prior local assignment folder is.
 
 ## Already cloned the repository?
 

@@ -1,0 +1,756 @@
+{
+  "experiment": "light_e10_colmap_mvs_1600",
+  "files": [
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_13mm/0030_IMG_8493.jpg",
+      "role": "registered_image",
+      "sha256": "d25b2666ff099aafd09d9297dbc9b046fd65eacf21b49a9d9c057ad9c1f43c94",
+      "size_bytes": 3672046
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_13mm/0032_IMG_8491.jpg",
+      "role": "registered_image",
+      "sha256": "c82ff5285fbab9e6816e6f2e5527d744388d2ed3780259df7dd0603ca82739a1",
+      "size_bytes": 3618804
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_13mm/0050_IMG_6787.jpg",
+      "role": "registered_image",
+      "sha256": "b3c1e503fab3afcf51bcf7c3f8f892efc872e2e4384c0dff7671e4190b64a12d",
+      "size_bytes": 3016548
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_13mm/0052_IMG_6788.jpg",
+      "role": "registered_image",
+      "sha256": "bb65fb218eb15edd70406aa150f15710235eb4aa3a6c8e5087bebaab45f94c9d",
+      "size_bytes": 3020912
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0000_IMG_6763.jpg",
+      "role": "registered_image",
+      "sha256": "72e8caa804689426ec459db565b7ca813e23aa200fc82d70cfcb03a128b9bc9f",
+      "size_bytes": 3589094
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0001_IMG_6764.jpg",
+      "role": "registered_image",
+      "sha256": "435c8c3c92730f86d22379f42208f551997ed19bfae27890e2b4967615f94a03",
+      "size_bytes": 3055681
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0006_IMG_6765.jpg",
+      "role": "registered_image",
+      "sha256": "e779bf692d3b59c7ff4be13508b3a0bffcbb5cc7d5adadaf18e6ecadc694fa74",
+      "size_bytes": 3027230
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0007_IMG_8378.jpg",
+      "role": "registered_image",
+      "sha256": "49907df262ef5da8208ebb691b7442f54147b7bbbf9e340ad1fd68604a068476",
+      "size_bytes": 3722336
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0009_IMG_8377.jpg",
+      "role": "registered_image",
+      "sha256": "388467efb7f64fe3437562f004ac1684ec080d9796cacde1b4e7ff4725b3f9c6",
+      "size_bytes": 4278084
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0012_IMG_8376.jpg",
+      "role": "registered_image",
+      "sha256": "e1e495f4709d968c1a947be193804dd57b6ad7d505c904c80d9a240fce9bb769",
+      "size_bytes": 4276082
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0013_IMG_8375.jpg",
+      "role": "registered_image",
+      "sha256": "065e66b4504b8e14e425a35a0aac5daf669bf38a5ad1380d94955efdba95445d",
+      "size_bytes": 3973926
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0016_IMG_6770.jpg",
+      "role": "registered_image",
+      "sha256": "65e2442411f51f9999f3bbafde3168e8d8b69c4487c6c1254964bddcaef3cb95",
+      "size_bytes": 4048576
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0017_IMG_8373.jpg",
+      "role": "registered_image",
+      "sha256": "5efce517dab70f59002ad1c7e6c86ff030ad2b4a2ed5e91a4a5285f006d1dd95",
+      "size_bytes": 4209526
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0020_IMG_6772.jpg",
+      "role": "registered_image",
+      "sha256": "0ac6e21d51a6f3014e0bb3b8561f31805dffb1e19be3462dcaf5c0063386a48f",
+      "size_bytes": 4225106
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0021_IMG_6773.jpg",
+      "role": "registered_image",
+      "sha256": "f23ddfab1c5d726492739581d9b158ce4024725efcd7c1ef7b2c0e83ca5e7e72",
+      "size_bytes": 4150999
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0024_IMG_8370.jpg",
+      "role": "registered_image",
+      "sha256": "0d97e66607a1e754cb4c6e68b3036d4784a29fb3f11ca47adc02fe7e398aecca",
+      "size_bytes": 4163145
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0025_IMG_6775.jpg",
+      "role": "registered_image",
+      "sha256": "9676e92ada5cdcc7bdf020668fda06b4841ed6de675327977704c1e52c7e3d57",
+      "size_bytes": 3715152
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0028_IMG_8368.jpg",
+      "role": "registered_image",
+      "sha256": "802da6c7c0225ba36711e8e8cb89c1cfd6bcc985444e51a19de0ed2e5a0ed36f",
+      "size_bytes": 3736466
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0033_IMG_6779.jpg",
+      "role": "registered_image",
+      "sha256": "15917149859a43051e450d0df786495a7dfa8da9ecb0d3b93f89f51e3b8c9ac4",
+      "size_bytes": 3372471
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0036_IMG_8367.jpg",
+      "role": "registered_image",
+      "sha256": "df60bf2266c3cd0542d23d9d2751a439b6078b8b2ec24e6c9f14e3deb6d709bf",
+      "size_bytes": 3308527
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0037_IMG_6781.jpg",
+      "role": "registered_image",
+      "sha256": "ac6bb603f2ee53e6d1d1413e6cb0e994f67a265f6ccb121bb3cb974ee8f0eb4d",
+      "size_bytes": 3265301
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0039_IMG_6782.jpg",
+      "role": "registered_image",
+      "sha256": "9156850f136d8692bfe02f59f541dd4d35324e30f425d44b0405b088a4be650a",
+      "size_bytes": 3292196
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0041_IMG_6783.jpg",
+      "role": "registered_image",
+      "sha256": "ec156c69df0a08126d4632e7b44c937b4e31b0d64d1c97053c7bfd21b35193cf",
+      "size_bytes": 2957640
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0043_IMG_8360.jpg",
+      "role": "registered_image",
+      "sha256": "4d7f2e395b602b9db7e231d5ffe272502edb0557ec1882261b18822524124daf",
+      "size_bytes": 2942128
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0045_IMG_8363.jpg",
+      "role": "registered_image",
+      "sha256": "7b52fa5eac814bdba89767e7682bdabc369f6fb26bb48bd4bb979150f1f5fa8e",
+      "size_bytes": 3088037
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0047_IMG_6786.jpg",
+      "role": "registered_image",
+      "sha256": "2150d0bf61fa46c1d63b66714b87858411c1dbb64c89fda6360d10ffa5ae8b68",
+      "size_bytes": 3137848
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0053_IMG_8355.jpg",
+      "role": "registered_image",
+      "sha256": "d02878096d0798b105671696fb5521d609d25d37737ec2ee7c0535677ef8bdad",
+      "size_bytes": 3181208
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0056_IMG_6790.jpg",
+      "role": "registered_image",
+      "sha256": "4331ba51ce4cfb1b76ce2ae04ceb680dc57b97e53c78d2ea840be9f669356e26",
+      "size_bytes": 2975898
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0057_IMG_6791.jpg",
+      "role": "registered_image",
+      "sha256": "fea911d312a6dec584d76deb19118b7bdeafc764ea268dd173841b345a307788",
+      "size_bytes": 3065148
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0060_IMG_6792.jpg",
+      "role": "registered_image",
+      "sha256": "24879179f489a19b99efb022cec2a0d67dce19860a1839c9ecd4464b85ba1bf1",
+      "size_bytes": 3029352
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0062_IMG_8352.jpg",
+      "role": "registered_image",
+      "sha256": "3351fa4309911f031f1baaa61f3fc4cf571f331e09b2046a2d14c6c9d2c92674",
+      "size_bytes": 3002191
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0064_IMG_8350.jpg",
+      "role": "registered_image",
+      "sha256": "6fc99a6a482af05cb394ab47d2c9c33f966b4ae726d06e087493ca4fb57d3b0b",
+      "size_bytes": 2908899
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0066_IMG_6795.jpg",
+      "role": "registered_image",
+      "sha256": "a25840f6de1ed766fa7fce0fc4d3d50ef74e616099cbd32e52883286bac7e5d0",
+      "size_bytes": 2964344
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0068_IMG_6796.jpg",
+      "role": "registered_image",
+      "sha256": "f8b97ab6967b99dd7820993c14878253aa7ab8159ab231e95782427f2afd1af5",
+      "size_bytes": 2680599
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0070_IMG_6797.jpg",
+      "role": "registered_image",
+      "sha256": "caf9c8dd895c4d2d0388e02060ee00ed5c618e8cf411e36744b89e2a021c3025",
+      "size_bytes": 3142649
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0072_IMG_6798.jpg",
+      "role": "registered_image",
+      "sha256": "3ef72231d2712f78d95cd627d4f015113328a63e7d267e936660ddb9f490cf67",
+      "size_bytes": 3374855
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0074_IMG_6799.jpg",
+      "role": "registered_image",
+      "sha256": "cc52f81369f073d6b916288c441b0ca40a742d985f0ccfcc1c7a1a0379021809",
+      "size_bytes": 3380062
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0075_IMG_6800.jpg",
+      "role": "registered_image",
+      "sha256": "290eea176aaa6a863d1d80da9a7142717997d4b14f7bdbd958b2cda1c3cf6ed3",
+      "size_bytes": 3672873
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0077_IMG_8345.jpg",
+      "role": "registered_image",
+      "sha256": "49689c912673c5e348553f908562604af50de796d6d8583a96d98641412fd4c1",
+      "size_bytes": 3699500
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0079_IMG_8346.jpg",
+      "role": "registered_image",
+      "sha256": "17e42e4a1d5ca108d5289d83dedc6bdd88d6fd6de0b73f0d071a683e637dacab",
+      "size_bytes": 3628164
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0081_IMG_8354.jpg",
+      "role": "registered_image",
+      "sha256": "c757f92dfb21448b2dca27478a56a139dff5e23198ad5a1fb1f5ab60a83f7491",
+      "size_bytes": 3606666
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0083_IMG_8348.jpg",
+      "role": "registered_image",
+      "sha256": "38f7e45e5404349435b937655e232d7b8afbc0f9c6be1fa6c5239d2cc97b20da",
+      "size_bytes": 3755388
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_11_26mm/0085_IMG_6805.jpg",
+      "role": "registered_image",
+      "sha256": "5befe8c97170d914a5c1393d83a8cd71666b7231674b95a94dab09d76850c961",
+      "size_bytes": 3812778
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_14mm/0029_IMG_8304.jpg",
+      "role": "registered_image",
+      "sha256": "8cee2461be100ac1e526a6000e26a9fc5d03f7e4cc87cd44dcd750bb26c9847a",
+      "size_bytes": 3944864
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_14mm/0031_IMG_8305.jpg",
+      "role": "registered_image",
+      "sha256": "89cce2f46895f69397269feb05046a3b9f235aa1defb9b902a63dd1309ded86e",
+      "size_bytes": 3872634
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_14mm/0049_IMG_8314.jpg",
+      "role": "registered_image",
+      "sha256": "d7bdd1d8cebb0398c11e808d66a4353d02e14b326f3785d02121d6f3c84955a1",
+      "size_bytes": 3381451
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_14mm/0051_IMG_8315.jpg",
+      "role": "registered_image",
+      "sha256": "206f513c753d8f978f1788c21c2eaf12f7c50f4602ef2ef5c1eef79957468862",
+      "size_bytes": 3388415
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_14mm/0087_IMG_8333.jpg",
+      "role": "registered_image",
+      "sha256": "9228821be3f19038a3da72d155b14bc040ebdcde0a86ef2e0636808c532597b7",
+      "size_bytes": 3855907
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_14mm/0088_IMG_8334.jpg",
+      "role": "registered_image",
+      "sha256": "f7dd664c733b0e127a25bc8349aa6e2bfc939589febc11650717e16e910207d2",
+      "size_bytes": 3720077
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_14mm/0089_IMG_8335.jpg",
+      "role": "registered_image",
+      "sha256": "d7087954e68674452e0157c0690fa078cc86bd188497608942757078fcb1a910",
+      "size_bytes": 3569599
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_14mm/0090_IMG_8336.jpg",
+      "role": "registered_image",
+      "sha256": "c4fbc4395b8b9ff8559c1893464deee3e6d7e0d665fcf7d08e57d5bffd622445",
+      "size_bytes": 3669035
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0002_IMG_8289.jpg",
+      "role": "registered_image",
+      "sha256": "fa15791dccdee1b713a147474a4aaac3f248d6a52a4c132e84641dd6e1128eeb",
+      "size_bytes": 3522742
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0003_IMG_8290.jpg",
+      "role": "registered_image",
+      "sha256": "1a934eb5c17791cbe51a1f7e63e00bed8b871d9922e933799ba60ca6faa46a43",
+      "size_bytes": 3495216
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0004_IMG_8291.jpg",
+      "role": "registered_image",
+      "sha256": "622df5d691d377cb11669477a40b9430aad7702d5a9fd7ad5138f16b36bba652",
+      "size_bytes": 3756025
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0005_IMG_8292.jpg",
+      "role": "registered_image",
+      "sha256": "ee73deb4fb0756ce5d80d029a25775eae20cd4921b95ef52857527b8976a5baa",
+      "size_bytes": 3462082
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0008_IMG_8293.jpg",
+      "role": "registered_image",
+      "sha256": "e65349f7c5357599d49d68314e52a43d3d144bb7d56b3997b21accd8b4ae0003",
+      "size_bytes": 3838099
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0010_IMG_8294.jpg",
+      "role": "registered_image",
+      "sha256": "df6dfec583e228bc8f266a8576efb0ab85497b753c06d63c39229d9d244ac447",
+      "size_bytes": 4257462
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0011_IMG_8295.jpg",
+      "role": "registered_image",
+      "sha256": "3c2782f212faca676f4d0aa406e5031b9d270d99e8462e4653e058f36459e508",
+      "size_bytes": 4266932
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0014_IMG_8296.jpg",
+      "role": "registered_image",
+      "sha256": "d954e2e97b14798ea1371d55976869c1c9d56ae4684377e134199e0cbb10f726",
+      "size_bytes": 4211442
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0015_IMG_8297.jpg",
+      "role": "registered_image",
+      "sha256": "0ac1639ac0cbc4bc4a65dde4c89e3bbdf6a990a7e1e4e501d803c0530b65fab6",
+      "size_bytes": 4190577
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0018_IMG_8298.jpg",
+      "role": "registered_image",
+      "sha256": "89ab6966d1aa960f5f0be251582fe670aed91863aeb9a5ae9944bfa41405ba96",
+      "size_bytes": 3967826
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0019_IMG_8299.jpg",
+      "role": "registered_image",
+      "sha256": "4a51dc8fe817242a9ef645d4cb1d8e697c1462a2ab1ccac0c96b70ef504caad1",
+      "size_bytes": 4002076
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0022_IMG_8300.jpg",
+      "role": "registered_image",
+      "sha256": "4f4d6767d0dad8cfd38dc9f815caf4f6a9e720783046414800cefaf48da30c3c",
+      "size_bytes": 4552062
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0023_IMG_8301.jpg",
+      "role": "registered_image",
+      "sha256": "726f9f712906183abb3f0bd71e44f011348b458b877e4292fc8dc28760c573f8",
+      "size_bytes": 4325323
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0026_IMG_8302.jpg",
+      "role": "registered_image",
+      "sha256": "7212bd90af117136c888b59da6257952d3043dffd3b1234e3334d372cb9b5fa0",
+      "size_bytes": 4194603
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0027_IMG_8303.jpg",
+      "role": "registered_image",
+      "sha256": "8c965cff66aa24ad28f854a672cd42dd24c7d93e862a6d3dbd4db1adc6a29ef2",
+      "size_bytes": 4291816
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0034_IMG_8306.jpg",
+      "role": "registered_image",
+      "sha256": "ac0fb813889fb15f9820a701edff599f1feb0f6c52c7149e6c3ed8dcf4287fe6",
+      "size_bytes": 3995954
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0035_IMG_8307.jpg",
+      "role": "registered_image",
+      "sha256": "b81c84734afa9dad21ad7bd3cbaed2e8d521f586551629bf41da9a9e116c95fe",
+      "size_bytes": 3868682
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0038_IMG_8308.jpg",
+      "role": "registered_image",
+      "sha256": "6055e0af306112e82e63524c8d729f6a3ea68d2b57e1c42dc16cf6e41ab75ac7",
+      "size_bytes": 3673752
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0040_IMG_8309.jpg",
+      "role": "registered_image",
+      "sha256": "cec522da892b84b02009825b59b002219c45b4c7a08d4f89a661ae2743bfbeb1",
+      "size_bytes": 3709026
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0042_IMG_8310.jpg",
+      "role": "registered_image",
+      "sha256": "17695abf9aea566fc89cde752216d73f7f72df49a1e9bcd3276a9468e64d2982",
+      "size_bytes": 3485633
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0044_IMG_8311.jpg",
+      "role": "registered_image",
+      "sha256": "4e53242c65298735fa4d0ce31ed80df11a90f85aea84cd735d7e15bfc8e2e6e2",
+      "size_bytes": 3484990
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0046_IMG_8312.jpg",
+      "role": "registered_image",
+      "sha256": "46e68acb401df11ee67fafc458bd10cd65b9f7e6951be969b5c90ac22de4be99",
+      "size_bytes": 3542595
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0048_IMG_8313.jpg",
+      "role": "registered_image",
+      "sha256": "6ca78c8ea99bfd158ce84316565831ad2917ea20d0558d382ec9af55dd55b3c4",
+      "size_bytes": 3550415
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0054_IMG_8316.jpg",
+      "role": "registered_image",
+      "sha256": "b6e2adcf2cc5e55074e4dfebbfe1fecdd28876195a0911b2f530e01129b7741f",
+      "size_bytes": 3590463
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0055_IMG_8317.jpg",
+      "role": "registered_image",
+      "sha256": "ab0074711d48ffc73c0031febea0c3cec2b23f8a453aa285cd365c7ce84ed6f8",
+      "size_bytes": 3748535
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0058_IMG_8318.jpg",
+      "role": "registered_image",
+      "sha256": "e1b41078626807cb4b6d09bd94886e902f176256c184bc76e6039b58da96be51",
+      "size_bytes": 3735562
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0059_IMG_8319.jpg",
+      "role": "registered_image",
+      "sha256": "fe2c21e3018f0cbb00d53d562ba067fcceaea66606fff7505bbf00a0f26a7997",
+      "size_bytes": 3295852
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0061_IMG_8320.jpg",
+      "role": "registered_image",
+      "sha256": "0f7d44f0cb3e450c7262f59563cacc2dbfc8bb8f7bcb88a4667e17b1ac0eb213",
+      "size_bytes": 3550740
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0063_IMG_8321.jpg",
+      "role": "registered_image",
+      "sha256": "89cf2b44112754b96b5c16de27bad34c4412f8e9287a5d390922e5dad1e9ac00",
+      "size_bytes": 3274143
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0065_IMG_8322.jpg",
+      "role": "registered_image",
+      "sha256": "c269cf6747b701c6877ce365fc872ea7149d5b499400f5eb88d1ac3bf1a266ab",
+      "size_bytes": 3592370
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0067_IMG_8323.jpg",
+      "role": "registered_image",
+      "sha256": "8c1350077e0a296af9c838a509f721d3ac29d00fa2b881029f2cd5b4128c5164",
+      "size_bytes": 3002946
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0069_IMG_8324.jpg",
+      "role": "registered_image",
+      "sha256": "3e017e7a2fdc4bbf9b71344f79f1bf30ff4579d270cfed0eb6b564b993c99c98",
+      "size_bytes": 3370822
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0071_IMG_8325.jpg",
+      "role": "registered_image",
+      "sha256": "ac04894bd17283dabccd5b30d6511e54bf3eccf81443a00249be9c7791d5b3fc",
+      "size_bytes": 3663429
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0073_IMG_8326.jpg",
+      "role": "registered_image",
+      "sha256": "e8ad1348cef85e0e0f5582780986f20652cc597cd9206a55c580931106b2b575",
+      "size_bytes": 3634537
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0076_IMG_8327.jpg",
+      "role": "registered_image",
+      "sha256": "e7fc17fa230f2e77dedaa28cbcdd28d0398604c7c3aebe700030664a94f55dbd",
+      "size_bytes": 3579246
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0078_IMG_8328.jpg",
+      "role": "registered_image",
+      "sha256": "24c229eeb1cd97e239a561c5ff8d94b333efa2dd3422428f7291cd7a95bbff8b",
+      "size_bytes": 3585295
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0080_IMG_8329.jpg",
+      "role": "registered_image",
+      "sha256": "d9bb91b971a2ac5ccfeaf80e0624a4bb6d29286f256aeb5c4fc031d25eaadac3",
+      "size_bytes": 3817351
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0082_IMG_8330.jpg",
+      "role": "registered_image",
+      "sha256": "ea76a45e7d2d06a9585a2f9e69c56ba2b4b4415b35c86ea1a7ee948233d063f1",
+      "size_bytes": 3876887
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0084_IMG_8331.jpg",
+      "role": "registered_image",
+      "sha256": "d936df857e14633db3cbc3a66047c4e87acdf4ef24da65573dbfe39e4d74d0dd",
+      "size_bytes": 3977063
+    },
+    {
+      "destination_relative": "inputs/images/photos_iphone_13_26mm/0086_IMG_8332.jpg",
+      "role": "registered_image",
+      "sha256": "3e69e993b7f42c499b8477bf16b5608dbf637b44ef2c45cca7a2a6a092083bac",
+      "size_bytes": 4025985
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t000083.jpg",
+      "role": "registered_image",
+      "sha256": "ccff80a75299e29485bb041e33a61b0a0546f6d3490e3032dcefb2f6ad7d0e86",
+      "size_bytes": 214463
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t000583.jpg",
+      "role": "registered_image",
+      "sha256": "3edc85c094f21e5c79ce4786a2fab4d715d32728328d415ba2b3bff9571b2037",
+      "size_bytes": 172322
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t001417.jpg",
+      "role": "registered_image",
+      "sha256": "8ab164cf2d246ee1029a672b5c5e5f7cdf5cdbb07372b6c53730e826cd3e4f4c",
+      "size_bytes": 200152
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t001917.jpg",
+      "role": "registered_image",
+      "sha256": "121ecb93d78df6d792887a2d35c39ad56c1bb8e39fca1ea89272d135cd656b9c",
+      "size_bytes": 209838
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t002083.jpg",
+      "role": "registered_image",
+      "sha256": "40f1fa21a51fb3756ea0870aaf9dadfdb22e93bd5da4826f99890647d10035a8",
+      "size_bytes": 216123
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t002750.jpg",
+      "role": "registered_image",
+      "sha256": "ed8b4dfedae4e72d15bde8df36acb299efe6633d6e0310827ababf050d118837",
+      "size_bytes": 163080
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t003417.jpg",
+      "role": "registered_image",
+      "sha256": "41f7d9fe869e891e19df23968b3da42e4fe2e1e015b0568575fa70f564732c92",
+      "size_bytes": 138823
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t003917.jpg",
+      "role": "registered_image",
+      "sha256": "78db020b6e29c89e11301628c4a839866a1e42eeca1855269366761f240b98dc",
+      "size_bytes": 149695
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t004250.jpg",
+      "role": "registered_image",
+      "sha256": "c372c72a8a905c2bd87572c599104620042c81958eb110b735b02a8a66fc9140",
+      "size_bytes": 165736
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t004917.jpg",
+      "role": "registered_image",
+      "sha256": "ca3ee4040bb62ed67a6bc885e14737b6211badf8900dc03457ad194dfe8a0685",
+      "size_bytes": 176150
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t005250.jpg",
+      "role": "registered_image",
+      "sha256": "14c6dbcd5244de1d4bf5a04dce953b78f1f34514df558221b3c2249147657d5c",
+      "size_bytes": 168283
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t005917.jpg",
+      "role": "registered_image",
+      "sha256": "9f10c4ae8b81c60f87d244e15e1a7ef34f347e5a3b2ccffec1b7f890b88e5d54",
+      "size_bytes": 159504
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t006417.jpg",
+      "role": "registered_image",
+      "sha256": "3bb31be3da64b2678f319db13951d37291bf3f4c0f5e5a63e9adf08f146ae3b3",
+      "size_bytes": 177334
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t006750.jpg",
+      "role": "registered_image",
+      "sha256": "73930f9309ff79b9a07825955605c2e174dc03dbfc9bf4641eeaffdad35fbd62",
+      "size_bytes": 175862
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t007417.jpg",
+      "role": "registered_image",
+      "sha256": "3cd401eeb9b3b440a6655b12cb36f817dbf9e53da8899179dcc53b0a168346db",
+      "size_bytes": 175979
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t007750.jpg",
+      "role": "registered_image",
+      "sha256": "2b1e3dee714d22feb9dbd19ca32dd8dd7ad453be48d47cc45156121f66fe83ea",
+      "size_bytes": 149467
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t008250.jpg",
+      "role": "registered_image",
+      "sha256": "29c72d4325905d6e00615f7dd21c8d389792cf15dbae8f22f89e563edd22e974",
+      "size_bytes": 140162
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t008583.jpg",
+      "role": "registered_image",
+      "sha256": "6360e5632b188943c4ea051e2fbdd7fc7b8d89b869359190f939aba9385fc048",
+      "size_bytes": 145267
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t009417.jpg",
+      "role": "registered_image",
+      "sha256": "e5051587f90ce3ee4f4c10de63f4c11543762c4e48bd38627da812bd14d3e069",
+      "size_bytes": 141843
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t009583.jpg",
+      "role": "registered_image",
+      "sha256": "37480df33c9312bb190993f5e561d0bb87328850bffbf1181ec2350f71f5e07b",
+      "size_bytes": 148336
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t010417.jpg",
+      "role": "registered_image",
+      "sha256": "6e17376883b0c7c2730d1def13578010d8b64d3521d9ac1e573f8d91c5ed0ead",
+      "size_bytes": 136818
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t010917.jpg",
+      "role": "registered_image",
+      "sha256": "7d48f212d32b0db615a3fe913170929ac3a117d8fb1f4b71839c8ffb9ba43072",
+      "size_bytes": 148265
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t011083.jpg",
+      "role": "registered_image",
+      "sha256": "c0d77eeb531750c43e87db278969b5245a3776aebe851142763c95b102c584d8",
+      "size_bytes": 126912
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t011917.jpg",
+      "role": "registered_image",
+      "sha256": "22700f79903277307368746b64d10afd662ff6e931b2283b7a03040e32e1fd87",
+      "size_bytes": 145197
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t012417.jpg",
+      "role": "registered_image",
+      "sha256": "294b72ba399299870e452f1c5f97bba15284ca4c003b63abc417cd262de7ed42",
+      "size_bytes": 188583
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t012583.jpg",
+      "role": "registered_image",
+      "sha256": "cda531d2eb33697c0e43849ab1385ed1f3d67d20a850f5178a8109edf342ac3b",
+      "size_bytes": 152463
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t013417.jpg",
+      "role": "registered_image",
+      "sha256": "223d8cde414fb5466b47c80ff77628ee6a56e88a53a6c80566658bab36bfc735",
+      "size_bytes": 196491
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t013583.jpg",
+      "role": "registered_image",
+      "sha256": "bfc4270dda7f6c594e9078e292d0551d06c7eefffac415f61d64dcfd42af0e0c",
+      "size_bytes": 281962
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t014417.jpg",
+      "role": "registered_image",
+      "sha256": "0e774f6a2d30bf7d16c817bd78a62dda25eebd7f18fb50fb745a7994b01eacf6",
+      "size_bytes": 325383
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t014583.jpg",
+      "role": "registered_image",
+      "sha256": "bdec1618c8cfafb8bce6aabecedcd96160297a66c0468b581665041088041aea",
+      "size_bytes": 315691
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t018083.jpg",
+      "role": "registered_image",
+      "sha256": "a2b1fbeda3b670a92b27f20a4b2e4320c31ffa335bf08e7ad7aecb6faaf67380",
+      "size_bytes": 292145
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t018917.jpg",
+      "role": "registered_image",
+      "sha256": "47022f6ce4aaae59919c21c22f94670d1e2f5343e91a33c18c89837aca33cb9b",
+      "size_bytes": 353497
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t019417.jpg",
+      "role": "registered_image",
+      "sha256": "fa43fc423b500f44f5c7b6c539ac232c06639c4e75af78a0b765bac730871697",
+      "size_bytes": 357165
+    },
+    {
+      "destination_relative": "inputs/images/video_IMG_8338/IMG_8338_t019583.jpg",
+      "role": "registered_image",
+      "sha256": "eda79fdd70a09ccb9225e57ea2f17259ca164ec08940e9eef57f8a6fc26932d4",
+      "size_bytes": 370910
+    }
+  ],
+  "schema_version": 1
+}
